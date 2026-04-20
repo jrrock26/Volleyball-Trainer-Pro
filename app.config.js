@@ -32,7 +32,12 @@ module.exports = {
       NSPhotoLibraryAddUsageDescription:
         "Volleyball Trainer Pro saves drill recordings and AI analysis snapshots to your photo library.",
       UIBackgroundModes: [],
-      ITSAppUsesNonExemptEncryption: false
+      ITSAppUsesNonExemptEncryption: false,
+
+      // ⭐ NEW: Allow HTTP for dev client (fixes ATS error)
+      NSAppTransportSecurity: {
+        NSAllowsArbitraryLoads: true
+      }
     }
   },
 
@@ -54,12 +59,8 @@ module.exports = {
 
   plugins: [
     "expo-asset",
-
-    // ⭐ NEW: ML plugins (you will create these next)
     "./plugins/with-tflite-ml",
     "./plugins/with-yolo-ml",
-    
-
   ],
 
   extra: {
@@ -77,5 +78,3 @@ module.exports = {
 
   assetBundlePatterns: ["**/*"]
 };
-
-

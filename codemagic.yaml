@@ -6,7 +6,7 @@ workflows:
       xcode: latest
       node: latest
       groups:
-        - app_store_credentials
+        - expo_credentials
     scripts:
       - name: Configure npm for TensorFlow
         script: |

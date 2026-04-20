@@ -41,7 +41,7 @@ workflows:
       xcode: latest
       node: latest
       groups:
-        - app_store_credentials
+        - expo_credentials   # ← FIXED
     scripts:
       - name: Configure npm for TensorFlow
         script: |
@@ -76,3 +76,4 @@ workflows:
         notify:
           success: true
           failure: true
+

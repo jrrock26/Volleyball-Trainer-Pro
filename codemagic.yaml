@@ -4,17 +4,28 @@ workflows:
     instance_type: mac_mini_m2
     environment:
       xcode: latest
-      node: 18
+      node: latest
       groups:
         - app_store_credentials
     scripts:
-      - name: Install dependencies
-        script: npm ci
-      - name: Build dev client
+      - name: Configure npm for TensorFlow
         script: |
-          eas build --platform ios --profile development --non-interactive
+          echo "legacy-peer-deps=true" >> .npmrc
+          echo "strict-peer-deps=false" >> .npmrc
+
+      - name: Install dependencies
+        script: npm install --legacy-peer-deps
+
+      - name: Install EAS CLI
+        script: npm install -g eas-cli
+
+      - name: Build iOS Dev Client locally
+        script: |
+          eas build --profile development --platform ios --local --output build.ipa
+
     artifacts:
-      - build/**/*.ipa
+      - build.ipa
+
     publishing:
       email:
         recipients:
@@ -23,19 +34,41 @@ workflows:
           success: true
           failure: true
 
-  android-dev-client:
-    name: Android Development Client
-    instance_type: linux_x2
+  ios-testflight:
+    name: iOS TestFlight Build
+    instance_type: mac_mini_m2
     environment:
-      node: 18
+      xcode: latest
+      node: latest
+      groups:
+        - app_store_credentials
     scripts:
-      - name: Install dependencies
-        script: npm ci
-      - name: Build dev client
+      - name: Configure npm for TensorFlow
         script: |
-          eas build --platform android --profile development --non-interactive
+          echo "legacy-peer-deps=true" >> .npmrc
+          echo "strict-peer-deps=false" >> .npmrc
+
+      - name: Install dependencies
+        script: npm install --legacy-peer-deps
+
+      - name: Install EAS CLI
+        script: npm install -g eas-cli
+
+      - name: Build iOS Production App locally
+        script: |
+          eas build --profile production --platform ios --local --output build.ipa
+
+      - name: Upload to App Store Connect
+        script: |
+          xcrun altool --upload-app \
+            --type ios \
+            --file build.ipa \
+            --username "$APP_STORE_CONNECT_USERNAME" \
+            --password "$APP_STORE_CONNECT_PASSWORD"
+
     artifacts:
-      - build/**/*.apk
+      - build.ipa
+
     publishing:
       email:
         recipients:

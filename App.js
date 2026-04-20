@@ -1,0 +1,204 @@
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { Text, TouchableOpacity } from 'react-native';
+
+import HeaderHomeButton from './components/HeaderHomeButton';
+
+// PERFORMANCE HUB SCREENS
+import PerformanceHubMenuScreen from './screens/PerformanceHubMenuScreen';
+import PerformanceHubScreen from './screens/PerformanceHubScreen'; // analytics + charts
+
+import PersonalBestsScreen from './screens/PersonalBestsScreen';
+import RecordHitScreen from './screens/RecordHitScreen';
+
+// CORE APP SCREENS
+import Drills from './screens/Drills';
+import HomeScreen from './screens/HomeScreen';
+import PlayDesigner from './screens/PlayDesigner';
+import PlayLibrary from './screens/PlayLibrary';
+
+// PLAY HUB
+import PlayHubScreen from './screens/PlayHubScreen';
+// After the PlayHubScreen import:
+import PlayGenerator from './screens/PlayGenerator';
+
+// PRACTICE
+import PracticeBuilder from './screens/PracticeBuilder';
+import PracticeHub from './screens/PracticeHub';
+import PracticeSchedule from './screens/PracticeSchedule';
+import SavedPractices from './screens/SavedPractices';
+import SavedTraining from './screens/SavedTraining';
+
+
+// TRAINING
+import Training from './screens/Training';
+import TrainingBuilder from './screens/TrainingBuilder';
+import TrainingGenerator from './screens/TrainingGenerator';
+import TrainingHub from './screens/TrainingHub';
+import TrainingSchedule from './screens/TrainingSchedule';
+
+// ROTATIONS
+import Rotations from './screens/Rotations';
+
+const Stack = createNativeStackNavigator();
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator
+        initialRouteName="Home"
+        screenOptions={{
+          headerBackTitleVisible: false,
+        }}
+      >
+
+        {/* HOME */}
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{ title: 'Home' }}
+        />
+    
+        {/* PLAY HUB */}
+        <Stack.Screen
+          name="PlayHub"
+          component={PlayHubScreen}
+          options={{
+            title: 'Play Hub',
+            headerRight: () => <HeaderHomeButton />,
+          }}
+        />
+
+        {/* PERFORMANCE HUB MENU (MAIN ENTRY) */}
+        <Stack.Screen
+          name="PerformanceHubMenu"
+          component={PerformanceHubMenuScreen}
+          options={{
+            title: 'Performance Hub',
+            headerRight: () => <HeaderHomeButton />,
+          }}
+        />
+
+        {/* PERFORMANCE HUB SUB-SCREENS */}
+        <Stack.Screen
+          name="PerformanceHub"
+          component={PerformanceHubScreen}
+          options={{ headerShown: false }}
+        />
+        
+
+
+        <Stack.Screen
+          name="RecordHit"
+          component={RecordHitScreen}
+          options={{
+            headerShown: false,
+            presentation: "transparentModal",
+            animation: "slide_from_bottom",
+          }}
+        />
+{/* PLAY GENERATOR */}
+        <Stack.Screen
+          name="PlayGenerator"
+          component={PlayGenerator}
+          options={{
+            title: 'Play Generator',
+            headerRight: () => <HeaderHomeButton />,
+          }}
+        />
+        <Stack.Screen
+  name="SavedTraining"
+  component={SavedTraining}
+  options={{
+    headerShown: true,
+    title: 'Saved Training',
+  }}
+/>
+        <Stack.Screen
+          name="PersonalBests"
+          component={PersonalBestsScreen}
+          options={{ headerShown: false }}
+        />
+
+        {/* PRACTICE HUB */}
+        <Stack.Screen
+          name="PracticeHub"
+          component={PracticeHub}
+          options={{
+            title: 'Practice Hub',
+            headerRight: () => <HeaderHomeButton />,
+          }}
+        />
+
+        <Stack.Screen name="PracticeBuilder" component={PracticeBuilder} />
+        <Stack.Screen name="PracticeSchedule" component={PracticeSchedule} />
+        <Stack.Screen name="SavedPractices" component={SavedPractices} />
+
+        {/* TRAINING HUB */}
+        <Stack.Screen name="TrainingHub" component={TrainingHub} />
+        <Stack.Screen name="Training" component={Training} />
+        <Stack.Screen name="TrainingBuilder" component={TrainingBuilder} />
+        <Stack.Screen name="TrainingGenerator" component={TrainingGenerator} />
+        <Stack.Screen name="TrainingSchedule" component={TrainingSchedule} />
+
+        {/* DRILLS */}
+        <Stack.Screen
+          name="Drills"
+          component={Drills}
+          options={{
+            title: 'Drills',
+            headerRight: () => <HeaderHomeButton />,
+          }}
+        />
+
+        {/* PLAY DESIGNER */}
+        <Stack.Screen
+          name="PlayDesigner"
+          component={PlayDesigner}
+          options={({ navigation, route }) => ({
+            title: 'Play Designer',
+            headerLeft: () =>
+              route.params?.loadPlayId ? (
+                <TouchableOpacity onPress={() => navigation.navigate('PlayLibrary')}>
+                  <Text style={{ marginLeft: 12, color: '#3A7AFE', fontWeight: '700' }}>
+                    Back to Play Library
+                  </Text>
+                </TouchableOpacity>
+              ) : null,
+            headerRight: () => <HeaderHomeButton />,
+          })}
+        />
+
+        {/* PLAY LIBRARY */}
+        <Stack.Screen
+          name="PlayLibrary"
+          component={PlayLibrary}
+          options={({ navigation }) => ({
+            title: 'Play Library',
+            headerLeft: () => (
+              <TouchableOpacity onPress={() => navigation.navigate('PlayDesigner')}>
+                <Text style={{ marginLeft: 12, color: '#3A7AFE', fontWeight: '700' }}>
+                  Back to Play Designer
+                </Text>
+              </TouchableOpacity>
+            ),
+            headerRight: () => <HeaderHomeButton />,
+          })}
+        />
+
+        {/* ROTATIONS */}
+        <Stack.Screen
+          name="Rotations"
+          component={Rotations}
+          options={{
+            title: 'Formations',
+            headerRight: () => <HeaderHomeButton />,
+          }}
+        />
+
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+
+

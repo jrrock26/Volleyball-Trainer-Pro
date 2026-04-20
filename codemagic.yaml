@@ -1,0 +1,45 @@
+workflows:
+  ios-dev-client:
+    name: iOS Development Client
+    instance_type: mac_mini_m2
+    environment:
+      xcode: latest
+      node: 18
+      groups:
+        - app_store_credentials
+    scripts:
+      - name: Install dependencies
+        script: npm ci
+      - name: Build dev client
+        script: |
+          eas build --platform ios --profile development --non-interactive
+    artifacts:
+      - build/**/*.ipa
+    publishing:
+      email:
+        recipients:
+          - jrrock26@gmail.com
+        notify:
+          success: true
+          failure: true
+
+  android-dev-client:
+    name: Android Development Client
+    instance_type: linux_x2
+    environment:
+      node: 18
+    scripts:
+      - name: Install dependencies
+        script: npm ci
+      - name: Build dev client
+        script: |
+          eas build --platform android --profile development --non-interactive
+    artifacts:
+      - build/**/*.apk
+    publishing:
+      email:
+        recipients:
+          - jrrock26@gmail.com
+        notify:
+          success: true
+          failure: true

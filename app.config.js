@@ -8,6 +8,11 @@ module.exports = {
   icon: "./assets/images/icon.png",
   userInterfaceStyle: "dark",
 
+  // ⭐ REQUIRED FOR TFLITE + JSI + TurboModules
+  experiments: {
+    reactNativeNewArchitecture: true
+  },
+
   splash: {
     image: "./assets/images/background.png",
     resizeMode: "contain",
@@ -34,7 +39,7 @@ module.exports = {
       UIBackgroundModes: [],
       ITSAppUsesNonExemptEncryption: false,
 
-      // ⭐ NEW: Allow HTTP for dev client (fixes ATS error)
+      // ⭐ ATS FIX — allows HTTP for dev client
       NSAppTransportSecurity: {
         NSAllowsArbitraryLoads: true
       }

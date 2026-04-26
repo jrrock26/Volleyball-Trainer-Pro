@@ -42,13 +42,10 @@ export type RootStackParamList = {
   // TrainingSchedule receives an array of training blocks
   TrainingSchedule: { trainingBlocks: TrainingBlock[] };
 
-  // --- Performance Hub + Performance Flow ---
+  // --- Performance Hub (placeholder only) ---
   PerformanceHub: undefined;
-  RecordHit: undefined;
-  PersonalBests: undefined;
-  SavedHits: undefined;
-  PerformanceTrends: undefined;
 };
+
 
 
 

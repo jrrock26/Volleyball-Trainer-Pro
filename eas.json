@@ -12,8 +12,7 @@
       },
       "ios": {
         "resourceClass": "m-medium",
-        "simulator": false,
-        "buildConfiguration": "Debug"
+        "simulator": false
       },
       "android": {
         "buildType": "apk"
@@ -50,12 +49,11 @@
         "APP_VARIANT": "production"
       },
       "ios": {
-        "resourceClass": "m-medium"
+        "resourceClass": "m-medium",
+        "autoIncrement": true
       },
       "android": {}
     }
   }
 }
-
-
 

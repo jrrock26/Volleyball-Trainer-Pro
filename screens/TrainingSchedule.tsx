@@ -35,7 +35,14 @@ export default function TrainingSchedule({ navigation }: { navigation: Nav }) {
   const [trainingName, setTrainingName] = useState('');
 
   const schedule = trainingBlocks;
-
+  
+// ---------------- REMOVE TRAILING WATER BREAK ----------------
+if (
+  schedule.length > 0 &&
+  schedule[schedule.length - 1].category === 'break'
+) {
+  schedule.pop();
+}
   // ------------------------------------------------------------
   // TIMERS
   // ------------------------------------------------------------
@@ -182,57 +189,62 @@ export default function TrainingSchedule({ navigation }: { navigation: Nav }) {
           }
 
           return (
-            <View key={item.id} style={styles.blockRow}>
-              <TouchableOpacity
-                style={{ flex: 1 }}
-                onPress={() => setSelectedBlock(item)}
-              >
-                <Text style={styles.blockName}>{item.name}</Text>
-                <Text style={styles.blockMeta}>
-                  {item.durationMinutes} min • {item.category} •{' '}
-                  {item.intensity.toUpperCase()}
-                </Text>
-              </TouchableOpacity>
+  <View key={item.id} style={styles.blockRow}>
+    <TouchableOpacity
+      style={{ flexDirection: 'row', flex: 1 }}
+      onPress={() => setSelectedBlock(item)}
+    >
+      {/* Small preview image */}
+      <Image source={item.image} style={styles.drillImage} />
 
-              <View style={styles.timerBox}>
-                <Text style={styles.timerTextPink}>
-                  {formatTime(timers[item.id] || 0)}
-                </Text>
+      <View style={{ flex: 1 }}>
+        <Text style={styles.drillName}>{item.name}</Text>
+        <Text style={styles.drillMeta}>
+          {item.durationMinutes} min • {item.category} • {item.intensity.toUpperCase()}
+        </Text>
+      </View>
+    </TouchableOpacity>
 
-                <View style={styles.timerButtons}>
-                  <TouchableOpacity
-                    onPress={() =>
-                      setRunning((prev) => ({ ...prev, [item.id]: true }))
-                    }
-                    style={styles.timerBtn}
-                  >
-                    <Text style={styles.timerBtnText}>▶</Text>
-                  </TouchableOpacity>
+    <View style={styles.timerBox}>
+      <Text style={styles.timerTextPink}>
+        {formatTime(timers[item.id] || 0)}
+      </Text>
 
-                  <TouchableOpacity
-                    onPress={() =>
-                      setRunning((prev) => ({ ...prev, [item.id]: false }))
-                    }
-                    style={styles.timerBtn}
-                  >
-                    <Text style={styles.timerBtnText}>⏸</Text>
-                  </TouchableOpacity>
+      <View style={styles.timerButtons}>
+        <TouchableOpacity
+          onPress={() =>
+            setRunning((prev) => ({ ...prev, [item.id]: true }))
+          }
+          style={styles.timerBtn}
+        >
+          <Text style={styles.timerBtnText}>▶</Text>
+        </TouchableOpacity>
 
-                  <TouchableOpacity
-                    onPress={() =>
-                      setTimers((prev) => ({
-                        ...prev,
-                        [item.id]: item.durationMinutes * 60,
-                      }))
-                    }
-                    style={styles.timerBtn}
-                  >
-                    <Text style={styles.timerBtnText}>⟲</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          );
+        <TouchableOpacity
+          onPress={() =>
+            setRunning((prev) => ({ ...prev, [item.id]: false }))
+          }
+          style={styles.timerBtn}
+        >
+          <Text style={styles.timerBtnText}>⏸</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() =>
+            setTimers((prev) => ({
+              ...prev,
+              [item.id]: item.durationMinutes * 60,
+            }))
+          }
+          style={styles.timerBtn}
+        >
+          <Text style={styles.timerBtnText}>⟲</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  </View>
+);
+
         })}
       </ScrollView>
 
@@ -514,6 +526,25 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '700',
   },
+  drillImage: {
+  width: 55,
+  height: 55,
+  marginRight: 10,
+  resizeMode: 'contain',
+},
+
+drillName: {
+  fontSize: 16,
+  fontWeight: '700',
+  color: '#111',
+},
+
+drillMeta: {
+  fontSize: 13,
+  color: '#666',
+  marginTop: 2,
+},
+
 });
 
 

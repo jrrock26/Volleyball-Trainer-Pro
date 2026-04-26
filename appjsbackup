@@ -1,11 +1,10 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Buffer } from "buffer";
-global.Buffer = Buffer;
+import { Text, TouchableOpacity } from 'react-native';
 
 import HeaderHomeButton from './components/HeaderHomeButton';
 
-// PERFORMANCE HUB
+// PERFORMANCE HUB PLACEHOLDER (ONLY SCREEN WE KEEP)
 import PerformanceHubScreen from './screens/PerformanceHubScreen';
 
 // CORE APP SCREENS
@@ -64,7 +63,7 @@ export default function App() {
           }}
         />
 
-        {/* PERFORMANCE HUB */}
+        {/* PERFORMANCE HUB PLACEHOLDER */}
         <Stack.Screen
           name="PerformanceHub"
           component={PerformanceHubScreen}
@@ -129,20 +128,35 @@ export default function App() {
         <Stack.Screen
           name="PlayDesigner"
           component={PlayDesigner}
-          options={{
+          options={({ navigation, route }) => ({
             title: 'Play Designer',
+            headerLeft: () =>
+              route.params?.loadPlayId ? (
+                <TouchableOpacity onPress={() => navigation.navigate('PlayLibrary')}>
+                  <Text style={{ marginLeft: 12, color: '#3A7AFE', fontWeight: '700' }}>
+                    Back to Play Library
+                  </Text>
+                </TouchableOpacity>
+              ) : null,
             headerRight: () => <HeaderHomeButton />,
-          }}
+          })}
         />
 
         {/* PLAY LIBRARY */}
         <Stack.Screen
           name="PlayLibrary"
           component={PlayLibrary}
-          options={{
+          options={({ navigation }) => ({
             title: 'Play Library',
+            headerLeft: () => (
+              <TouchableOpacity onPress={() => navigation.navigate('PlayDesigner')}>
+                <Text style={{ marginLeft: 12, color: '#3A7AFE', fontWeight: '700' }}>
+                  Back to Play Designer
+                </Text>
+              </TouchableOpacity>
+            ),
             headerRight: () => <HeaderHomeButton />,
-          }}
+          })}
         />
 
         {/* ROTATIONS */}

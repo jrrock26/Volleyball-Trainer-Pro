@@ -37,6 +37,16 @@ export default function PracticeSchedule() {
   const [practiceName, setPracticeName] = useState('');
 
   // ------------------------------------------------------------
+// REMOVE TRAILING WATER BREAK
+// ------------------------------------------------------------
+if (
+  practiceDrills.length > 0 &&
+  practiceDrills[practiceDrills.length - 1].category === 'break'
+) {
+  practiceDrills.pop();
+}
+
+  // ------------------------------------------------------------
   // INITIALIZE TIMERS
   // ------------------------------------------------------------
   const initialTimers: Record<string, number> = {};

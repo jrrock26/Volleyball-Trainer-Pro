@@ -1,15 +1,15 @@
 import { useNavigation } from "@react-navigation/native";
 import { Asset } from "expo-asset";
-import React, { useCallback, useRef } from "react";
+import { useCallback, useRef } from "react";
 
 import {
-    Animated,
-    Dimensions,
-    Image,
-    ImageBackground,
-    Pressable,
-    StyleSheet,
-    View,
+  Animated,
+  Dimensions,
+  Image,
+  ImageBackground,
+  Pressable,
+  StyleSheet,
+  View,
 } from "react-native";
 
 const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get("window");
@@ -94,7 +94,7 @@ export default function HomeScreen() {
             />
             <GlowButton
               img={require("../assets/images/performancehub.png")}
-              onPress={() => navigation.navigate("PerformanceHubMenu")}
+              onPress={() => navigation.navigate("PerformanceHub")}
             />
           </View>
         </View>

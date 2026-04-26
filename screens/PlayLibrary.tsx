@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+  import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import {
@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+
 
 type Pos = { x: number; y: number };
 type Rotation = 1 | 2 | 3 | 4 | 5 | 6;
@@ -95,12 +96,15 @@ export default function PlayLibrary({ navigation }: Props) {
   };
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', loadPlays);
-    return unsubscribe;
-  }, [navigation]);
+  const unsubscribe = navigation.addListener('focus', () => {
+    loadPlays();
+  });
+
+  return unsubscribe;
+}, [navigation]);
 
   const handleLoadPlay = (play: SavedPlay) => {
-  navigation.navigate('PlayDesigner', { loadPlayId: play.id });
+  navigation.replace('PlayDesigner', { loadPlayId: play.id });
 };
 
 
@@ -148,6 +152,7 @@ export default function PlayLibrary({ navigation }: Props) {
             Rotation {play.rotation} • Last updated {timestamp}
           </Text>
         </TouchableOpacity>
+       
 
         <TouchableOpacity
           style={styles.deleteBtn}
@@ -196,7 +201,7 @@ export default function PlayLibrary({ navigation }: Props) {
       <View style={styles.footer}>
         <TouchableOpacity
   style={styles.footerBtn}
-  onPress={() => navigation.navigate('PlayDesigner')}
+  onPress={() => navigation.replace('PlayDesigner')}
 >
   <Text style={styles.footerBtnText}>Back to Play Builder</Text>
 </TouchableOpacity>
@@ -229,5 +234,3 @@ const styles = StyleSheet.create({
   footerBtn: { backgroundColor: '#2b6cb0', paddingHorizontal: 18, paddingVertical: 10, borderRadius: 10 },
   footerBtnText: { color: '#fff', fontWeight: '700', fontSize: 14 },
 });
-
-

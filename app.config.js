@@ -8,7 +8,6 @@ module.exports = {
   icon: "./assets/images/icon.png",
   userInterfaceStyle: "dark",
 
-  // ⭐ REQUIRED FOR TFLITE + JSI + TurboModules
   experiments: {
     reactNativeNewArchitecture: true
   },
@@ -16,7 +15,7 @@ module.exports = {
   splash: {
     image: "./assets/images/background.png",
     resizeMode: "contain",
-    backgroundColor: "#0a0a1a",
+    backgroundColor: "#0a0a1a"
   },
 
   ios: {
@@ -26,7 +25,6 @@ module.exports = {
       : "com.yourteam.volleyballtrainerpro",
     buildNumber: "2",
     deploymentTarget: "14.0",
-
     infoPlist: {
       NSCameraUsageDescription:
         "Volleyball Trainer Pro uses your camera for real-time AI form analysis, serve tracking, and drill recording.",
@@ -36,10 +34,7 @@ module.exports = {
         "Volleyball Trainer Pro saves drill recordings and AI analysis snapshots to your photo library.",
       NSPhotoLibraryAddUsageDescription:
         "Volleyball Trainer Pro saves drill recordings and AI analysis snapshots to your photo library.",
-      UIBackgroundModes: [],
       ITSAppUsesNonExemptEncryption: false,
-
-      // ⭐ ATS FIX — allows HTTP for dev client
       NSAppTransportSecurity: {
         NSAllowsArbitraryLoads: true
       }
@@ -49,7 +44,7 @@ module.exports = {
   android: {
     adaptiveIcon: {
       foregroundImage: "./assets/images/icon.png",
-      backgroundColor: "#0a0a1a",
+      backgroundColor: "#0a0a1a"
     },
     package: IS_DEV
       ? "com.yourteam.volleyballtrainerpro.dev"
@@ -64,8 +59,12 @@ module.exports = {
 
   plugins: [
     "expo-asset",
+    "expo-media-library",
+    "expo-sensors",
+    "expo-video-thumbnails",
+    "expo-keep-awake",
     "./plugins/with-tflite-ml",
-    "./plugins/with-yolo-ml",
+    "./plugins/with-yolo-ml"
   ],
 
   extra: {
@@ -83,3 +82,5 @@ module.exports = {
 
   assetBundlePatterns: ["**/*"]
 };
+
+

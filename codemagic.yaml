@@ -7,7 +7,7 @@ workflows:
       cocoapods: default
       node: latest
       groups:
-        - APP_CREDINTIALS
+        - APP_CREDENTIALS
 
     scripts:
       - name: Install dependencies

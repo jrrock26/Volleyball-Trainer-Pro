@@ -1,65 +1,37 @@
 workflows:
-  ios-eas-build:
-    name: iOS EAS Build (Restored)
-    instance_type: mac_mini_m2
+  ios-ml-build:
+    name: iOS ML Build (Native ML + Expo SDK 50)
     environment:
-      node: latest
+      vars:
+        NODE_OPTIONS: "--max-old-space-size=4096"
       xcode: latest
-      groups:
-        - APP_CREDENTIALS
+      cocoapods: default
 
     scripts:
-      - name: Install dependencies
+      - name: Install JS dependencies
         script: |
           npm install
 
-      - name: Install EAS CLI
+      - name: Expo prebuild (clean)
         script: |
-          npm install -g eas-cli
+          npx expo prebuild --clean
 
-      - name: Run EAS Build (Development)
+      - name: Copy ML models into iOS build
         script: |
-          eas build --platform ios --profile development --non-interactive
+          mkdir -p ios/MLModels
+          cp -R MLModels/* ios/MLModels/
+
+      - name: Install CocoaPods
+        script: |
+          cd ios
+          pod install
+
+      - name: Build iOS IPA
+        script: |
+          xcode-project build-ipa \
+            --project ios/VolleyballTrainerPro.xcodeproj \
+            --scheme VolleyballTrainerPro
 
     artifacts:
-      - build/**/*
-    publishing:
-      email:
-        recipients:
-          - jrrock26@gmail.com
-        notify:
-          success: true
-          failure: true
-
-  ios-eas-production:
-    name: iOS EAS Production Build (Restored)
-    instance_type: mac_mini_m2
-    environment:
-      node: latest
-      xcode: latest
-      groups:
-        - APP_CREDENTIALS
-
-    scripts:
-      - name: Install dependencies
-        script: |
-          npm install
-
-      - name: Install EAS CLI
-        script: |
-          npm install -g eas-cli
-
-      - name: Run EAS Build (Production)
-        script: |
-          eas build --platform ios --profile production --non-interactive --auto-submit
-
-    artifacts:
-      - build/**/*
-    publishing:
-      email:
-        recipients:
-          - jrrock26@gmail.com
-        notify:
-          success: true
-          failure: true
+      - build/ios/ipa/*.ipa
 

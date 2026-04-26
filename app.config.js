@@ -6,7 +6,7 @@ export default ({ config }) => ({
 
   version: "1.0.0",
   orientation: "portrait",
-  icon: "./assets/icon.png",
+  icon: "./assets/images/icon.png",
   userInterfaceStyle: "light",
 
   ios: {
@@ -32,20 +32,15 @@ export default ({ config }) => ({
     ]
   },
 
-  plugins: [
-    "expo-media-library",
-    "@shopify/react-native-skia",
-    "ffmpeg-kit-react-native",
-    "./plugins/with-tflite-ml",
-    "./plugins/with-yolo-ml"
-  ],
-
   experiments: {
     reactCompiler: true
   },
 
   extra: {
-    APP_VARIANT: process.env.APP_VARIANT ?? "development"
+    APP_VARIANT: process.env.APP_VARIANT ?? "development",
+    eas: {
+      projectId: "52419e0b-33fe-413c-90ca-6e800a4872c1"
+    }
   }
 });
 

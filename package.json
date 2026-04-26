@@ -11,7 +11,7 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "prepare": "expo doctor --fix"
+    "prepare": "npx expo-doctor --fix"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",

@@ -15,7 +15,7 @@ workflows:
 
       - name: Build iOS Dev Client with EAS (Local)
         script: |
-          eas build --local --platform ios --profile development
+          eas build --local --platform ios --profile development --output build
 
     artifacts:
       - build/**/*
@@ -43,7 +43,7 @@ workflows:
 
       - name: Build iOS Production App with EAS (Local)
         script: |
-          eas build --local --platform ios --profile production
+          eas build --local --platform ios --profile production --output build
 
     artifacts:
       - build/**/*
@@ -54,3 +54,4 @@ workflows:
         notify:
           success: true
           failure: true
+

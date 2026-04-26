@@ -19,6 +19,7 @@ workflows:
 
       - name: Build iOS Dev Client with EAS
         script: |
+          export EXPO_TOKEN=$EXPO_TOKEN
           eas build --platform ios --profile development --non-interactive
 
     artifacts:
@@ -51,6 +52,7 @@ workflows:
 
       - name: Build iOS Production App with EAS
         script: |
+          export EXPO_TOKEN=$EXPO_TOKEN
           eas build --platform ios --profile production --non-interactive --auto-submit
 
     artifacts:
@@ -62,3 +64,4 @@ workflows:
         notify:
           success: true
           failure: true
+

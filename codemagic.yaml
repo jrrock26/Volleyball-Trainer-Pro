@@ -1,28 +1,42 @@
 workflows:
   ios-dev-client:
-    name: iOS Development Client
+    name: iOS Development Client (Native Build)
     instance_type: mac_mini_m2
     environment:
       xcode: latest
+      cocoapods: default
       node: latest
 
     scripts:
       - name: Install dependencies
-        script: npm install
-
-      - name: Install EAS CLI globally
-        script: npm install -g eas-cli
-
-      - name: Expo Login
         script: |
-          eas login --username "$EXPO_USERNAME" --password "$EXPO_PASSWORD"
+          npm install
+          cd ios
+          pod install
+          cd ..
 
-      - name: Build iOS Dev Client with EAS
+      - name: Build iOS Dev Client (Xcode)
         script: |
-          eas build --platform ios --profile development --non-interactive
+          xcodebuild \
+            -workspace ios/VTPDev.xcworkspace \
+            -scheme VTPDev \
+            -configuration Debug \
+            -sdk iphoneos \
+            -archivePath build/VTPDev.xcarchive \
+            archive
+
+      - name: Export IPA
+        script: |
+          xcodebuild \
+            -exportArchive \
+            -archivePath build/VTPDev.xcarchive \
+            -exportOptionsPlist ios/exportOptionsDev.plist \
+            -exportPath build
 
     artifacts:
-      - build/**/*
+      - build/**/*.ipa
+      - build/**/*.dSYM.zip
+
     publishing:
       email:
         recipients:
@@ -32,29 +46,51 @@ workflows:
           failure: true
 
   ios-testflight:
-    name: iOS TestFlight Build
+    name: iOS TestFlight Build (Native Build)
     instance_type: mac_mini_m2
     environment:
       xcode: latest
+      cocoapods: default
       node: latest
 
     scripts:
       - name: Install dependencies
-        script: npm install
-
-      - name: Install EAS CLI globally
-        script: npm install -g eas-cli
-
-      - name: Expo Login
         script: |
-          eas login --username "$EXPO_USERNAME" --password "$EXPO_PASSWORD"
+          npm install
+          cd ios
+          pod install
+          cd ..
 
-      - name: Build iOS Production App with EAS
+      - name: Build iOS Release (Xcode)
         script: |
-          eas build --platform ios --profile production --non-interactive --auto-submit
+          xcodebuild \
+            -workspace ios/VTPDev.xcworkspace \
+            -scheme VTPDev \
+            -configuration Release \
+            -sdk iphoneos \
+            -archivePath build/VTPDev.xcarchive \
+            archive
+
+      - name: Export IPA
+        script: |
+          xcodebuild \
+            -exportArchive \
+            -archivePath build/VTPDev.xcarchive \
+            -exportOptionsPlist ios/exportOptionsAppStore.plist \
+            -exportPath build
+
+      - name: Upload to TestFlight
+        script: |
+          xcrun altool --upload-app \
+            -f build/VTPDev.ipa \
+            -t ios \
+            -u "$APP_STORE_CONNECT_USERNAME" \
+            -p "$APP_STORE_CONNECT_PASSWORD"
 
     artifacts:
-      - build/**/*
+      - build/**/*.ipa
+      - build/**/*.dSYM.zip
+
     publishing:
       email:
         recipients:

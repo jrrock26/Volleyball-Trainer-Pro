@@ -1,59 +1,40 @@
 {
   "cli": {
-    "version": ">= 12.0.0",
-    "appVersionSource": "local"
+    "version": ">= 10.0.0"
   },
   "build": {
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "env": {
-        "APP_VARIANT": "development"
-      },
       "ios": {
         "resourceClass": "m-medium",
-        "simulator": false
+        "image": "latest"
       },
-      "android": {
-        "buildType": "apk"
-      }
-    },
-
-    "development-simulator": {
-      "developmentClient": true,
-      "distribution": "internal",
       "env": {
         "APP_VARIANT": "development"
-      },
-      "ios": {
-        "resourceClass": "m-medium",
-        "simulator": true
       }
     },
-
-    "preview": {
-      "distribution": "internal",
-      "env": {
-        "APP_VARIANT": "preview"
-      },
-      "ios": {
-        "resourceClass": "m-medium"
-      },
-      "android": {
-        "buildType": "apk"
-      }
-    },
-
     "production": {
+      "distribution": "store",
+      "ios": {
+        "resourceClass": "m-medium",
+        "image": "latest"
+      },
       "env": {
         "APP_VARIANT": "production"
-      },
+      }
+    }
+  },
+  "submit": {
+    "production": {
       "ios": {
-        "resourceClass": "m-medium",
-        "autoIncrement": true
-      },
-      "android": {}
+        "appleId": "jrrock26@gmail.com",
+        "ascAppId": "6762460562",
+        "appleTeamId": "2G78XY4X97"
+      }
     }
   }
 }
+
+
 

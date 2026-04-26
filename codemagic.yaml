@@ -1,11 +1,10 @@
 workflows:
-  ios-dev-client:
-    name: iOS Development Client (Native Build)
+  ios-eas-build:
+    name: iOS EAS Build (Restored)
     instance_type: mac_mini_m2
     environment:
-      xcode: latest
-      cocoapods: default
       node: latest
+      xcode: latest
       groups:
         - APP_CREDENTIALS
 
@@ -13,32 +12,17 @@ workflows:
       - name: Install dependencies
         script: |
           npm install
-          cd ios
-          pod install || true
-          cd ..
 
-      - name: Build iOS Dev Client (Xcode)
+      - name: Install EAS CLI
         script: |
-          xcodebuild \
-            -project ios/VolleyballTrainerPro.xcodeproj \
-            -scheme VolleyballTrainerPro \
-            -configuration Debug \
-            -sdk iphoneos \
-            -archivePath build/VolleyballTrainerPro.xcarchive \
-            archive
+          npm install -g eas-cli
 
-      - name: Export IPA
+      - name: Run EAS Build (Development)
         script: |
-          xcodebuild \
-            -exportArchive \
-            -archivePath build/VolleyballTrainerPro.xcarchive \
-            -exportOptionsPlist ios/exportOptionsDev.plist \
-            -exportPath build
+          eas build --platform ios --profile development --non-interactive
 
     artifacts:
-      - build/**/*.ipa
-      - build/**/*.dSYM.zip
-
+      - build/**/*
     publishing:
       email:
         recipients:
@@ -47,13 +31,12 @@ workflows:
           success: true
           failure: true
 
-  ios-testflight:
-    name: iOS TestFlight Build (Native Build)
+  ios-eas-production:
+    name: iOS EAS Production Build (Restored)
     instance_type: mac_mini_m2
     environment:
-      xcode: latest
-      cocoapods: default
       node: latest
+      xcode: latest
       groups:
         - APP_CREDENTIALS
 
@@ -61,40 +44,17 @@ workflows:
       - name: Install dependencies
         script: |
           npm install
-          cd ios
-          pod install || true
-          cd ..
 
-      - name: Build iOS Release (Xcode)
+      - name: Install EAS CLI
         script: |
-          xcodebuild \
-            -project ios/VolleyballTrainerPro.xcodeproj \
-            -scheme VolleyballTrainerPro \
-            -configuration Release \
-            -sdk iphoneos \
-            -archivePath build/VolleyballTrainerPro.xcarchive \
-            archive
+          npm install -g eas-cli
 
-      - name: Export IPA
+      - name: Run EAS Build (Production)
         script: |
-          xcodebuild \
-            -exportArchive \
-            -archivePath build/VolleyballTrainerPro.xcarchive \
-            -exportOptionsPlist ios/exportOptionsAppStore.plist \
-            -exportPath build
-
-      - name: Upload to TestFlight
-        script: |
-          xcrun altool --upload-app \
-            -f build/VolleyballTrainerPro.ipa \
-            -t ios \
-            -u "$APP_STORE_CONNECT_USERNAME" \
-            -p "$APP_STORE_CONNECT_PASSWORD"
+          eas build --platform ios --profile production --non-interactive --auto-submit
 
     artifacts:
-      - build/**/*.ipa
-      - build/**/*.dSYM.zip
-
+      - build/**/*
     publishing:
       email:
         recipients:
@@ -102,3 +62,4 @@ workflows:
         notify:
           success: true
           failure: true
+

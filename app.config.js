@@ -1,86 +1,56 @@
-const IS_DEV = process.env.APP_VARIANT === "development";
+export default ({ config }) => ({
+  ...config,
 
-module.exports = {
-  name: IS_DEV ? "VTP (Dev)" : "Volleyball Trainer Pro",
-  slug: "volleyball-trainer-pro",
+  name: "Volleyball Trainer Pro",
+  slug: "volleyballtrainerpro",
+
   version: "1.0.0",
   orientation: "portrait",
-  icon: "./assets/images/icon.png",
-  userInterfaceStyle: "dark",
-
-  experiments: {
-    reactNativeNewArchitecture: true
-  },
-
-  splash: {
-    image: "./assets/images/background.png",
-    resizeMode: "contain",
-    backgroundColor: "#0a0a1a"
-  },
+  icon: "./assets/icon.png",
+  userInterfaceStyle: "light",
 
   ios: {
-    supportsTablet: true,
-    bundleIdentifier: IS_DEV
-      ? "com.yourteam.volleyballtrainerpro.dev"
-      : "com.yourteam.volleyballtrainerpro",
-    buildNumber: "2",
-    deploymentTarget: "14.0",
+    bundleIdentifier: "com.yourteam.volleyballtrainerpro",
+    buildNumber: "1",
+    supportsTablet: false,
     infoPlist: {
-      NSCameraUsageDescription:
-        "Volleyball Trainer Pro uses your camera for real-time AI form analysis, serve tracking, and drill recording.",
-      NSMicrophoneUsageDescription:
-        "Volleyball Trainer Pro uses your microphone to capture coaching audio during drills.",
-      NSPhotoLibraryUsageDescription:
-        "Volleyball Trainer Pro saves drill recordings and AI analysis snapshots to your photo library.",
-      NSPhotoLibraryAddUsageDescription:
-        "Volleyball Trainer Pro saves drill recordings and AI analysis snapshots to your photo library.",
-      ITSAppUsesNonExemptEncryption: false,
-      NSAppTransportSecurity: {
-        NSAllowsArbitraryLoads: true
-      }
+      NSCameraUsageDescription: "This app uses the camera for recording drills.",
+      NSMicrophoneUsageDescription: "This app uses the microphone for recording audio.",
+      NSPhotoLibraryAddUsageDescription: "This app saves exported videos to your library.",
+      NSPhotoLibraryUsageDescription: "This app accesses your library to save videos."
     }
   },
 
   android: {
-    adaptiveIcon: {
-      foregroundImage: "./assets/images/icon.png",
-      backgroundColor: "#0a0a1a"
-    },
-    package: IS_DEV
-      ? "com.yourteam.volleyballtrainerpro.dev"
-      : "com.yourteam.volleyballtrainerpro",
+    package: "com.yourteam.volleyballtrainerpro",
+    versionCode: 1,
     permissions: [
-      "android.permission.CAMERA",
-      "android.permission.RECORD_AUDIO",
-      "android.permission.READ_EXTERNAL_STORAGE",
-      "android.permission.WRITE_EXTERNAL_STORAGE"
+      "CAMERA",
+      "RECORD_AUDIO",
+      "READ_EXTERNAL_STORAGE",
+      "WRITE_EXTERNAL_STORAGE"
     ]
   },
 
   plugins: [
-    "expo-asset",
     "expo-media-library",
-    "expo-sensors",
-    "expo-video-thumbnails",
-    "expo-keep-awake",
+    "@shopify/react-native-skia",
+    "ffmpeg-kit-react-native",
     "./plugins/with-tflite-ml",
     "./plugins/with-yolo-ml"
   ],
 
+  experiments: {
+    reactCompiler: true
+  },
+
   extra: {
-    eas: {
-      projectId: "ec1b4630-26b6-4051-b45c-2008426804a0"
-    }
-  },
+    APP_VARIANT: process.env.APP_VARIANT ?? "development"
+  }
+});
 
-  updates: {
-    fallbackToCacheTimeout: 0,
-    url: "https://u.expo.dev/ec1b4630-26b6-4051-b45c-2008426804a0"
-  },
 
-  runtimeVersion: { policy: "appVersion" },
 
-  assetBundlePatterns: ["**/*"]
-};
+
 
 

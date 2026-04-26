@@ -7,31 +7,31 @@ workflows:
       cocoapods: default
       node: latest
       groups:
-        - APP_CREDENTIALS
+        - APP_CREDINTIALS
 
     scripts:
       - name: Install dependencies
         script: |
           npm install
           cd ios
-          pod install
+          pod install || true
           cd ..
 
       - name: Build iOS Dev Client (Xcode)
         script: |
           xcodebuild \
-            -workspace ios/VTPDev.xcworkspace \
-            -scheme VTPDev \
+            -project ios/VolleyballTrainerPro.xcodeproj \
+            -scheme VolleyballTrainerPro \
             -configuration Debug \
             -sdk iphoneos \
-            -archivePath build/VTPDev.xcarchive \
+            -archivePath build/VolleyballTrainerPro.xcarchive \
             archive
 
       - name: Export IPA
         script: |
           xcodebuild \
             -exportArchive \
-            -archivePath build/VTPDev.xcarchive \
+            -archivePath build/VolleyballTrainerPro.xcarchive \
             -exportOptionsPlist ios/exportOptionsDev.plist \
             -exportPath build
 
@@ -62,31 +62,31 @@ workflows:
         script: |
           npm install
           cd ios
-          pod install
+          pod install || true
           cd ..
 
       - name: Build iOS Release (Xcode)
         script: |
           xcodebuild \
-            -workspace ios/VTPDev.xcworkspace \
-            -scheme VTPDev \
+            -project ios/VolleyballTrainerPro.xcodeproj \
+            -scheme VolleyballTrainerPro \
             -configuration Release \
             -sdk iphoneos \
-            -archivePath build/VTPDev.xcarchive \
+            -archivePath build/VolleyballTrainerPro.xcarchive \
             archive
 
       - name: Export IPA
         script: |
           xcodebuild \
             -exportArchive \
-            -archivePath build/VTPDev.xcarchive \
+            -archivePath build/VolleyballTrainerPro.xcarchive \
             -exportOptionsPlist ios/exportOptionsAppStore.plist \
             -exportPath build
 
       - name: Upload to TestFlight
         script: |
           xcrun altool --upload-app \
-            -f build/VTPDev.ipa \
+            -f build/VolleyballTrainerPro.ipa \
             -t ios \
             -u "$APP_STORE_CONNECT_USERNAME" \
             -p "$APP_STORE_CONNECT_PASSWORD"

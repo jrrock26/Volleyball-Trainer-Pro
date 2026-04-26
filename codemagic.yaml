@@ -5,27 +5,21 @@ workflows:
     environment:
       xcode: latest
       node: latest
+      vars:
+        EXPO_TOKEN: $EXPO_TOKEN
       groups:
         - expo_credentials
+
     scripts:
-      - name: Configure npm for TensorFlow
-        script: |
-          echo "legacy-peer-deps=true" >> .npmrc
-          echo "strict-peer-deps=false" >> .npmrc
-
       - name: Install dependencies
-        script: npm install --legacy-peer-deps
+        script: npm install
 
-      - name: Install EAS CLI
-        script: npm install -g eas-cli
-
-      - name: Build iOS Dev Client locally
+      - name: Build iOS Dev Client with EAS
         script: |
-          eas build --profile development --platform ios --local --output build.ipa
+          npx eas build --platform ios --profile development --non-interactive
 
     artifacts:
-      - build.ipa
-
+      - build/**/*
     publishing:
       email:
         recipients:
@@ -40,35 +34,21 @@ workflows:
     environment:
       xcode: latest
       node: latest
+      vars:
+        EXPO_TOKEN: $EXPO_TOKEN
       groups:
-        - expo_credentials   # ← FIXED
+        - expo_credentials
+
     scripts:
-      - name: Configure npm for TensorFlow
-        script: |
-          echo "legacy-peer-deps=true" >> .npmrc
-          echo "strict-peer-deps=false" >> .npmrc
-
       - name: Install dependencies
-        script: npm install --legacy-peer-deps
+        script: npm install
 
-      - name: Install EAS CLI
-        script: npm install -g eas-cli
-
-      - name: Build iOS Production App locally
+      - name: Build iOS Production App with EAS
         script: |
-          eas build --profile production --platform ios --local --output build.ipa
-
-      - name: Upload to App Store Connect
-        script: |
-          xcrun altool --upload-app \
-            --type ios \
-            --file build.ipa \
-            --username "$APP_STORE_CONNECT_USERNAME" \
-            --password "$APP_STORE_CONNECT_PASSWORD"
+          npx eas build --platform ios --profile production --non-interactive --auto-submit
 
     artifacts:
-      - build.ipa
-
+      - build/**/*
     publishing:
       email:
         recipients:
@@ -76,4 +56,5 @@ workflows:
         notify:
           success: true
           failure: true
+
 

@@ -13,9 +13,13 @@ workflows:
       - name: Install EAS CLI globally
         script: npm install -g eas-cli
 
-      - name: Build iOS Dev Client with EAS (Local)
+      - name: Expo Login
         script: |
-          eas build --local --platform ios --profile development --output build
+          eas login --username "$EXPO_USERNAME" --password "$EXPO_PASSWORD"
+
+      - name: Build iOS Dev Client with EAS
+        script: |
+          eas build --platform ios --profile development --non-interactive
 
     artifacts:
       - build/**/*
@@ -41,9 +45,13 @@ workflows:
       - name: Install EAS CLI globally
         script: npm install -g eas-cli
 
-      - name: Build iOS Production App with EAS (Local)
+      - name: Expo Login
         script: |
-          eas build --local --platform ios --profile production --output build
+          eas login --username "$EXPO_USERNAME" --password "$EXPO_PASSWORD"
+
+      - name: Build iOS Production App with EAS
+        script: |
+          eas build --platform ios --profile production --non-interactive --auto-submit
 
     artifacts:
       - build/**/*
@@ -54,4 +62,3 @@ workflows:
         notify:
           success: true
           failure: true
-

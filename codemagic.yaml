@@ -12,9 +12,6 @@ workflows:
         script: |
           npm install
 
-      - name: Expo prebuild
-        script: |
-          npx expo prebuild
 
       - name: Copy ML models into iOS build
         script: |

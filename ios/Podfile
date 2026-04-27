@@ -51,7 +51,8 @@ target 'VolleyballTrainerPro' do
 
   pod 'MediaPipeTasksVision'
 
-  pod 'ffmpeg-kit-react-native', :subspecs => ['full']
+  pod 'ffmpeg-kit-react-native'
+
 
   # ---------------------------------------------------------
 

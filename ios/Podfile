@@ -7,8 +7,7 @@ podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties
 ENV['RCT_NEW_ARCH_ENABLED'] = podfile_properties['newArchEnabled'] == 'true' ? '1' : '0'
 ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] = podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR']
 
-platform :ios, '13.4'
-
+platform :ios, '14.0'
 
 install! 'cocoapods',
   :deterministic_uuids => false
@@ -40,20 +39,12 @@ target 'VolleyballTrainerPro' do
     :flipper_configuration => flipper_config
   )
 
-  # ---------------------------------------------------------
-  # ⭐ Native ML Pods (Codemagic-only, safe for Expo SDK 50)
-  # ---------------------------------------------------------
-
+  # Native ML Pods
   pod 'TensorFlowLiteSwift'
   pod 'TensorFlowLiteC'
   pod 'TensorFlowLiteObjC'
   pod 'TensorFlowLiteSelectTfOps'
-
   pod 'MediaPipeTasksVision'
-
-
-
-  # ---------------------------------------------------------
 
   post_install do |installer|
     react_native_post_install(

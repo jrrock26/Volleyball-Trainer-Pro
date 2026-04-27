@@ -1,10 +1,10 @@
 workflows:
   ios-ml-build:
     name: iOS ML Build (Native ML + Expo SDK 50)
+
     environment:
       vars:
         NODE_OPTIONS: "--max-old-space-size=4096"
-        EXPO_NO_PREBUILD: "1"   # ← THIS DISABLES EXPO AUTOLINKING
       xcode: latest
       cocoapods: default
 
@@ -12,6 +12,14 @@ workflows:
       - name: Install JS dependencies
         script: |
           npm install
+
+      - name: Ensure Expo-compatible dependencies
+        script: |
+          npx expo install react-native-screens
+
+      - name: Run Expo prebuild (CRITICAL)
+        script: |
+          npx expo prebuild --platform ios --clean
 
       - name: Copy ML models into iOS build
         script: |
@@ -21,7 +29,7 @@ workflows:
       - name: Install CocoaPods
         script: |
           cd ios
-          pod install
+          pod install --repo-update
 
       - name: Build iOS IPA
         script: |

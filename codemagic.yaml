@@ -4,6 +4,7 @@ workflows:
     environment:
       vars:
         NODE_OPTIONS: "--max-old-space-size=4096"
+        EXPO_NO_PREBUILD: "1"   # ← THIS DISABLES EXPO AUTOLINKING
       xcode: latest
       cocoapods: default
 
@@ -11,7 +12,6 @@ workflows:
       - name: Install JS dependencies
         script: |
           npm install
-
 
       - name: Copy ML models into iOS build
         script: |
@@ -31,4 +31,3 @@ workflows:
 
     artifacts:
       - build/ios/ipa/*.ipa
-

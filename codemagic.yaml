@@ -1,6 +1,6 @@
 workflows:
-  ios-ml-build:
-    name: iOS ML Build (Native ML + Expo SDK 50)
+  ios-dev-client:
+    name: iOS Dev Client (No Signing)
 
     instance_type: mac_mini_m2
 
@@ -12,7 +12,7 @@ workflows:
       - name: Install JS dependencies
         script: npm install
 
-      - name: Clean CocoaPods cache (fix boost checksum)
+      - name: Clean CocoaPods cache
         script: |
           pod cache clean boost --all || true
           rm -rf "$HOME/Library/Caches/CocoaPods" || true
@@ -23,20 +23,16 @@ workflows:
           cd ios
           pod install --repo-update
 
-      - name: Build iOS IPA
+      - name: Build iOS Dev Client (no signing)
         script: |
           cd ios
           xcodebuild \
             -workspace VolleyballTrainerPro.xcworkspace \
             -scheme VolleyballTrainerPro \
-            -configuration Release \
-            -archivePath ../build/App.xcarchive archive
-
-          xcodebuild \
-            -exportArchive \
-            -archivePath ../build/App.xcarchive \
-            -exportOptionsPlist ExportOptions.plist \
-            -exportPath ../build
+            -configuration Debug \
+            -sdk iphoneos \
+            CODE_SIGNING_ALLOWED=NO \
+            build
 
     artifacts:
-      - build/*.ipa
+      - ios/build/Build/Products/Debug-iphoneos/*.app

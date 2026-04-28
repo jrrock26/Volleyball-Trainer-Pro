@@ -5,6 +5,8 @@ workflows:
     environment:
       vars:
         NODE_OPTIONS: "--max-old-space-size=4096"
+        EXPO_NO_PREBUILD: "1"
+        EXPO_NO_AUTOLINKING: "1"
       xcode: latest
       cocoapods: default
 
@@ -12,14 +14,6 @@ workflows:
       - name: Install JS dependencies
         script: |
           npm install
-
-      - name: Ensure Expo-compatible dependencies
-        script: |
-          npx expo install react-native-screens
-
-      - name: Run Expo prebuild (CRITICAL)
-        script: |
-          npx expo prebuild --platform ios --clean
 
       - name: Copy ML models into iOS build
         script: |

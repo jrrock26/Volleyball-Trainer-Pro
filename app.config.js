@@ -32,6 +32,9 @@ export default ({ config }) => ({
     ]
   },
 
+  // Important: keep plugins empty so Expo does NOT regenerate native code
+  plugins: [],
+
   experiments: {
     reactCompiler: true
   },
@@ -41,11 +44,8 @@ export default ({ config }) => ({
     eas: {
       projectId: "52419e0b-33fe-413c-90ca-6e800a4872c1"
     }
-  }
+  },
+
+  // Recommended for native builds
+  assetBundlePatterns: ["**/*"]
 });
-
-
-
-
-
-

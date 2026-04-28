@@ -32,12 +32,12 @@ target 'VolleyballTrainerPro' do
     :path => "../node_modules/react-native",
     :hermes_enabled => true,
     :app_path => "#{Pod::Config.instance.installation_root}/..",
-    :flipper_configuration => flipper_config
-  )
+    :flipper_configuration => flipper_config,
 
-  # --- FIX BOOST CHECKSUM FAILURE ---
-  # Force Boost to use a known-good podspec instead of the corrupted CDN tarball
-  pod 'boost', :podspec => 'https://raw.githubusercontent.com/react-native-community/boost-for-react-native/main/boost-1.83.0.podspec'
+    # --- FIX BOOST CHECKSUM FAILURE ---
+    # Override React Native's internal Boost podspec
+    :boost_podspec => 'https://raw.githubusercontent.com/react-native-community/boost-for-react-native/main/boost-1.83.0.podspec'
+  )
 
   # --- Native ML Pods ---
   pod 'TensorFlowLiteSwift'
@@ -62,4 +62,3 @@ target 'VolleyballTrainerPro' do
       end
   end
 end
-

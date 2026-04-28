@@ -35,7 +35,11 @@ target 'VolleyballTrainerPro' do
     :flipper_configuration => flipper_config
   )
 
-  # Native ML Pods
+  # --- FIX BOOST CHECKSUM FAILURE ---
+  # Force Boost to use a known-good podspec instead of the corrupted CDN tarball
+  pod 'boost', '1.83.0', :podspec => 'https://raw.githubusercontent.com/react-native-community/boost-for-react-native/main/boost-1.83.0.podspec'
+
+  # --- Native ML Pods ---
   pod 'TensorFlowLiteSwift'
   pod 'TensorFlowLiteC'
   pod 'TensorFlowLiteObjC'
@@ -50,11 +54,12 @@ target 'VolleyballTrainerPro' do
 
     installer.target_installation_results.pod_target_installation_results
       .each do |pod_name, target_installation_result|
-      target_installation_result.resource_bundle_targets.each do |resource_bundle_target|
-        resource_bundle_target.build_configurations.each do |config|
-          config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
+        target_installation_result.resource_bundle_targets.each do |resource_bundle_target|
+          resource_bundle_target.build_configurations.each do |config|
+            config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
+          end
         end
       end
-    end
   end
 end
+

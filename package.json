@@ -29,12 +29,14 @@
     "react-native": "0.73.0",
     "react-native-gesture-handler": "^2.31.1",
     "react-native-reanimated": "^3.6.2",
-    "react-native-record-screen": "^1.0.0",
+    "react-native-record-screen": "^0.6.2",
     "react-native-safe-area-context": "^5.7.0",
     "react-native-screens": "^4.24.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.20.0",
+    "@types/react": "^19.2.14",
+    "@types/react-native": "^0.72.8"
   },
   "private": true
 }

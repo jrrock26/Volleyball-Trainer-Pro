@@ -12,6 +12,12 @@ workflows:
       - name: Install JS dependencies
         script: npm install
 
+      - name: Clean CocoaPods cache (fix boost checksum)
+        script: |
+          pod cache clean boost --all || true
+          rm -rf "$HOME/Library/Caches/CocoaPods" || true
+          rm -rf "$HOME/Library/Caches/org.cocoapods.CocoaPods" || true
+
       - name: Install CocoaPods
         script: |
           cd ios

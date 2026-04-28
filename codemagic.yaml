@@ -2,6 +2,8 @@ workflows:
   ios-ml-build:
     name: iOS ML Build (Native ML + Expo SDK 50)
 
+    working_directory: VolleyballTrainerProClean
+
     environment:
       vars:
         NODE_OPTIONS: "--max-old-space-size=4096"

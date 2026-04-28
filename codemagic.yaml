@@ -2,27 +2,15 @@ workflows:
   ios-ml-build:
     name: iOS ML Build (Native ML + Expo SDK 50)
 
-    working_directory: Volleyball_Trainer_Pro/VolleyballTrainerProClean
+    instance_type: mac_mini_m2
 
     environment:
-      vars:
-        NODE_OPTIONS: "--max-old-space-size=4096"
       xcode: latest
-      cocoapods: default
+      node: latest
 
     scripts:
       - name: Install JS dependencies
         script: npm install
-
-      - name: Regenerate iOS folder (Expo prebuild)
-        script: |
-          rm -rf ios
-          npx expo prebuild --platform ios
-
-      - name: Copy ML models into iOS build
-        script: |
-          mkdir -p ios/MLModels
-          cp -R MLModels/* ios/MLModels/
 
       - name: Install CocoaPods
         script: |
@@ -31,9 +19,18 @@ workflows:
 
       - name: Build iOS IPA
         script: |
-          xcode-project build-ipa \
-            --project ios/VolleyballTrainerPro.xcodeproj \
-            --scheme VolleyballTrainerPro
+          cd ios
+          xcodebuild \
+            -workspace VolleyballTrainerPro.xcworkspace \
+            -scheme VolleyballTrainerPro \
+            -configuration Release \
+            -archivePath ../build/App.xcarchive archive
+
+          xcodebuild \
+            -exportArchive \
+            -archivePath ../build/App.xcarchive \
+            -exportOptionsPlist ExportOptions.plist \
+            -exportPath ../build
 
     artifacts:
-      - build/ios/ipa/*.ipa
+      - build/*.ipa

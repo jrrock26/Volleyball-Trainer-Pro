@@ -28,15 +28,16 @@ target 'VolleyballTrainerPro' do
   use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
   use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']
 
+  # --- FIX BOOST CHECKSUM FAILURE FOR RN 0.73 ---
+  # Replace React Native's internal Boost podspec with a known-good version
+  boost_podspec_path = File.join(__dir__, "../node_modules/react-native/third-party-podspecs/boost.podspec")
+  File.write(boost_podspec_path, File.read(File.join(__dir__, "boost-1.83.0.podspec")))
+
   use_react_native!(
     :path => "../node_modules/react-native",
     :hermes_enabled => true,
     :app_path => "#{Pod::Config.instance.installation_root}/..",
-    :flipper_configuration => flipper_config,
-
-    # --- FIX BOOST CHECKSUM FAILURE ---
-    # Override React Native's internal Boost podspec
-    :boost_podspec => 'https://raw.githubusercontent.com/react-native-community/boost-for-react-native/main/boost-1.83.0.podspec'
+    :flipper_configuration => flipper_config
   )
 
   # --- Native ML Pods ---
@@ -62,3 +63,4 @@ target 'VolleyballTrainerPro' do
       end
   end
 end
+

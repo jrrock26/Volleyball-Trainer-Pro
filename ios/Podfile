@@ -37,7 +37,7 @@ target 'VolleyballTrainerPro' do
 
   # --- FIX BOOST CHECKSUM FAILURE ---
   # Force Boost to use a known-good podspec instead of the corrupted CDN tarball
-  pod 'boost', '1.83.0', :podspec => 'https://raw.githubusercontent.com/react-native-community/boost-for-react-native/main/boost-1.83.0.podspec'
+  pod 'boost', :podspec => 'https://raw.githubusercontent.com/react-native-community/boost-for-react-native/main/boost-1.83.0.podspec'
 
   # --- Native ML Pods ---
   pod 'TensorFlowLiteSwift'

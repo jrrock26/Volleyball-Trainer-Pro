@@ -2,35 +2,65 @@ workflows:
   ios-ml-build:
     name: iOS ML Build (Native ML + Expo SDK 50)
 
-    working_directory: VolleyballTrainerProClean
-
     environment:
       vars:
         NODE_OPTIONS: "--max-old-space-size=4096"
       xcode: latest
       cocoapods: default
 
-
     scripts:
+
+      # 1. Confirm working directory and package.json
+      - name: DEBUG — Show working directory
+        script: |
+          echo "PWD:"
+          pwd
+          echo "Directory listing:"
+          ls -la
+          echo "Checking for package.json:"
+          cat package.json || echo "package.json NOT FOUND"
+
+      # 2. Install JS dependencies with full error dump
       - name: Install JS dependencies
         script: |
-          npm install
+          echo "Running npm install..."
+          npm install || {
+            echo "npm install failed. Dumping npm logs:"
+            find /Users/builder/.npm/_logs -type f -print -exec cat {} \;
+            exit 1
+          }
 
+      # 3. Show which Reanimated version Codemagic actually installed
+      - name: DEBUG — Check Reanimated version
+        script: |
+          echo "Checking installed Reanimated version:"
+          grep version node_modules/react-native-reanimated/package.json || echo "Reanimated not installed"
+          echo "Listing Podspec:"
+          ls node_modules/react-native-reanimated/*.podspec || echo "Podspec missing"
+
+      # 4. Regenerate iOS folder
       - name: Regenerate iOS folder (Expo prebuild)
         script: |
           rm -rf ios
           npx expo prebuild --platform ios
 
-      - name: Copy ML models into iOS build
+      # 5. Show Podfile before install
+      - name: DEBUG — Show Podfile
         script: |
-          mkdir -p ios/MLModels
-          cp -R MLModels/* ios/MLModels/
+          echo "Podfile contents:"
+          cat ios/Podfile || echo "Podfile missing"
 
+      # 6. Install CocoaPods with full error dump
       - name: Install CocoaPods
         script: |
           cd ios
-          pod install --repo-update
+          pod install --repo-update || {
+            echo "Pod install failed. Dumping Pod error logs:"
+            find ~/Library/Logs/CocoaPods -type f -print -exec cat {} \;
+            exit 1
+          }
 
+      # 7. Build IPA
       - name: Build iOS IPA
         script: |
           xcode-project build-ipa \

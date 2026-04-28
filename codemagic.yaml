@@ -5,8 +5,6 @@ workflows:
     environment:
       vars:
         NODE_OPTIONS: "--max-old-space-size=4096"
-        EXPO_NO_PREBUILD: "1"
-        EXPO_NO_AUTOLINKING: "1"
       xcode: latest
       cocoapods: default
 
@@ -14,6 +12,11 @@ workflows:
       - name: Install JS dependencies
         script: |
           npm install
+
+      - name: Regenerate iOS folder (Expo prebuild)
+        script: |
+          rm -rf ios
+          npx expo prebuild --platform ios
 
       - name: Copy ML models into iOS build
         script: |

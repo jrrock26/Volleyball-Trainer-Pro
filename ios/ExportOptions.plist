@@ -3,10 +3,7 @@
 <plist version="1.0">
 <dict>
     <key>method</key>
-    <string>app-store</string>
-
-    <key>uploadBitcode</key>
-    <false/>
+    <string>ad-hoc</string>
 
     <key>compileBitcode</key>
     <false/>
@@ -19,5 +16,9 @@
 
     <key>stripSwiftSymbols</key>
     <true/>
+
+    <key>teamID</key>
+    <string>2G78XY4X97</string>
 </dict>
 </plist>
+

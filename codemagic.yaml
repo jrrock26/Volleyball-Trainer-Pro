@@ -1,6 +1,6 @@
 workflows:
-  ios-app:
-    name: iOS Native App Build
+  ios-dev-client:
+    name: iOS Dev Client (No Signing, Auto IPA)
 
     instance_type: mac_mini_m2
 
@@ -17,25 +17,24 @@ workflows:
           cd ios
           pod install --repo-update
 
-      - name: Build iOS archive
+      - name: Build iOS Dev Client (no signing)
         script: |
           cd ios
           xcodebuild \
             -workspace VolleyballTrainerPro.xcworkspace \
             -scheme VolleyballTrainerPro \
-            -configuration Release \
-            -archivePath ../build/App.xcarchive \
-            -allowProvisioningUpdates \
-            archive
+            -configuration Debug \
+            -sdk iphoneos \
+            CODE_SIGNING_ALLOWED=NO \
+            build
 
-      - name: Export IPA
+      - name: Package IPA (no signing)
         script: |
-          cd ios
-          xcodebuild \
-            -exportArchive \
-            -archivePath ../build/App.xcarchive \
-            -exportOptionsPlist ExportOptions.plist \
-            -exportPath ../build
+          cd ios/build/Build/Products/Debug-iphoneos
+          mkdir Payload
+          cp -R VolleyballTrainerPro.app Payload/
+          zip -r VolleyballTrainerPro.ipa Payload
 
     artifacts:
-      - build/*.ipa
+      - ios/build/Build/Products/Debug-iphoneos/VolleyballTrainerPro.ipa
+

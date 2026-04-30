@@ -25,6 +25,7 @@ workflows:
             -scheme VolleyballTrainerPro \
             -configuration Release \
             -archivePath ../build/App.xcarchive \
+            -allowProvisioningUpdates \
             archive
 
       - name: Export IPA

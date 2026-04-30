@@ -259,74 +259,76 @@
         };
 /* End PBXSourcesBuildPhase section */
 
-13B07F941A680F5B00A75B9A /* Debug */ = {
-    isa = XCBuildConfiguration;
-    baseConfigurationReference = 6C2E3173556A471DD304B334 /* Pods-VolleyballTrainerPro.debug.xcconfig */;
-    buildSettings = {
-        ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-        CLANG_ENABLE_MODULES = YES;
-        CURRENT_PROJECT_VERSION = 1;
-        ENABLE_BITCODE = NO;
-        GCC_PREPROCESSOR_DEFINITIONS = (
-            "$(inherited)",
-            "FB_SONARKIT_ENABLED=1",
-        );
-        INFOPLIST_FILE = VolleyballTrainerPro/Info.plist;
-        IPHONEOS_DEPLOYMENT_TARGET = 13.4;
-        LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-        MARKETING_VERSION = 1.0;
-        OTHER_LDFLAGS = (
-            "$(inherited)",
-            "-ObjC",
-            "-lc++",
-        );
-        PRODUCT_BUNDLE_IDENTIFIER = "com.yourteam.volleyballtrainerpro";
-        PRODUCT_NAME = "VolleyballTrainerPro";
-        SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-        SWIFT_VERSION = 5.0;
-        VERSIONING_SYSTEM = "apple-generic";
-        TARGETED_DEVICE_FAMILY = "1";
-        SWIFT_OBJC_BRIDGING_HEADER = VolleyballTrainerPro/VolleyballTrainerPro-Bridging-Header.h;
-        CODE_SIGN_ENTITLEMENTS = VolleyballTrainerPro/VolleyballTrainerPro.entitlements;
+/* Begin XCBuildConfiguration section */
+        13B07F941A680F5B00A75B9A /* Debug */ = {
+            isa = XCBuildConfiguration;
+            baseConfigurationReference = 6C2E3173556A471DD304B334 /* Pods-VolleyballTrainerPro.debug.xcconfig */;
+            buildSettings = {
+                ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+                CLANG_ENABLE_MODULES = YES;
+                CURRENT_PROJECT_VERSION = 1;
+                ENABLE_BITCODE = NO;
+                GCC_PREPROCESSOR_DEFINITIONS = (
+                    "$(inherited)",
+                    "FB_SONARKIT_ENABLED=1",
+                );
+                INFOPLIST_FILE = VolleyballTrainerPro/Info.plist;
+                IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+                LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+                MARKETING_VERSION = 1.0;
+                OTHER_LDFLAGS = (
+                    "$(inherited)",
+                    "-ObjC",
+                    "-lc++",
+                );
+                PRODUCT_BUNDLE_IDENTIFIER = "com.yourteam.volleyballtrainerpro";
+                PRODUCT_NAME = "VolleyballTrainerPro";
+                SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+                SWIFT_VERSION = 5.0;
+                VERSIONING_SYSTEM = "apple-generic";
+                TARGETED_DEVICE_FAMILY = "1";
+                SWIFT_OBJC_BRIDGING_HEADER = VolleyballTrainerPro/VolleyballTrainerPro-Bridging-Header.h;
+                CODE_SIGN_ENTITLEMENTS = VolleyballTrainerPro/VolleyballTrainerPro.entitlements;
 
-        /* ⭐ REQUIRED FOR ARCHIVE ⭐ */
-        DEVELOPMENT_TEAM = 2G78XY4X97;
-        CODE_SIGN_STYLE = Automatic;
-    };
-    name = Debug;
-};
-
+                /* ⭐ REQUIRED FOR ARCHIVE ⭐ */
+                DEVELOPMENT_TEAM = 2G78XY4X97;
+                CODE_SIGN_STYLE = Automatic;
+            };
+            name = Debug;
         };
-        13B07F951A680F5B00A75B9A /* Release */ = {
-    isa = XCBuildConfiguration;
-    baseConfigurationReference = 7A4D352CD337FB3A3BF06240 /* Pods-VolleyballTrainerPro.release.xcconfig */;
-    buildSettings = {
-        ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-        CLANG_ENABLE_MODULES = YES;
-        CURRENT_PROJECT_VERSION = 1;
-        INFOPLIST_FILE = VolleyballTrainerPro/Info.plist;
-        IPHONEOS_DEPLOYMENT_TARGET = 13.4;
-        LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-        MARKETING_VERSION = 1.0;
-        OTHER_LDFLAGS = (
-            "$(inherited)",
-            "-ObjC",
-            "-lc++",
-        );
-        PRODUCT_BUNDLE_IDENTIFIER = "com.yourteam.volleyballtrainerpro";
-        PRODUCT_NAME = "VolleyballTrainerPro";
-        SWIFT_VERSION = 5.0;
-        VERSIONING_SYSTEM = "apple-generic";
-        TARGETED_DEVICE_FAMILY = "1";
-        SWIFT_OBJC_BRIDGING_HEADER = VolleyballTrainerPro/VolleyballTrainerPro-Bridging-Header.h;
-        CODE_SIGN_ENTITLEMENTS = VolleyballTrainerPro/VolleyballTrainerPro.entitlements;
 
-        /* ⭐ ADD THESE TWO LINES ⭐ */
-        DEVELOPMENT_TEAM = 2G78XY4X97;
-        CODE_SIGN_STYLE = Manual;
-    };
-    name = Release;
-};
+        13B07F951A680F5B00A75B9A /* Release */ = {
+            isa = XCBuildConfiguration;
+            baseConfigurationReference = 7A4D352CD337FB3A3BF06240 /* Pods-VolleyballTrainerPro.release.xcconfig */;
+            buildSettings = {
+                ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+                CLANG_ENABLE_MODULES = YES;
+                CURRENT_PROJECT_VERSION = 1;
+                INFOPLIST_FILE = VolleyballTrainerPro/Info.plist;
+                IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+                LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+                MARKETING_VERSION = 1.0;
+                OTHER_LDFLAGS = (
+                    "$(inherited)",
+                    "-ObjC",
+                    "-lc++",
+                );
+                PRODUCT_BUNDLE_IDENTIFIER = "com.yourteam.volleyballtrainerpro";
+                PRODUCT_NAME = "VolleyballTrainerPro";
+                SWIFT_VERSION = 5.0;
+                VERSIONING_SYSTEM = "apple-generic";
+                TARGETED_DEVICE_FAMILY = "1";
+                SWIFT_OBJC_BRIDGING_HEADER = VolleyballTrainerPro/VolleyballTrainerPro-Bridging-Header.h;
+                CODE_SIGN_ENTITLEMENTS = VolleyballTrainerPro/VolleyballTrainerPro.entitlements;
+
+                /* ⭐ REQUIRED FOR ARCHIVE ⭐ */
+                DEVELOPMENT_TEAM = 2G78XY4X97;
+                CODE_SIGN_STYLE = Automatic;
+            };
+            name = Release;
+        };
+/* End XCBuildConfiguration section */
+
 
         83CBBA201A601CBA00E9B192 /* Debug */ = {
             isa = XCBuildConfiguration;

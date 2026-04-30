@@ -1,6 +1,6 @@
 workflows:
   ios-dev-client:
-    name: iOS Dev Client (No Signing, Auto IPA)
+    name: iOS Dev Client (Guaranteed Output, No Signing)
 
     instance_type: mac_mini_m2
 
@@ -17,7 +17,7 @@ workflows:
           cd ios
           pod install --repo-update
 
-      - name: Build iOS Dev Client (no signing)
+      - name: Build iOS Dev Client (forced output path, no signing)
         script: |
           cd ios
           xcodebuild \
@@ -26,14 +26,16 @@ workflows:
             -configuration Debug \
             -sdk iphoneos \
             CODE_SIGNING_ALLOWED=NO \
+            CONFIGURATION_BUILD_DIR=./build_output \
             build
 
-      - name: Package IPA (no signing)
+      - name: Package IPA (guaranteed path)
         script: |
-          cd ios/build/Debug-iphoneos
+          cd ios/build_output
           mkdir Payload
           cp -R VolleyballTrainerPro.app Payload/
           zip -r VolleyballTrainerPro.ipa Payload
 
     artifacts:
-      - ios/build/Debug-iphoneos/VolleyballTrainerPro.ipa
+      - ios/build_output/VolleyballTrainerPro.ipa
+

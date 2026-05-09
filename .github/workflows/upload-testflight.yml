@@ -1,0 +1,36 @@
+name: Upload IPA to TestFlight
+
+on:
+  workflow_dispatch:
+
+jobs:
+  upload:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Install Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.1
+
+      - name: Install Fastlane
+        run: sudo gem install fastlane -NV
+
+      - name: Upload IPA to TestFlight
+        env:
+          ASC_API_KEY: ${{ secrets.ASC_API_KEY }}
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        run: |
+          echo "$ASC_API_KEY" > api_key.p8
+
+          fastlane deliver \
+            --ipa "./dist/app.ipa" \
+            --api_key_path "api_key.p8" \
+            --api_key_id "$ASC_KEY_ID" \
+            --api_issuer "$ASC_ISSUER_ID" \
+            --skip_screenshots \
+            --skip_metadata

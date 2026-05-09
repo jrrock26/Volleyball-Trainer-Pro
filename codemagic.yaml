@@ -1,6 +1,6 @@
 workflows:
   ios-dev-client:
-    name: iOS Dev Client (Signed)
+    name: iOS Dev Client (Clean Build)
 
     instance_type: mac_mini_m2
 
@@ -10,35 +10,40 @@ workflows:
 
     scripts:
       - name: Install JS dependencies
-        script: npm install
+        script: |
+          npm install
 
       - name: Install CocoaPods
         script: |
           cd ios
           pod install --repo-update
 
-      - name: Build iOS Dev Client (signed)
+      - name: Clean iOS build folder
+        script: |
+          cd ios
+          xcodebuild clean -workspace VolleyballTrainerPro.xcworkspace -scheme VolleyballTrainerPro
+
+      - name: Archive iOS App
         script: |
           cd ios
           xcodebuild \
             -workspace VolleyballTrainerPro.xcworkspace \
             -scheme VolleyballTrainerPro \
-            -configuration Debug \
+            -configuration Release \
             -sdk iphoneos \
-            -allowProvisioningUpdates \
+            -archivePath $CM_BUILD_DIR/VolleyballTrainerPro.xcarchive \
+            clean archive \
+            CODE_SIGN_STYLE=Automatic \
             DEVELOPMENT_TEAM=2G78XY4X97 \
-            CODE_SIGN_STYLE=Manual \
-            CODE_SIGNING_ALLOWED=YES \
-            PROVISIONING_PROFILE_SPECIFIER="VolleyballTrainerPro AdHoc" \
-            build
+            -allowProvisioningUpdates
 
-      - name: Package IPA (signed)
+      - name: Export IPA
         script: |
-          cd ios/build/Build/Products/Debug-iphoneos
-          mkdir Payload
-          cp -R VolleyballTrainerPro.app Payload/
-          zip -r VolleyballTrainerPro.ipa Payload
+          xcodebuild \
+            -exportArchive \
+            -archivePath $CM_BUILD_DIR/VolleyballTrainerPro.xcarchive \
+            -exportPath $CM_BUILD_DIR/ipa \
+            -exportOptionsPlist ios/ExportOptions.plist
 
     artifacts:
-      - ios/build/Build/Products/Debug-iphoneos/VolleyballTrainerPro.ipa
-
+      - ipa/*.ipa

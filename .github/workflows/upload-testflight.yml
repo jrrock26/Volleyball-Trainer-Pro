@@ -19,18 +19,21 @@ jobs:
       - name: Install Fastlane
         run: sudo gem install fastlane -NV
 
-      - name: Upload IPA to TestFlight
+      - name: Prepare API key file
         env:
           ASC_API_KEY: ${{ secrets.ASC_API_KEY }}
-          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
-          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
         run: |
           echo "$ASC_API_KEY" > api_key.p8
 
+      - name: Upload IPA to TestFlight
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        run: |
           fastlane deliver \
             --ipa "./dist/app.ipa" \
-            --api_key_path "api_key.p8" \
-            --api_key_id "$ASC_KEY_ID" \
-            --api_issuer "$ASC_ISSUER_ID" \
-            --skip_screenshots \
-            --skip_metadata
+            --api-key api_key.p8 \
+            --api-key-id "$ASC_KEY_ID" \
+            --api-issuer "$ASC_ISSUER_ID" \
+            --skip-screenshots \
+            --skip-metadata

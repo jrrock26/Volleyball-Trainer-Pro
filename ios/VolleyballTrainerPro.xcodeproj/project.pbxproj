@@ -308,7 +308,7 @@
                     "-ObjC",
                     "-lc++",
                 );
-                PRODUCT_BUNDLE_IDENTIFIER = "com.yourteam.volleyballtrainerpro";
+                PRODUCT_BUNDLE_IDENTIFIER = "com.jrrock26.volleyballtrainerpro";
                 PRODUCT_NAME = "VolleyballTrainerPro";
                 SWIFT_VERSION = 5.0;
                 VERSIONING_SYSTEM = "apple-generic";

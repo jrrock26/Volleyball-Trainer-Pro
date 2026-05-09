@@ -25,18 +25,19 @@ jobs:
           ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
           ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
         run: |
+          ESCAPED_KEY=$(printf "%s" "$ASC_API_KEY" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))')
           cat <<EOF > fastlane_api_key.json
           {
             "key_id": "${ASC_KEY_ID}",
             "issuer_id": "${ASC_ISSUER_ID}",
-            "key": "${ASC_API_KEY}"
+            "key": $ESCAPED_KEY
           }
           EOF
 
       - name: Upload IPA to TestFlight
         run: |
           fastlane deliver \
-            --ipa "./dist/app.ipa" \
+            --ipa "./VolleyballTrainerProClean/dist/app.ipa" \
             --api-key fastlane_api_key.json \
             --skip-screenshots \
             --skip-metadata

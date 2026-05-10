@@ -62,18 +62,17 @@ jobs:
           EOF
 
       # -----------------------------
-      # Build Dev Client IPA
+      # Build Dev Client IPA (ROOT LEVEL)
       # -----------------------------
       - name: Build Dev Client IPA with Fastlane
         run: |
-          cd ios
           bundle exec fastlane gym \
-            --workspace "VolleyballTrainerPro.xcworkspace" \
+            --workspace "ios/VolleyballTrainerPro.xcworkspace" \
             --scheme "VolleyballTrainerPro" \
             --configuration Debug \
             --export_method ad-hoc \
-            --api-key ../fastlane_api_key.json \
-            --output_directory "../build" \
+            --api-key fastlane_api_key.json \
+            --output_directory "build" \
             --output_name "DevClient.ipa"
 
       # -----------------------------
@@ -84,5 +83,3 @@ jobs:
         with:
           name: DevClient-IPA
           path: build/DevClient.ipa
-
-

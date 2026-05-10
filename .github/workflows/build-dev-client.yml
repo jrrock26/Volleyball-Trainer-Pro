@@ -10,8 +10,6 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-        with:
-          ref: restore-039b6df
 
       - name: Install Node
         uses: actions/setup-node@v4
@@ -23,44 +21,28 @@ jobs:
 
       - name: Install CocoaPods
         run: |
-          sudo gem install cocoapods -NV
           cd ios
           pod install
 
-      # -----------------------------
-      # Install Fastlane (system version OK)
-      # -----------------------------
-      - name: Install Fastlane
+      - name: Build Dev Client IPA with xcodebuild
         run: |
-          sudo gem install fastlane -NV
+          xcodebuild \
+            -workspace ios/VolleyballTrainerProClean.xcworkspace \
+            -scheme VolleyballTrainerProClean \
+            -configuration Debug \
+            -archivePath build/DevClient.xcarchive \
+            archive
 
-      # -----------------------------
-      # Build Dev Client IPA (Apple ID login)
-      # -----------------------------
-      - name: Build Dev Client IPA with Fastlane
-        env:
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APP_SPECIFIC_PASSWORD: ${{ secrets.APP_SPECIFIC_PASSWORD }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-        run: |
-          cd ios
-          fastlane gym \
-            --workspace "VolleyballTrainerPro.xcworkspace" \
-            --scheme "VolleyballTrainerPro" \
-            --configuration Debug \
-            --export_method ad-hoc \
-            --username "$APPLE_ID" \
-            --password "$APP_SPECIFIC_PASSWORD" \
-            --team_id "$APPLE_TEAM_ID" \
-            --output_directory "../build" \
-            --output_name "DevClient.ipa"
+          xcodebuild \
+            -exportArchive \
+            -archivePath build/DevClient.xcarchive \
+            -exportOptionsPlist ios/exportOptions.plist \
+            -exportPath build
 
-      # -----------------------------
-      # Upload IPA Artifact
-      # -----------------------------
       - name: Upload Dev Client IPA artifact
         uses: actions/upload-artifact@v4
         with:
           name: DevClient-IPA
-          path: build/DevClient.ipa
+          path: build/*.ipa
+
 

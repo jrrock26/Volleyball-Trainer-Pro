@@ -27,8 +27,8 @@ jobs:
       - name: Build Dev Client IPA with xcodebuild
         run: |
           xcodebuild \
-            -workspace ios/VolleyballTrainerProClean.xcworkspace \
-            -scheme VolleyballTrainerProClean \
+            -workspace ios/VolleyballTrainerPro.xcworkspace \
+            -scheme VolleyballTrainerPro \
             -configuration Debug \
             -archivePath build/DevClient.xcarchive \
             archive
@@ -44,5 +44,4 @@ jobs:
         with:
           name: DevClient-IPA
           path: build/*.ipa
-
 

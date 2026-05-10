@@ -1,0 +1,65 @@
+name: Build Expo Dev Client IPA
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-dev-client:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          ref: restore-039b6df
+
+      - name: Install Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install JS dependencies
+        run: npm install
+
+      - name: Install CocoaPods
+        run: |
+          sudo gem install cocoapods -NV
+          cd ios
+          pod install
+
+      - name: Install Fastlane
+        run: sudo gem install fastlane -NV
+
+      - name: Prepare Fastlane API key JSON
+        env:
+          ASC_API_KEY: ${{ secrets.ASC_API_KEY }}
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        run: |
+          ESCAPED_KEY=$(printf "%s" "$ASC_API_KEY" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))')
+          cat <<EOF > fastlane_api_key.json
+          {
+            "key_id": "${ASC_KEY_ID}",
+            "issuer_id": "${ASC_ISSUER_ID}",
+            "key": $ESCAPED_KEY
+          }
+          EOF
+
+      - name: Build Dev Client IPA with Fastlane
+        run: |
+          cd ios
+          fastlane gym \
+            --workspace "VolleyballTrainerPro.xcworkspace" \
+            --scheme "VolleyballTrainerPro" \
+            --configuration Debug \
+            --export_method ad-hoc \
+            --export_options plist:"../exportOptions.plist" \
+            --api-key ../fastlane_api_key.json \
+            --output_directory "../build" \
+            --output_name "DevClient.ipa"
+
+      - name: Upload Dev Client IPA artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: DevClient-IPA
+          path: build/DevClient.ipa

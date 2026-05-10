@@ -37,7 +37,8 @@ jobs:
       - name: Install Bundler + Fastlane
         run: |
           gem install bundler -NV
-          bundle install --path vendor/bundle
+          bundle config set path 'vendor/bundle'
+          bundle install
 
       - name: Prepare Fastlane API key JSON
         env:

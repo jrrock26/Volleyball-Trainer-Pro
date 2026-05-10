@@ -72,7 +72,7 @@ jobs:
             --scheme "VolleyballTrainerPro" \
             --configuration Debug \
             --export_method ad-hoc \
-            --api_key_path ../fastlane_api_key.json \
+            --api-key ../fastlane_api_key.json \
             --output_directory "../build" \
             --output_name "DevClient.ipa"
 
@@ -84,4 +84,5 @@ jobs:
         with:
           name: DevClient-IPA
           path: build/DevClient.ipa
+
 

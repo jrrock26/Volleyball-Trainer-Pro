@@ -27,8 +27,10 @@ jobs:
           cd ios
           pod install
 
-      - name: Install Fastlane
-        run: sudo gem install fastlane -NV
+      - name: Remove old Fastlane and install modern Fastlane
+        run: |
+          sudo gem uninstall fastlane -aIx || true
+          sudo gem install fastlane -v 2.220.0 -NV
 
       - name: Prepare Fastlane API key JSON
         env:
@@ -53,7 +55,7 @@ jobs:
             --scheme "VolleyballTrainerPro" \
             --configuration Debug \
             --export_method ad-hoc \
-            --api_key_path ../fastlane_api_key.json \
+            --api-key ../fastlane_api_key.json \
             --output_directory "../build" \
             --output_name "DevClient.ipa"
 

@@ -11,11 +11,24 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Install Ruby + Bundler + Fastlane
+      # -----------------------------
+      # FIX: Install Bundler 2.7.2 (Fastlane requires < 3.0)
+      # -----------------------------
+      - name: Install Bundler 2.7.2
         run: |
-          gem install bundler
-          bundle install
+          gem uninstall bundler -a -x || true
+          gem install bundler -v 2.7.2
 
+      # -----------------------------
+      # Install Fastlane via Bundler
+      # -----------------------------
+      - name: Install Ruby gems
+        run: |
+          bundle _2.7.2_ install
+
+      # -----------------------------
+      # Node + JS dependencies
+      # -----------------------------
       - name: Install Node
         uses: actions/setup-node@v4
         with:
@@ -24,20 +37,32 @@ jobs:
       - name: Install JS dependencies
         run: npm install
 
+      # -----------------------------
+      # CocoaPods
+      # -----------------------------
       - name: Install CocoaPods
         run: |
           cd ios
           pod install
 
+      # -----------------------------
+      # Install VBTPDEV provisioning profile
+      # -----------------------------
       - name: Install VBTPDEV provisioning profile
         run: |
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp ios/VBTPDEV.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/VBTPDEV.mobileprovision
 
+      # -----------------------------
+      # Build Dev Client with Fastlane
+      # -----------------------------
       - name: Build Dev Client with Fastlane
         run: |
-          bundle exec fastlane ios dev_client
+          bundle _2.7.2_ exec fastlane ios dev_client
 
+      # -----------------------------
+      # Upload IPA
+      # -----------------------------
       - name: Upload Dev Client IPA
         uses: actions/upload-artifact@v4
         with:

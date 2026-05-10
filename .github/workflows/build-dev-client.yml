@@ -24,6 +24,9 @@ jobs:
           cd ios
           pod install
 
+      - name: Clear old provisioning profiles
+        run: rm -rf ~/Library/MobileDevice/Provisioning\ Profiles/*
+
       - name: Install provisioning profile
         run: |
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles

@@ -1,4 +1,4 @@
-name: Build Dev Client
+name: Build Dev Client (Fastlane)
 
 on:
   workflow_dispatch:
@@ -10,6 +10,11 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+
+      - name: Install Ruby + Bundler + Fastlane
+        run: |
+          gem install bundler
+          bundle install
 
       - name: Install Node
         uses: actions/setup-node@v4
@@ -24,33 +29,17 @@ jobs:
           cd ios
           pod install
 
-      - name: Clear old provisioning profiles
-        run: rm -rf ~/Library/MobileDevice/Provisioning\ Profiles/*
-
       - name: Install VBTPDEV provisioning profile
         run: |
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp ios/VBTPDEV.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/VBTPDEV.mobileprovision
 
-      - name: Build Dev Client IPA (Debug)
+      - name: Build Dev Client with Fastlane
         run: |
-          xcodebuild \
-            -workspace ios/VolleyballTrainerPro.xcworkspace \
-            -scheme VolleyballTrainerPro \
-            -configuration Debug \
-            -archivePath build/DevClient.xcarchive \
-            archive
-
-          xcodebuild \
-            -exportArchive \
-            -archivePath build/DevClient.xcarchive \
-            -exportOptionsPlist ios/exportOptions.plist \
-            -exportPath build
+          bundle exec fastlane ios dev_client
 
       - name: Upload Dev Client IPA
         uses: actions/upload-artifact@v4
         with:
           name: DevClient-IPA
-          path: build/*.ipa
-
-
+          path: ./*.ipa

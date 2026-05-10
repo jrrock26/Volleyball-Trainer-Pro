@@ -282,7 +282,7 @@
                     "-lc++",
                 );
                 DEVELOPMENT_TEAM = 2G78XY4X97;
-                PROVISIONING_PROFILE_SPECIFIER = ADHOC;
+                PROVISIONING_PROFILE_SPECIFIER = VBTPDEV;
                 CODE_SIGN_STYLE = Manual;
                 PRODUCT_BUNDLE_IDENTIFIER = "com.yourteam.volleyballtrainerpro";
                 

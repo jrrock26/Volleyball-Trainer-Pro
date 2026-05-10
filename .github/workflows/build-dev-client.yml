@@ -28,52 +28,31 @@ jobs:
           pod install
 
       # -----------------------------
-      # Install Fastlane via Bundler
+      # Install Fastlane (system version OK)
       # -----------------------------
-      - name: Create Gemfile for Fastlane
+      - name: Install Fastlane
         run: |
-          cat <<EOF > Gemfile
-          ruby "3.3.11"
-          source "https://rubygems.org"
-          gem "fastlane", "2.233.1"
-          EOF
-
-      - name: Install Bundler + Fastlane
-        run: |
-          gem install bundler -NV
-          bundle config set path 'vendor/bundle'
-          bundle install
+          sudo gem install fastlane -NV
 
       # -----------------------------
-      # Prepare API Key JSON
-      # -----------------------------
-      - name: Prepare Fastlane API key JSON
-        env:
-          ASC_API_KEY: ${{ secrets.ASC_API_KEY }}
-          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
-          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
-        run: |
-          ESCAPED_KEY=$(printf "%s" "$ASC_API_KEY" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))')
-          cat <<EOF > fastlane_api_key.json
-          {
-            "key_id": "${ASC_KEY_ID}",
-            "issuer_id": "${ASC_ISSUER_ID}",
-            "key": $ESCAPED_KEY
-          }
-          EOF
-
-      # -----------------------------
-      # Build Dev Client IPA (ROOT LEVEL)
+      # Build Dev Client IPA (Apple ID login)
       # -----------------------------
       - name: Build Dev Client IPA with Fastlane
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APP_SPECIFIC_PASSWORD: ${{ secrets.APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
-          bundle exec fastlane gym \
-            --workspace "ios/VolleyballTrainerPro.xcworkspace" \
+          cd ios
+          fastlane gym \
+            --workspace "VolleyballTrainerPro.xcworkspace" \
             --scheme "VolleyballTrainerPro" \
             --configuration Debug \
             --export_method ad-hoc \
-            --api-key fastlane_api_key.json \
-            --output_directory "build" \
+            --username "$APPLE_ID" \
+            --password "$APP_SPECIFIC_PASSWORD" \
+            --team_id "$APPLE_TEAM_ID" \
+            --output_directory "../build" \
             --output_name "DevClient.ipa"
 
       # -----------------------------
@@ -84,3 +63,4 @@ jobs:
         with:
           name: DevClient-IPA
           path: build/DevClient.ipa
+

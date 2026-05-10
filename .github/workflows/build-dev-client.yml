@@ -1,4 +1,4 @@
-name: Build Expo Dev Client IPA
+name: Build Dev Client
 
 on:
   workflow_dispatch:
@@ -53,8 +53,7 @@ jobs:
             --scheme "VolleyballTrainerPro" \
             --configuration Debug \
             --export_method ad-hoc \
-            --export_options plist:"../exportOptions.plist" \
-            --api-key ../fastlane_api_key.json \
+            --api_key_path ../fastlane_api_key.json \
             --output_directory "../build" \
             --output_name "DevClient.ipa"
 

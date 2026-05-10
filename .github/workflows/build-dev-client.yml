@@ -24,6 +24,11 @@ jobs:
           cd ios
           pod install
 
+      - name: Install provisioning profile
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp ios/ADHOC.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/ADHOC.mobileprovision
+
       - name: Build Dev Client IPA with xcodebuild
         run: |
           xcodebuild \

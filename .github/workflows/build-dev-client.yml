@@ -27,6 +27,9 @@ jobs:
           cd ios
           pod install
 
+      # -----------------------------
+      # Install Fastlane via Bundler
+      # -----------------------------
       - name: Create Gemfile for Fastlane
         run: |
           cat <<EOF > Gemfile
@@ -40,6 +43,9 @@ jobs:
           bundle config set path 'vendor/bundle'
           bundle install
 
+      # -----------------------------
+      # Prepare API Key JSON
+      # -----------------------------
       - name: Prepare Fastlane API key JSON
         env:
           ASC_API_KEY: ${{ secrets.ASC_API_KEY }}
@@ -55,6 +61,9 @@ jobs:
           }
           EOF
 
+      # -----------------------------
+      # Build Dev Client IPA
+      # -----------------------------
       - name: Build Dev Client IPA with Fastlane
         run: |
           cd ios
@@ -67,8 +76,12 @@ jobs:
             --output_directory "../build" \
             --output_name "DevClient.ipa"
 
+      # -----------------------------
+      # Upload IPA Artifact
+      # -----------------------------
       - name: Upload Dev Client IPA artifact
         uses: actions/upload-artifact@v4
         with:
           name: DevClient-IPA
           path: build/DevClient.ipa
+

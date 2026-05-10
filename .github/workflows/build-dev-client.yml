@@ -27,12 +27,12 @@ jobs:
       - name: Clear old provisioning profiles
         run: rm -rf ~/Library/MobileDevice/Provisioning\ Profiles/*
 
-      - name: Install provisioning profile
+      - name: Install VBTPDEV provisioning profile
         run: |
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          cp ios/ADHOC.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/ADHOC.mobileprovision
+          cp ios/VBTPDEV.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/VBTPDEV.mobileprovision
 
-      - name: Build Dev Client IPA with xcodebuild
+      - name: Build Dev Client IPA (Debug)
         run: |
           xcodebuild \
             -workspace ios/VolleyballTrainerPro.xcworkspace \
@@ -47,9 +47,10 @@ jobs:
             -exportOptionsPlist ios/exportOptions.plist \
             -exportPath build
 
-      - name: Upload Dev Client IPA artifact
+      - name: Upload Dev Client IPA
         uses: actions/upload-artifact@v4
         with:
           name: DevClient-IPA
           path: build/*.ipa
+
 

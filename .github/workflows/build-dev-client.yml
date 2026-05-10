@@ -27,10 +27,17 @@ jobs:
           cd ios
           pod install
 
-      - name: Remove old Fastlane and install modern Fastlane
+      - name: Create Gemfile for Fastlane
         run: |
-          sudo gem uninstall fastlane -aIx || true
-          sudo gem install fastlane -v 2.220.0 -NV
+          cat <<EOF > Gemfile
+          source "https://rubygems.org"
+          gem "fastlane", "2.233.1"
+          EOF
+
+      - name: Install Bundler + Fastlane
+        run: |
+          gem install bundler -NV
+          bundle install --path vendor/bundle
 
       - name: Prepare Fastlane API key JSON
         env:
@@ -50,7 +57,7 @@ jobs:
       - name: Build Dev Client IPA with Fastlane
         run: |
           cd ios
-          fastlane gym \
+          bundle exec fastlane gym \
             --workspace "VolleyballTrainerPro.xcworkspace" \
             --scheme "VolleyballTrainerPro" \
             --configuration Debug \

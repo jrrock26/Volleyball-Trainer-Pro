@@ -281,7 +281,9 @@
                     "-ObjC",
                     "-lc++",
                 );
-                PRODUCT_BUNDLE_IDENTIFIER = "com.jrrock26.volleyballtrainerpro";
+                PRODUCT_BUNDLE_IDENTIFIER = "com.yourteam.volleyballtrainerpro";
+                DEVELOPMENT_TEAM = 2G78XY4X97;
+                CODE_SIGN_STYLE = Manual;
                 PRODUCT_NAME = "VolleyballTrainerPro";
                 SWIFT_OPTIMIZATION_LEVEL = "-Onone";
                 SWIFT_VERSION = 5.0;
@@ -308,7 +310,9 @@
                     "-ObjC",
                     "-lc++",
                 );
-                PRODUCT_BUNDLE_IDENTIFIER = "com.jrrock26.volleyballtrainerpro";
+                PRODUCT_BUNDLE_IDENTIFIER = "com.yourteam.volleyballtrainerpro";
+                DEVELOPMENT_TEAM = 2G78XY4X97;
+                CODE_SIGN_STYLE = Manual;
                 PRODUCT_NAME = "VolleyballTrainerPro";
                 SWIFT_VERSION = 5.0;
                 VERSIONING_SYSTEM = "apple-generic";

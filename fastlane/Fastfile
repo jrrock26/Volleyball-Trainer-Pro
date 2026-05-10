@@ -1,0 +1,19 @@
+platform :ios do
+  desc "Build Expo Dev Client IPA"
+  lane :dev_client do
+    build_app(
+      workspace: "ios/VolleyballTrainerPro.xcworkspace",
+      scheme: "VolleyballTrainerPro",
+      configuration: "Debug",
+      export_method: "development",
+      export_options: {
+        provisioningProfiles: {
+          "com.yourteam.volleyballtrainerpro" => "VBTPDEV"
+        }
+      },
+      export_xcargs: "-allowProvisioningUpdates",
+      include_bitcode: false,
+      include_symbols: false
+    )
+  end
+end

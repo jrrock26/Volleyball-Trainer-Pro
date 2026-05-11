@@ -10,6 +10,11 @@ jobs:
   build-ios:
     runs-on: macos-latest
 
+    env:
+      IOS_DEV_CERT_P12: ${{ secrets.IOS_DEV_CERT_P12 }}
+      IOS_DEV_CERT_PASSWORD: ${{ secrets.IOS_DEV_CERT_PASSWORD }}
+      IOS_DEV_MOBILEPROVISION: ${{ secrets.IOS_DEV_MOBILEPROVISION }}
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4

@@ -7,6 +7,12 @@ jobs:
   build:
     runs-on: macos-latest
 
+    env:
+      IOS_DEV_CERT_PASSWORD: ${{ secrets.IOS_DEV_CERT_PASSWORD }}
+      IOS_DEV_CERT_P12: ${{ secrets.IOS_DEV_CERT_P12 }}
+      IOS_DEV_PROFILE: ${{ secrets.IOS_DEV_PROFILE }}
+      APPLE_TEAM_ID: "2G78XY4X97"
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -51,10 +57,3 @@ jobs:
       # ⭐ Build Dev Client using Fastlane
       - name: Build iOS Dev Client
         run: bundle exec fastlane ios dev_client
-        env:
-          MATCH_KEYCHAIN_NAME: build.keychain
-          MATCH_KEYCHAIN_PASSWORD: ""
-          IOS_DEV_CERT_PASSWORD: ${{ secrets.IOS_DEV_CERT_PASSWORD }}
-          IOS_DEV_CERT_P12: ${{ secrets.IOS_DEV_CERT_P12 }}
-          IOS_DEV_PROFILE: ${{ secrets.IOS_DEV_PROFILE }}
-          APPLE_TEAM_ID: "2G78XY4X97"

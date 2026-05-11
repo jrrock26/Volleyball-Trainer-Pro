@@ -23,7 +23,15 @@ jobs:
       - name: Install dependencies
         run: bundle install
 
-      # ⭐ Install iOS Development Certificate (.p12)
+      # ⭐ Base64 Validation Block
+      - name: Validate Base64 for iOS Dev Certificate
+        run: |
+          echo "Base64 length (GitHub Secret): ${#IOS_DEV_CERT_P12}"
+          echo "$IOS_DEV_CERT_P12" | base64 --decode > dev_cert_test.p12 || echo "Base64 decode failed"
+          echo "Decoded file size:"
+          ls -lh dev_cert_test.p12
+
+      # ⭐ Install iOS Development Certificate
       - name: Install iOS Development Certificate
         run: |
           echo "$IOS_DEV_CERT_P12" | base64 --decode > dev_cert.p12
@@ -34,7 +42,7 @@ jobs:
           security unlock-keychain -p "" build.keychain
           security set-keychain-settings build.keychain
 
-      # ⭐ Install provisioning profile (VBTPDEV)
+      # ⭐ Install provisioning profile
       - name: Install provisioning profile
         run: |
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles

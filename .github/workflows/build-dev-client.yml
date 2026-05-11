@@ -1,70 +1,52 @@
-name: Build Dev Client (Fastlane)
+name: iOS Dev Client Build
 
 on:
   workflow_dispatch:
 
 jobs:
-  build-dev-client:
+  build:
     runs-on: macos-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      # -----------------------------
-      # FIX: Install Bundler 2.7.2 (Fastlane requires < 3.0)
-      # -----------------------------
-      - name: Install Bundler 2.7.2
-        run: |
-          gem uninstall bundler -a -x || true
-          gem install bundler -v 2.7.2
-
-      # -----------------------------
-      # Install Fastlane via Bundler
-      # -----------------------------
-      - name: Install Ruby gems
-        run: |
-          bundle _2.7.2_ install
-
-      # -----------------------------
-      # Node + JS dependencies
-      # -----------------------------
-      - name: Install Node
-        uses: actions/setup-node@v4
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
         with:
-          node-version: 18
+          ruby-version: '3.2'
+          bundler-cache: true
 
-      - name: Install JS dependencies
-        run: npm install
+      - name: Install Bundler
+        run: gem install bundler
 
-      # -----------------------------
-      # CocoaPods
-      # -----------------------------
-      - name: Install CocoaPods
+      - name: Install dependencies
+        run: bundle install
+
+      # ⭐ Install iOS Development Certificate (.p12)
+      - name: Install iOS Development Certificate
         run: |
-          cd ios
-          pod install
+          echo "$IOS_DEV_CERT_P12" | base64 --decode > dev_cert.p12
+          security create-keychain -p "" build.keychain
+          security import dev_cert.p12 -k build.keychain -P "$IOS_DEV_CERT_PASSWORD" -T /usr/bin/codesign
+          security list-keychains -s build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "" build.keychain
+          security set-keychain-settings build.keychain
 
-      # -----------------------------
-      # Install VBTPDEV provisioning profile
-      # -----------------------------
-      - name: Install VBTPDEV provisioning profile
+      # ⭐ Install provisioning profile (VBTPDEV)
+      - name: Install provisioning profile
         run: |
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          cp ios/VBTPDEV.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/VBTPDEV.mobileprovision
+          echo "$IOS_DEV_PROFILE" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/VBTPDEV.mobileprovision
 
-      # -----------------------------
-      # Build Dev Client with Fastlane
-      # -----------------------------
-      - name: Build Dev Client with Fastlane
-        run: |
-          bundle _2.7.2_ exec fastlane ios dev_client
-
-      # -----------------------------
-      # Upload IPA
-      # -----------------------------
-      - name: Upload Dev Client IPA
-        uses: actions/upload-artifact@v4
-        with:
-          name: DevClient-IPA
-          path: ./*.ipa
+      # ⭐ Build Dev Client using Fastlane
+      - name: Build iOS Dev Client
+        run: bundle exec fastlane ios dev_client
+        env:
+          MATCH_KEYCHAIN_NAME: build.keychain
+          MATCH_KEYCHAIN_PASSWORD: ""
+          IOS_DEV_CERT_PASSWORD: ${{ secrets.IOS_DEV_CERT_PASSWORD }}
+          IOS_DEV_CERT_P12: ${{ secrets.IOS_DEV_CERT_P12 }}
+          IOS_DEV_PROFILE: ${{ secrets.IOS_DEV_PROFILE }}
+          APPLE_TEAM_ID: "2G78XY4X97"

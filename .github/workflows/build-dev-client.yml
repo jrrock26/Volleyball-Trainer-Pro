@@ -1,59 +1,71 @@
-name: iOS Dev Client Build
+name: Build iOS IPA
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
-  build:
+  build-ios:
     runs-on: macos-latest
 
-    env:
-      IOS_DEV_CERT_PASSWORD: ${{ secrets.IOS_DEV_CERT_PASSWORD }}
-      IOS_DEV_CERT_P12: ${{ secrets.IOS_DEV_CERT_P12 }}
-      IOS_DEV_PROFILE: ${{ secrets.IOS_DEV_PROFILE }}
-      APPLE_TEAM_ID: "2G78XY4X97"
-
     steps:
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+      - name: Set up Node
+        uses: actions/setup-node@v4
         with:
-          ruby-version: '3.2'
-          bundler-cache: true
-
-      - name: Install Bundler
-        run: gem install bundler
+          node-version: 18
 
       - name: Install dependencies
-        run: bundle install
-
-      # ⭐ Base64 Validation Block
-      - name: Validate Base64 for iOS Dev Certificate
         run: |
-          echo "Base64 length (GitHub Secret): ${#IOS_DEV_CERT_P12}"
-          echo "$IOS_DEV_CERT_P12" | base64 --decode > dev_cert_test.p12 || echo "Base64 decode failed"
-          echo "Decoded file size:"
-          ls -lh dev_cert_test.p12
+          npm ci
 
-      # ⭐ Install iOS Development Certificate
-      - name: Install iOS Development Certificate
+      - name: Decode iOS certificate
         run: |
+          echo "Base64 length: ${#IOS_DEV_CERT_P12}"
           echo "$IOS_DEV_CERT_P12" | base64 --decode > dev_cert.p12
+          ls -lh dev_cert.p12
+
+      - name: Import certificate into keychain
+        run: |
           security create-keychain -p "" build.keychain
-          security import dev_cert.p12 -k build.keychain -P "$IOS_DEV_CERT_PASSWORD" -T /usr/bin/codesign
-          security list-keychains -s build.keychain
           security default-keychain -s build.keychain
           security unlock-keychain -p "" build.keychain
-          security set-keychain-settings build.keychain
+          security import dev_cert.p12 -P "$IOS_DEV_CERT_PASSWORD" -A -t cert -f pkcs12
+          security set-key-partition-list -S apple-tool:,apple: -s -k "" build.keychain
 
-      # ⭐ Install provisioning profile
-      - name: Install provisioning profile
+      - name: Decode provisioning profile
         run: |
+          echo "$IOS_DEV_MOBILEPROVISION" | base64 --decode > profile.mobileprovision
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          echo "$IOS_DEV_PROFILE" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/VBTPDEV.mobileprovision
+          cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
 
-      # ⭐ Build Dev Client using Fastlane
-      - name: Build iOS Dev Client
-        run: bundle exec fastlane ios dev_client
+      - name: Install pods
+        run: |
+          cd ios
+          pod install --repo-update
+
+      - name: Build IPA
+        run: |
+          cd ios
+          xcodebuild \
+            -workspace VolleyballTrainerPro.xcworkspace \
+            -scheme VolleyballTrainerPro \
+            -configuration Release \
+            -archivePath build/VTPro.xcarchive \
+            archive
+
+          xcodebuild \
+            -exportArchive \
+            -archivePath build/VTPro.xcarchive \
+            -exportPath build/output \
+            -exportOptionsPlist ../exportOptions.plist
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-ipa
+          path: ios/build/output/*.ipa

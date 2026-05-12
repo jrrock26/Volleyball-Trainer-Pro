@@ -61,6 +61,7 @@ jobs:
             -scheme VolleyballTrainerPro \
             -configuration Release \
             -archivePath build/VTPro.xcarchive \
+            -allowProvisioningUpdates \
             archive
 
           xcodebuild \
@@ -74,3 +75,4 @@ jobs:
         with:
           name: ios-ipa
           path: ios/build/output/*.ipa
+

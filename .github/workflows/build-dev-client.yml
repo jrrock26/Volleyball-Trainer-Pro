@@ -1,4 +1,4 @@
-name: Build iOS IPA
+name: Build Dev Client IPA
 
 on:
   workflow_dispatch:
@@ -20,24 +20,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: restore-039b6df
-
-      - name: Cache node_modules
-        uses: actions/cache@v3
-        with:
-          path: node_modules
-          key: node-modules-${{ hashFiles('package-lock.json') }}
-
-      - name: Cache CocoaPods
-        uses: actions/cache@v3
-        with:
-          path: ios/Pods
-          key: pods-${{ hashFiles('ios/Podfile.lock') }}
-
-      - name: Cache Xcode DerivedData
-        uses: actions/cache@v3
-        with:
-          path: ~/Library/Developer/Xcode/DerivedData
-          key: deriveddata-${{ github.sha }}
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -66,12 +48,12 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
 
-      - name: Install pods
+      - name: Install pods (retry)
         run: |
           cd ios
-          pod install
+          pod install || pod install --verbose || pod install --repo-update
 
-      - name: Build IPA
+      - name: Build Dev Client IPA
         run: |
           cd ios
           xcodebuild \
@@ -91,5 +73,5 @@ jobs:
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ios-ipa
+          name: dev-client-ipa
           path: ios/build/output/*.ipa

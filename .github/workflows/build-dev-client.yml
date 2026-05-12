@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-ios:
-    runs-on: macos-14
+    runs-on: macos-latest
 
     env:
       IOS_DEV_CERT_P12: ${{ secrets.IOS_DEV_CERT_P12 }}

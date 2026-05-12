@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
     <key>method</key>
-    <string>ad-hoc</string>
+    <string>development</string>
 
     <key>signingStyle</key>
     <string>manual</string>
@@ -11,7 +11,7 @@
     <key>provisioningProfiles</key>
     <dict>
         <key>com.yourteam.volleyballtrainerpro</key>
-        <string>ADHOC</string>
+        <string>VBTPDEV</string>
     </dict>
 
     <key>compileBitcode</key>

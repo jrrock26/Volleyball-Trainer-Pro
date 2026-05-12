@@ -8,11 +8,9 @@ on:
 
 jobs:
   build-ios:
-    runs-on: macos-latest
+    runs-on: macos-14
 
     env:
-      IOS_DEV_CERT_P12: ${{ secrets.IOS_DEV_CERT_P12 }}
-      IOS_DEV_CERT_PASSWORD: ${{ secrets.IOS_DEV_CERT_PASSWORD }}
       IOS_DEV_MOBILEPROVISION: ${{ secrets.IOS_DEV_MOBILEPROVISION }}
 
     steps:
@@ -29,20 +27,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Decode iOS certificate
-        run: |
-          echo "$IOS_DEV_CERT_P12" | base64 --decode > dev_cert.p12
-          ls -lh dev_cert.p12
+      - name: Import iOS signing certificate
+        uses: apple-actions/import-codesign-certs@v3
+        with:
+          p12-file-base64: ${{ secrets.IOS_DEV_CERT_P12 }}
+          p12-password: ${{ secrets.IOS_DEV_CERT_PASSWORD }}
 
-      - name: Import certificate into keychain
-        run: |
-          security create-keychain -p "" build.keychain
-          security default-keychain -s build.keychain
-          security unlock-keychain -p "" build.keychain
-          security import dev_cert.p12 -P "$IOS_DEV_CERT_PASSWORD" -A -t cert -f pkcs12
-          security set-key-partition-list -S apple-tool:,apple: -s -k "" build.keychain
-
-      - name: Decode provisioning profile
+      - name: Install provisioning profile
         run: |
           echo "$IOS_DEV_MOBILEPROVISION" | base64 --decode > profile.mobileprovision
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
@@ -75,3 +66,4 @@ jobs:
         with:
           name: dev-client-ipa
           path: ios/build/output/*.ipa
+

@@ -27,13 +27,11 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci
-
       - name: Decode iOS certificate
         run: |
           echo "Base64 length: ${#IOS_DEV_CERT_P12}"
           echo "$IOS_DEV_CERT_P12" | base64 --decode > dev_cert.p12
           ls -lh dev_cert.p12
-
       - name: Import certificate into keychain
         run: |
           security create-keychain -p "" build.keychain
@@ -41,18 +39,15 @@ jobs:
           security unlock-keychain -p "" build.keychain
           security import dev_cert.p12 -P "$IOS_DEV_CERT_PASSWORD" -A -t cert -f pkcs12
           security set-key-partition-list -S apple-tool:,apple: -s -k "" build.keychain
-
       - name: Decode provisioning profile
         run: |
           echo "$IOS_DEV_MOBILEPROVISION" | base64 --decode > profile.mobileprovision
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
-
       - name: Install pods
         run: |
           cd ios
           pod install --repo-update
-
       - name: Build IPA
         run: |
           cd ios
@@ -64,16 +59,13 @@ jobs:
             -destination generic/platform=iOS \
             -allowProvisioningUpdates \
             archive
-
           xcodebuild \
             -exportArchive \
             -archivePath build/VTPro.xcarchive \
             -exportPath build/output \
             -exportOptionsPlist ../exportOptions.plist
-
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
         with:
           name: ios-ipa
           path: ios/build/output/*.ipa
-

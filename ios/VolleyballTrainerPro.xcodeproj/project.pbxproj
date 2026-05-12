@@ -284,8 +284,9 @@
                 DEVELOPMENT_TEAM = 2G78XY4X97;
                 PROVISIONING_PROFILE_SPECIFIER = VBTPDEV;
                 CODE_SIGN_STYLE = Manual;
+                CODE_SIGN_IDENTITY = "iPhone Developer";
                 PRODUCT_BUNDLE_IDENTIFIER = "com.yourteam.volleyballtrainerpro";
-                
+
                 PRODUCT_NAME = "VolleyballTrainerPro";
                 SWIFT_OPTIMIZATION_LEVEL = "-Onone";
                 SWIFT_VERSION = 5.0;
@@ -294,7 +295,8 @@
                 SWIFT_OBJC_BRIDGING_HEADER = VolleyballTrainerPro/VolleyballTrainerPro-Bridging-Header.h;
                 CODE_SIGN_ENTITLEMENTS = VolleyballTrainerPro/VolleyballTrainerPro.entitlements;
             };
-            name = Debug;
+                name = Debug;
+
         };
         13B07F951A680F5B00A75B9A /* Release */ = {
             isa = XCBuildConfiguration;
@@ -313,10 +315,10 @@
                     "-lc++",
                 );
                 DEVELOPMENT_TEAM = 2G78XY4X97;
-                PROVISIONING_PROFILE_SPECIFIER = ADHOC;
+                PROVISIONING_PROFILE_SPECIFIER = VBTPDEV;
                 CODE_SIGN_STYLE = Manual;
+                CODE_SIGN_IDENTITY = "iPhone Developer";
                 PRODUCT_BUNDLE_IDENTIFIER = "com.yourteam.volleyballtrainerpro";
-    
                 PRODUCT_NAME = "VolleyballTrainerPro";
                 SWIFT_VERSION = 5.0;
                 VERSIONING_SYSTEM = "apple-generic";

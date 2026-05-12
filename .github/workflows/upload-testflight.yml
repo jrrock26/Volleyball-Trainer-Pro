@@ -5,11 +5,11 @@ on:
 
 jobs:
   upload:
-    runs-on: macos-latest
+    runs-on: macos-14
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Ruby
         uses: ruby/setup-ruby@v1
@@ -19,25 +19,22 @@ jobs:
       - name: Install Fastlane
         run: sudo gem install fastlane -NV
 
-      - name: Prepare Fastlane API key JSON
+      - name: Prepare API key file
         env:
           ASC_API_KEY: ${{ secrets.ASC_API_KEY }}
+        run: |
+          echo "$ASC_API_KEY" | base64 --decode > api_key.p8
+
+      - name: Upload IPA to TestFlight
+        env:
           ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
           ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
         run: |
-          ESCAPED_KEY=$(printf "%s" "$ASC_API_KEY" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))')
-          cat <<EOF > fastlane_api_key.json
-          {
-            "key_id": "${ASC_KEY_ID}",
-            "issuer_id": "${ASC_ISSUER_ID}",
-            "key": $ESCAPED_KEY
-          }
-          EOF
-
-      - name: Upload IPA to TestFlight
-        run: |
           fastlane deliver \
-            --ipa "./VolleyballTrainerProClean/dist/app.ipa" \
-            --api-key fastlane_api_key.json \
+            --ipa "ios/build/output/VolleyballTrainerPro.ipa" \
+            --api-key api_key.p8 \
+            --api-key-id "$ASC_KEY_ID" \
+            --api-issuer "$ASC_ISSUER_ID" \
             --skip-screenshots \
             --skip-metadata
+

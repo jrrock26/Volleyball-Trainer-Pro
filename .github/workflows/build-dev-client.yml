@@ -9,6 +9,7 @@ on:
 jobs:
   build-ios:
     runs-on: macos-latest
+    timeout-minutes: 120
 
     env:
       IOS_DEV_CERT_P12: ${{ secrets.IOS_DEV_CERT_P12 }}
@@ -25,15 +26,30 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
+          cache: npm
+
+      - name: Cache CocoaPods
+        uses: actions/cache@v3
+        with:
+          path: ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
+      - name: Cache Xcode Build
+        uses: actions/cache@v3
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-xcode-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-xcode-
 
       - name: Install dependencies
         run: npm ci
 
       - name: Decode iOS certificate
         run: |
-          echo "Base64 length: ${#IOS_DEV_CERT_P12}"
           echo "$IOS_DEV_CERT_P12" | base64 --decode > dev_cert.p12
-          ls -lh dev_cert.p12
 
       - name: Import certificate into keychain
         run: |
@@ -52,7 +68,7 @@ jobs:
       - name: Install pods
         run: |
           cd ios
-          pod install --repo-update
+          pod install
 
       - name: Build IPA
         run: |
@@ -62,7 +78,9 @@ jobs:
             -scheme VolleyballTrainerPro \
             -configuration Release \
             -archivePath build/VTPro.xcarchive \
-            -destination generic/platform=iOS \
+            -derivedDataPath build/DerivedData \
+            -parallelizeTargets \
+            -jobs $(sysctl -n hw.ncpu) \
             -allowProvisioningUpdates \
             archive
 

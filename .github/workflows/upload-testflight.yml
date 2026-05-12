@@ -19,22 +19,25 @@ jobs:
       - name: Install Fastlane
         run: sudo gem install fastlane -NV
 
-      - name: Prepare API key file
+      - name: Create API key JSON
         env:
           ASC_API_KEY: ${{ secrets.ASC_API_KEY }}
-        run: |
-          echo "$ASC_API_KEY" | base64 --decode > api_key.p8
-
-      - name: Upload IPA to TestFlight
-        env:
           ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
           ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
         run: |
+          echo "$ASC_API_KEY" | base64 --decode > AuthKey.p8
+          cat <<EOF > api_key.json
+          {
+            "key_id": "$ASC_KEY_ID",
+            "issuer_id": "$ASC_ISSUER_ID",
+            "key": "$(cat AuthKey.p8 | sed 's/$/\\n/' | tr -d '\n')"
+          }
+          EOF
+
+      - name: Upload IPA to TestFlight
+        run: |
           fastlane deliver \
             --ipa "ios/build/output/VolleyballTrainerPro.ipa" \
-            --api-key api_key.p8 \
-            --api-key-id "$ASC_KEY_ID" \
-            --api-issuer "$ASC_ISSUER_ID" \
-            --skip-screenshots \
-            --skip-metadata
-
+            --api_key_path api_key.json \
+            --skip_screenshots \
+            --skip_metadata

@@ -1,0 +1,74 @@
+name: iOS Crash Debug
+
+on:
+  workflow_dispatch:
+
+jobs:
+  crash-debug:
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Node dependencies
+        run: npm install
+
+      - name: Install CocoaPods
+        run: |
+          cd ios
+          pod install --repo-update
+
+      - name: Boot iOS Simulator
+        run: |
+          SIM_ID=$(xcrun simctl list devices | grep "iPhone 15" | grep -v unavailable | awk '{print $NF}' | tr -d '()')
+          if [ -z "$SIM_ID" ]; then
+            xcrun simctl create "iPhone 15" com.apple.CoreSimulator.SimDeviceType.iPhone-15 com.apple.CoreSimulator.SimRuntime.iOS-17-4
+            SIM_ID=$(xcrun simctl list devices | grep "iPhone 15" | grep -v unavailable | awk '{print $NF}' | tr -d '()')
+          fi
+          echo "Using simulator: $SIM_ID"
+          xcrun simctl boot "$SIM_ID"
+          xcrun simctl bootstatus "$SIM_ID"
+
+      - name: Build Debug App
+        run: |
+          xcodebuild \
+            -workspace ios/VolleyballTrainerPro.xcworkspace \
+            -scheme VolleyballTrainerPro \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -derivedDataPath build \
+            build
+
+      - name: Install App on Simulator
+        run: |
+          APP_PATH=$(find build/Build/Products/Debug-iphonesimulator -name "*.app" | head -n 1)
+          echo "Installing app: $APP_PATH"
+          xcrun simctl install booted "$APP_PATH"
+
+      - name: Start Log Capture
+        run: |
+          mkdir -p crashlogs
+          xcrun simctl spawn booted log stream --level debug --style compact > crashlogs/device.log &
+          echo $! > crashlogs/log_pid.txt
+          sleep 3
+
+      - name: Launch App
+        run: |
+          xcrun simctl launch booted com.yourteam.volleyballtrainerpro || true
+          sleep 10
+
+      - name: Stop Log Capture
+        run: |
+          kill $(cat crashlogs/log_pid.txt) || true
+
+      - name: Collect Crash Reports
+        run: |
+          mkdir -p crashlogs/reports
+          cp ~/Library/Logs/DiagnosticReports/*.ips crashlogs/reports/ || true
+
+      - name: Upload Crash Logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: crash-debug-logs
+          path: crashlogs

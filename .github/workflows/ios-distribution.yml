@@ -19,6 +19,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Install Node dependencies
+        run: npm install
+
       - name: Install CocoaPods
         run: |
           cd ios
@@ -89,4 +92,3 @@ jobs:
             --skip_screenshots \
             --skip_metadata \
             --force
-

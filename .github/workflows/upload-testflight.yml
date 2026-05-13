@@ -20,7 +20,7 @@ jobs:
           curl -L \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -o artifact.zip \
-            "https://api.github.com/repos/jrrock26/Volleyball-Trainer-Pro/actions/artifacts/6952379122/zip"
+            "https://api.github.com/repos/jrrock26/Volleyball-Trainer-Pro/actions/artifacts/6974040293/zip"
 
       - name: Extract IPA
         run: |

@@ -37,12 +37,14 @@ jobs:
         run: sudo gem install fastlane -NV
 
       - name: Upload IPA to TestFlight (Apple ID login)
+        env:
+          FASTLANE_USER: ${{ secrets.APP_STORE_CONNECT_USERNAME }}
+          FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.APP_SPECIFIC_PASSWORD }}
         run: |
           fastlane deliver \
             --ipa "$IPA_FILE" \
-            --username "$APP_STORE_CONNECT_USERNAME" \
-            --password "$APP_SPECIFIC_PASSWORD" \
             --app_identifier "com.yourteam.volleyballtrainerpro" \
             --skip_screenshots \
             --skip_metadata \
             --force
+

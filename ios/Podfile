@@ -65,6 +65,9 @@ target 'VolleyballTrainerPro' do
   pod 'TensorFlowLiteSelectTfOps'
   pod 'MediaPipeTasksVision'
 
+   # --- ReplayKit Screen Recording ---
+  pod 'ReplayKit'
+
   post_install do |installer|
     react_native_post_install(
       installer,

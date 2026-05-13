@@ -8,8 +8,9 @@ jobs:
     runs-on: macos-14
 
     env:
-      APP_STORE_CONNECT_USERNAME: ${{ secrets.APP_STORE_CONNECT_USERNAME }}
-      APP_SPECIFIC_PASSWORD: ${{ secrets.APP_SPECIFIC_PASSWORD }}
+      ASC_API_KEY: ${{ secrets.ASC_API_KEY }}
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
 
     steps:
       - name: Checkout repo
@@ -36,17 +37,23 @@ jobs:
       - name: Install Fastlane
         run: sudo gem install fastlane -NV
 
-      - name: Upload IPA to TestFlight (Transporter)
-        env:
-          APP_STORE_CONNECT_USERNAME: ${{ secrets.APP_STORE_CONNECT_USERNAME }}
-          APP_SPECIFIC_PASSWORD: ${{ secrets.APP_SPECIFIC_PASSWORD }}
+      - name: Create API key JSON
         run: |
-          xcrun iTMSTransporter \
-            -m upload \
-            -u "$APP_STORE_CONNECT_USERNAME" \
-            -p "$APP_SPECIFIC_PASSWORD" \
-            -assetFile "$IPA_FILE" \
-            -assetDescription "VolleyballTrainerPro build upload" \
-            -v eXtreme
+          echo "$ASC_API_KEY" | base64 --decode > AuthKey.p8
+          cat <<EOF > api_key.json
+          {
+            "key_id": "$ASC_KEY_ID",
+            "issuer_id": "$ASC_ISSUER_ID",
+            "key": "$(cat AuthKey.p8 | sed 's/$/\\n/' | tr -d '\n')"
+          }
+          EOF
 
+      - name: Upload IPA to TestFlight (API key)
+        run: |
+          fastlane deliver \
+            --ipa "$IPA_FILE" \
+            --api_key_path api_key.json \
+            --skip_screenshots \
+            --skip_metadata \
+            --force
 

@@ -19,14 +19,20 @@ jobs:
           cd ios
           pod install --repo-update
 
-      - name: Boot iOS Simulator
+      - name: Find & Boot Simulator
+        id: sim
         run: |
-          SIM_ID=$(xcrun simctl list devices | grep "iPhone 15" | grep -v unavailable | awk '{print $NF}' | tr -d '()')
+          # Find the first iPhone 15 simulator UUID
+          SIM_ID=$(xcrun simctl list devices | grep "iPhone 15" | grep -oE "[A-F0-9-]{36}" | head -n 1)
+
           if [ -z "$SIM_ID" ]; then
-            xcrun simctl create "iPhone 15" com.apple.CoreSimulator.SimDeviceType.iPhone-15 com.apple.CoreSimulator.SimRuntime.iOS-17-4
-            SIM_ID=$(xcrun simctl list devices | grep "iPhone 15" | grep -v unavailable | awk '{print $NF}' | tr -d '()')
+            echo "No iPhone 15 simulator found. Creating one..."
+            SIM_ID=$(xcrun simctl create "iPhone 15" com.apple.CoreSimulator.SimDeviceType.iPhone-15 com.apple.CoreSimulator.SimRuntime.iOS-17-4)
           fi
+
           echo "Using simulator: $SIM_ID"
+          echo "SIM_ID=$SIM_ID" >> $GITHUB_ENV
+
           xcrun simctl boot "$SIM_ID"
           xcrun simctl bootstatus "$SIM_ID"
 
@@ -44,18 +50,18 @@ jobs:
         run: |
           APP_PATH=$(find build/Build/Products/Debug-iphonesimulator -name "*.app" | head -n 1)
           echo "Installing app: $APP_PATH"
-          xcrun simctl install booted "$APP_PATH"
+          xcrun simctl install "$SIM_ID" "$APP_PATH"
 
       - name: Start Log Capture
         run: |
           mkdir -p crashlogs
-          xcrun simctl spawn booted log stream --level debug --style compact > crashlogs/device.log &
+          xcrun simctl spawn "$SIM_ID" log stream --level debug --style compact > crashlogs/device.log &
           echo $! > crashlogs/log_pid.txt
           sleep 3
 
       - name: Launch App
         run: |
-          xcrun simctl launch booted com.yourteam.volleyballtrainerpro || true
+          xcrun simctl launch "$SIM_ID" com.yourteam.volleyballtrainerpro || true
           sleep 10
 
       - name: Stop Log Capture

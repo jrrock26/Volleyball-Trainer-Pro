@@ -1,4 +1,4 @@
-name: Upload IPA from Artifact ID to TestFlight
+name: Upload IPA to TestFlight
 
 on:
   workflow_dispatch:
@@ -8,19 +8,17 @@ jobs:
     runs-on: macos-14
 
     env:
-      ASC_API_KEY: ${{ secrets.ASC_API_KEY }}
-      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
-      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      APP_STORE_CONNECT_USERNAME: ${{ secrets.APP_STORE_CONNECT_USERNAME }}
+      APP_SPECIFIC_PASSWORD: ${{ secrets.APP_SPECIFIC_PASSWORD }}
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Download artifact ZIP using GitHub API
+      - name: Download artifact ZIP
         run: |
           curl -L \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github+json" \
             -o artifact.zip \
             "https://api.github.com/repos/jrrock26/Volleyball-Trainer-Pro/actions/artifacts/6952379122/zip"
 
@@ -38,22 +36,13 @@ jobs:
       - name: Install Fastlane
         run: sudo gem install fastlane -NV
 
-      - name: Create API key JSON
-        run: |
-          echo "$ASC_API_KEY" | base64 --decode > AuthKey.p8
-          cat <<EOF > api_key.json
-          {
-            "key_id": "$ASC_KEY_ID",
-            "issuer_id": "$ASC_ISSUER_ID",
-            "key": "$(cat AuthKey.p8 | sed 's/$/\\n/' | tr -d '\n')"
-          }
-          EOF
-
-      - name: Upload IPA to TestFlight
+      - name: Upload IPA to TestFlight (Apple ID login)
         run: |
           fastlane deliver \
             --ipa "$IPA_FILE" \
-            --api_key_path api_key.json \
+            --username "$APP_STORE_CONNECT_USERNAME" \
+            --password "$APP_SPECIFIC_PASSWORD" \
+            --app_identifier "com.yourteam.volleyballtrainerpro" \
             --skip_screenshots \
-            --skip_metadata
-
+            --skip_metadata \
+            --force

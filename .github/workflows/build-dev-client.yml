@@ -2,9 +2,7 @@ name: Build Dev Client IPA
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - restore-039b6df
+  
 
 jobs:
   build-ios:

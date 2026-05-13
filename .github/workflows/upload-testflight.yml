@@ -1,4 +1,4 @@
-name: Upload Latest IPA to TestFlight
+name: Upload IPA from Artifact URL to TestFlight
 
 on:
   workflow_dispatch:
@@ -16,14 +16,15 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Download latest IPA artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: dev-client-ipa
+      - name: Download artifact ZIP directly from URL
+        run: |
+          curl -L -o artifact.zip \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            "https://github.com/jrrock26/Volleyball-Trainer-Pro/actions/runs/25752527196/artifacts/6952379122"
 
       - name: Extract IPA
         run: |
-          unzip dev-client-ipa.zip
+          unzip artifact.zip
           IPA_FILE=$(ls *.ipa)
           echo "IPA_FILE=$IPA_FILE" >> $GITHUB_ENV
 

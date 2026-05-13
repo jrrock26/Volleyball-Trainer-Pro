@@ -1,0 +1,92 @@
+name: iOS Distribution Build & Upload to TestFlight
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-upload:
+    runs-on: macos-14
+
+    env:
+      ASC_API_KEY: ${{ secrets.ASC_API_KEY }}
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      IOS_DIST_CERT: ${{ secrets.IOS_DIST_CERT }}
+      IOS_DIST_CERT_PASSWORD: ${{ secrets.IOS_DIST_CERT_PASSWORD }}
+      IOS_DIST_PROFILE: ${{ secrets.IOS_DIST_PROFILE }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install CocoaPods
+        run: |
+          cd ios
+          pod install --repo-update
+
+      - name: Decode distribution certificate
+        run: |
+          echo "$IOS_DIST_CERT" | base64 --decode > dist.cer
+
+      - name: Decode distribution provisioning profile
+        run: |
+          echo "$IOS_DIST_PROFILE" | base64 --decode > VBTPDIST.mobileprovision
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp VBTPDIST.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+
+      - name: Install distribution certificate into keychain
+        run: |
+          security create-keychain -p "" build.keychain
+          security import dist.cer -k build.keychain -P "$IOS_DIST_CERT_PASSWORD" -A
+          security list-keychains -s build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "" build.keychain
+
+      - name: Build archive (Distribution)
+        run: |
+          xcodebuild \
+            -workspace ios/VolleyballTrainerPro.xcworkspace \
+            -scheme VolleyballTrainerPro \
+            -configuration Release \
+            -archivePath build/VolleyballTrainerPro.xcarchive \
+            archive \
+            DEVELOPMENT_TEAM=2G78XY4X97 \
+            PROVISIONING_PROFILE_SPECIFIER=VBTPDIST \
+            CODE_SIGN_STYLE=Manual
+
+      - name: Export IPA using distExportOptions.plist
+        run: |
+          xcodebuild \
+            -exportArchive \
+            -archivePath build/VolleyballTrainerPro.xcarchive \
+            -exportOptionsPlist ios/distExportOptions.plist \
+            -exportPath build
+
+      - name: Install Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.1
+
+      - name: Install Fastlane
+        run: sudo gem install fastlane -NV
+
+      - name: Create API key JSON
+        run: |
+          echo "$ASC_API_KEY" | base64 --decode > AuthKey.p8
+          cat <<EOF > api_key.json
+          {
+            "key_id": "$ASC_KEY_ID",
+            "issuer_id": "$ASC_ISSUER_ID",
+            "key": "$(cat AuthKey.p8 | sed 's/$/\\n/' | tr -d '\n')"
+          }
+          EOF
+
+      - name: Upload IPA to TestFlight
+        run: |
+          fastlane deliver \
+            --ipa "build/VolleyballTrainerPro.ipa" \
+            --api_key_path api_key.json \
+            --skip_screenshots \
+            --skip_metadata \
+            --force
+

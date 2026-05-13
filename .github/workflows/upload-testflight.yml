@@ -36,15 +36,17 @@ jobs:
       - name: Install Fastlane
         run: sudo gem install fastlane -NV
 
-      - name: Upload IPA to TestFlight (Apple ID login)
+      - name: Upload IPA to TestFlight (Transporter)
         env:
-          FASTLANE_USER: ${{ secrets.APP_STORE_CONNECT_USERNAME }}
-          FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.APP_SPECIFIC_PASSWORD }}
+          APP_STORE_CONNECT_USERNAME: ${{ secrets.APP_STORE_CONNECT_USERNAME }}
+          APP_SPECIFIC_PASSWORD: ${{ secrets.APP_SPECIFIC_PASSWORD }}
         run: |
-          fastlane deliver \
-            --ipa "$IPA_FILE" \
-            --app_identifier "com.yourteam.volleyballtrainerpro" \
-            --skip_screenshots \
-            --skip_metadata \
-            --force
+          xcrun iTMSTransporter \
+            -m upload \
+            -u "$APP_STORE_CONNECT_USERNAME" \
+            -p "$APP_SPECIFIC_PASSWORD" \
+            -assetFile "$IPA_FILE" \
+            -assetDescription "VolleyballTrainerPro build upload" \
+            -v eXtreme
+
 

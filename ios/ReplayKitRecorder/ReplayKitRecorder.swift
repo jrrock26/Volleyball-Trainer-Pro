@@ -1,25 +1,32 @@
 import Foundation
 import ReplayKit
 import Photos
+import React
 
 @objc(ReplayKitRecorder)
-class ReplayKitRecorder: RCTEventEmitter, RPScreenRecorderDelegate {
+class ReplayKitRecorder: RCTEventEmitter, RPScreenRecorderDelegate, RPPreviewViewControllerDelegate {
 
   private let recorder = RPScreenRecorder.shared()
   private var isRecording = false
 
+  // MARK: - RCTEventEmitter
+
+  @objc
   override static func requiresMainQueueSetup() -> Bool {
     return true
   }
 
+  @objc
   override func supportedEvents() -> [String]! {
-    return ["onRecordingFinished"]
+    return ["onRecordingFinished", "onRecordingError"]
   }
 
+  // MARK: - Public API (JS)
+
   @objc(startRecording:rejecter:)
-  func startRecording(resolve: @escaping RCTPromiseResolveBlock,
-                      reject: @escaping RCTPromiseRejectBlock) {
-    guard !isRecording else {
+  func startRecording(_ resolve: @escaping RCTPromiseResolveBlock,
+                      rejecter reject: @escaping RCTPromiseRejectBlock) {
+    if isRecording {
       resolve("already_recording")
       return
     }
@@ -28,6 +35,7 @@ class ReplayKitRecorder: RCTEventEmitter, RPScreenRecorderDelegate {
 
     recorder.startRecording { error in
       if let error = error {
+        self.sendEvent(withName: "onRecordingError", body: ["message": error.localizedDescription])
         reject("recording_error", "Failed to start recording", error)
       } else {
         self.isRecording = true
@@ -37,9 +45,9 @@ class ReplayKitRecorder: RCTEventEmitter, RPScreenRecorderDelegate {
   }
 
   @objc(stopRecording:rejecter:)
-  func stopRecording(resolve: @escaping RCTPromiseResolveBlock,
-                     reject: @escaping RCTPromiseRejectBlock) {
-    guard isRecording else {
+  func stopRecording(_ resolve: @escaping RCTPromiseResolveBlock,
+                     rejecter reject: @escaping RCTPromiseRejectBlock) {
+    if !isRecording {
       resolve("not_recording")
       return
     }
@@ -48,59 +56,41 @@ class ReplayKitRecorder: RCTEventEmitter, RPScreenRecorderDelegate {
       self.isRecording = false
 
       if let error = error {
+        self.sendEvent(withName: "onRecordingError", body: ["message": error.localizedDescription])
         reject("stop_error", "Failed to stop recording", error)
         return
       }
 
       guard let preview = preview else {
-        reject("preview_error", "No preview controller", nil)
+        reject("preview_error", "No preview controller returned", nil)
         return
       }
 
       preview.previewControllerDelegate = self
-      preview.loadPreview { url in
-        if let url = url {
-          self.saveToCameraRoll(url: url)
-          self.sendEvent(withName: "onRecordingFinished", body: ["file": url.path])
-          resolve(url.path)
-        } else {
-          reject("export_error", "Failed to export video", nil)
+
+      // Present the system ReplayKit preview UI so the user can tap "Save Video"
+      DispatchQueue.main.async {
+        if let root = UIApplication.shared.keyWindow?.rootViewController {
+          root.present(preview, animated: true, completion: nil)
+        } else if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                  let window = scene.windows.first,
+                  let rootVC = window.rootViewController {
+          rootVC.present(preview, animated: true, completion: nil)
         }
       }
+
+      // We don't get a direct file path here; the user chooses "Save Video" in the UI.
+      // We still resolve to JS so you know the recording stopped.
+      resolve("preview_presented")
     }
   }
 
-  private func saveToCameraRoll(url: URL) {
-    PHPhotoLibrary.shared().performChanges({
-      PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: url)
-    })
-  }
-}
+  // MARK: - RPPreviewViewControllerDelegate
 
-extension RPPreviewViewController {
-  func loadPreview(completion: @escaping (URL?) -> Void) {
-    let temp = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("replaykit_temp.mp4")
-
-    if FileManager.default.fileExists(atPath: temp.path) {
-      try? FileManager.default.removeItem(at: temp)
-    }
-
-    self.export(to: temp) { success in
-      completion(success ? temp : nil)
-    }
-  }
-
-  func export(to url: URL, completion: @escaping (Bool) -> Void) {
-    guard let movie = self.movieURL else {
-      completion(false)
-      return
-    }
-
-    do {
-      try FileManager.default.copyItem(at: movie, to: url)
-      completion(true)
-    } catch {
-      completion(false)
-    }
+  func previewControllerDidFinish(_ previewController: RPPreviewViewController) {
+    previewController.dismiss(animated: true, completion: nil)
+    // Notify JS that the flow is done (no file path, user handled saving).
+    sendEvent(withName: "onRecordingFinished", body: ["status": "closed"])
   }
 }
+

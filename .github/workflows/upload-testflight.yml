@@ -1,4 +1,4 @@
-name: Upload IPA from Artifact URL to TestFlight
+name: Upload IPA from Artifact ID to TestFlight
 
 on:
   workflow_dispatch:
@@ -16,11 +16,13 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Download artifact ZIP directly from URL
+      - name: Download artifact ZIP using GitHub API
         run: |
-          curl -L -o artifact.zip \
+          curl -L \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            "https://github.com/jrrock26/Volleyball-Trainer-Pro/actions/runs/25752527196/artifacts/6952379122"
+            -H "Accept: application/vnd.github+json" \
+            -o artifact.zip \
+            "https://api.github.com/repos/jrrock26/Volleyball-Trainer-Pro/actions/artifacts/6952379122/zip"
 
       - name: Extract IPA
         run: |
@@ -54,3 +56,4 @@ jobs:
             --api_key_path api_key.json \
             --skip_screenshots \
             --skip_metadata
+

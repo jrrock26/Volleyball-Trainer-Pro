@@ -11,7 +11,7 @@ export default ({ config }) => ({
 
   ios: {
     bundleIdentifier: "com.yourteam.volleyballtrainerpro",
-    buildNumber: "1",
+    buildNumber: "2",
     supportsTablet: false,
     infoPlist: {
       NSCameraUsageDescription: "This app uses the camera for recording drills.",

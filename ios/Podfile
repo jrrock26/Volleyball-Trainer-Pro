@@ -61,8 +61,8 @@ target 'VolleyballTrainerPro' do
   pod 'TensorFlowLiteSwift'
   pod 'TensorFlowLiteC'
   pod 'TensorFlowLiteObjC'
-  pod 'TensorFlowLiteSelectTfOps'
-  pod 'MediaPipeTasksVision'
+  pod 'TensorFlowLiteSelectTfOps', :configurations => ['Release']
+  pod 'MediaPipeTasksVision', :configurations => ['Release']
 
   # --- ReplayKit Native Module (local pod) ---
   pod 'ReplayKitRecorder', :path => './ReplayKitRecorder'

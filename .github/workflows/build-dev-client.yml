@@ -48,10 +48,17 @@ jobs:
           xcodebuild \
             -workspace VolleyballTrainerPro.xcworkspace \
             -scheme VolleyballTrainerPro \
-            -configuration Release \
+            -configuration Debug \
             -archivePath build/VTPro.xcarchive \
             -destination generic/platform=iOS \
             archive
+
+          xcodebuild \
+            -exportArchive \
+            -archivePath build/VTPro.xcarchive \
+            -exportPath build/output \
+            -exportOptionsPlist exportOptions.plist
+
 
           xcodebuild \
             -exportArchive \

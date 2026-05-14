@@ -1,4 +1,4 @@
-name: iOS Crash Debug
+name: iOS Crash Debug (Verbose)
 
 on:
   workflow_dispatch:
@@ -22,7 +22,7 @@ jobs:
       - name: Find & Boot Simulator
         id: sim
         run: |
-          # Find the first iPhone 15 simulator UUID
+          set -e
           SIM_ID=$(xcrun simctl list devices | grep "iPhone 15" | grep -oE "[A-F0-9-]{36}" | head -n 1)
 
           if [ -z "$SIM_ID" ]; then
@@ -36,15 +36,25 @@ jobs:
           xcrun simctl boot "$SIM_ID"
           xcrun simctl bootstatus "$SIM_ID"
 
-      - name: Build Debug App
+      - name: Build Debug App (Verbose)
         run: |
+          set -o pipefail
+          mkdir -p buildlogs
           xcodebuild \
             -workspace ios/VolleyballTrainerPro.xcworkspace \
             -scheme VolleyballTrainerPro \
             -configuration Debug \
             -sdk iphonesimulator \
             -derivedDataPath build \
-            build
+            build \
+            | tee buildlogs/xcodebuild.log
+
+      - name: Upload Build Logs
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: xcode-build-logs
+          path: buildlogs
 
       - name: Install App on Simulator
         run: |

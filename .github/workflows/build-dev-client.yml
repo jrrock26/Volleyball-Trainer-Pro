@@ -37,10 +37,12 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
 
-      - name: Install pods (retry)
+      - name: Install pods (clean + install)
         run: |
           cd ios
+          rm -rf Pods Podfile.lock
           pod install || pod install --verbose || pod install --repo-update
+
 
       - name: Build Dev Client IPA
         run: |

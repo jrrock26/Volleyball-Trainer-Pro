@@ -52,7 +52,7 @@ target 'VolleyballTrainerPro' do
 
   use_react_native!(
     :path => "../node_modules/react-native",
-    :hermes_enabled => true,
+    :hermes_enabled => false,
     :app_path => "#{Pod::Config.instance.installation_root}/..",
     :flipper_configuration => flipper_config
   )

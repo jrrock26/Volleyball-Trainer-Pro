@@ -2,7 +2,6 @@ name: Build Dev Client IPA
 
 on:
   workflow_dispatch:
-  
 
 jobs:
   build-ios:
@@ -37,12 +36,11 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
 
-      - name: Install pods (clean + install)
+      - name: Clean + Install Pods (JSC only)
         run: |
           cd ios
           rm -rf Pods Podfile.lock
-          pod install || pod install --verbose || pod install --repo-update
-
+          pod install --repo-update
 
       - name: Build Dev Client IPA
         run: |
@@ -61,10 +59,10 @@ jobs:
             -exportPath build/output \
             -exportOptionsPlist exportOptions.plist
 
-
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
         with:
           name: dev-client-ipa
           path: ios/build/output/*.ipa
+
 

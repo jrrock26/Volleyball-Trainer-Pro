@@ -58,12 +58,11 @@ target 'VolleyballTrainerPro' do
   )
 
   # --- Native ML Pods ---
-  pod 'MediaPipeTasksVision'  # allow Debug + Release
+  pod 'MediaPipeTasksVision'
   pod 'TensorFlowLiteSelectTfOps', :configurations => ['Release']
-# Include ML model files in the app bundle
+
+  # Include ML model files in the app bundle
   pod 'MLModels', :path => '../MLModels.podspec'
-
-
 
   # --- ReplayKit Native Module (local pod) ---
   pod 'ReplayKitRecorder', :path => './ReplayKitRecorder'
@@ -90,5 +89,14 @@ target 'VolleyballTrainerPro' do
         config.build_settings['SWIFT_VERSION'] = '5.0'
       end
     end
+
+    # --- ⭐ FORCE DISABLE HERMES IN ALL POD TARGETS ⭐ ---
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['USE_HERMES'] = 'NO'
+        config.build_settings['HERMES_ENABLED'] = '0'
+      end
+    end
+    # ----------------------------------------------------
   end
 end

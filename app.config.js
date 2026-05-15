@@ -9,6 +9,8 @@ export default ({ config }) => ({
   icon: "./assets/images/icon.png",
   userInterfaceStyle: "light",
 
+  jsEngine: "jsc",   // ⭐ THIS is the correct location
+
   ios: {
     bundleIdentifier: "com.yourteam.volleyballtrainerpro",
     buildNumber: "2",
@@ -32,7 +34,6 @@ export default ({ config }) => ({
     ]
   },
 
-  // Important: keep plugins empty so Expo does NOT regenerate native code
   plugins: [],
 
   experiments: {
@@ -46,6 +47,5 @@ export default ({ config }) => ({
     }
   },
 
-  // Recommended for native builds
   assetBundlePatterns: ["**/*"]
 });

@@ -59,7 +59,10 @@ target 'VolleyballTrainerPro' do
 
   # --- Native ML Pods ---
   pod 'MediaPipeTasksVision'  # allow Debug + Release
-pod 'TensorFlowLiteSelectTfOps', :configurations => ['Release']
+  pod 'TensorFlowLiteSelectTfOps', :configurations => ['Release']
+# Include ML model files in the app bundle
+  pod 'MLModels', :path => '../MLModels.podspec'
+
 
 
   # --- ReplayKit Native Module (local pod) ---

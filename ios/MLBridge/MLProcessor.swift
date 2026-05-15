@@ -21,6 +21,8 @@ class MLProcessor {
                     completion: @escaping (Result<[String: Any], Error>) -> Void) {
 
     DispatchQueue.global(qos: .userInitiated).async {
+
+      // Load image
       guard let url = URL(string: uri) else {
         completion(.failure(MLError.invalidURI))
         return
@@ -31,10 +33,16 @@ class MLProcessor {
         return
       }
 
-      // Pose estimation
-      let poseResult = self.poseEstimator.estimatePose(from: image)
+      // Pose estimation (SAFE)
+      let poseResult: PoseResult
+      do {
+        poseResult = try self.poseEstimator.estimatePose(from: image)
+      } catch {
+        completion(.failure(error))
+        return
+      }
 
-      // Ball detection
+      // Ball detection (CoreML, safe)
       let ballResult = self.yoloDetector.detectBall(in: image)
 
       // Derived analytics

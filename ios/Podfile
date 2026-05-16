@@ -90,15 +90,16 @@ target 'VolleyballTrainerPro' do
       end
     end
 
-    # --- ⭐ FORCE DISABLE HERMES (React-Core only) ⭐ ---
-    installer.pods_project.targets.each do |target|
-      if target.name == "React-Core"
-        target.build_configurations.each do |config|
-          config.build_settings['USE_HERMES'] = 'false'
-          config.build_settings['HERMES_ENABLED'] = 'false'
-        end
-      end
+    # --- ⭐ FORCE DISABLE HERMES IN ALL REACT-CORE TARGETS ⭐ ---
+installer.pods_project.targets.each do |target|
+  if target.name.start_with?("React-Core")
+    target.build_configurations.each do |config|
+      config.build_settings['USE_HERMES'] = 'false'
+      config.build_settings['HERMES_ENABLED'] = 'false'
     end
+  end
+end
+
     # ----------------------------------------------------
   end
 end

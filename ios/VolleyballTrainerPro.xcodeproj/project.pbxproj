@@ -294,8 +294,8 @@
                 TARGETED_DEVICE_FAMILY = "1";
                 SWIFT_OBJC_BRIDGING_HEADER = VolleyballTrainerPro/VolleyballTrainerPro-Bridging-Header.h;
                 CODE_SIGN_ENTITLEMENTS = VolleyballTrainerPro/VolleyballTrainerPro.entitlements;
-                HERMES_ENABLED = 0;
-                USE_HERMES = NO;
+                HERMES_ENABLED = FALSE;
+                USE_HERMES = FALSE;
             };
                 name = Debug;
 
@@ -327,8 +327,8 @@
                 TARGETED_DEVICE_FAMILY = "1";
                 SWIFT_OBJC_BRIDGING_HEADER = VolleyballTrainerPro/VolleyballTrainerPro-Bridging-Header.h;
                 CODE_SIGN_ENTITLEMENTS = VolleyballTrainerPro/VolleyballTrainerPro.entitlements;
-                HERMES_ENABLED = 0;
-                USE_HERMES = NO;
+                HERMES_ENABLED = FALSE;
+                USE_HERMES = FALSE;
             };
             name = Release;
         };

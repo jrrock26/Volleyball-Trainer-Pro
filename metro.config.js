@@ -1,18 +1,18 @@
 // metro.config.js
-const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
+const { getDefaultConfig } = require('metro-config');
 
 /**
  * Metro configuration
  * https://metrobundler.dev/docs/configuration
  *
- * @type {import('metro-config').MetroConfig}
+ * @type {import('metro-config').MetroConfig | Promise<import('metro-config').MetroConfig>}
  */
-const defaultConfig = getDefaultConfig(__dirname);
+module.exports = (async () => {
+  const defaultConfig = await getDefaultConfig(__dirname);
 
-const config = {
-  resolver: {
-    assetExts: [...defaultConfig.resolver.assetExts, 'mp3', 'wav'],
-  },
-};
-
-module.exports = mergeConfig(defaultConfig, config);
+  return {
+    resolver: {
+      assetExts: [...defaultConfig.resolver.assetExts, 'mp3', 'wav'],
+    },
+  };
+})();

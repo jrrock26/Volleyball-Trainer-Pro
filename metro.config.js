@@ -1,12 +1,10 @@
 // metro.config.js
-const { getDefaultConfig } = require('metro-config');
+const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
 
-module.exports = (async () => {
-  const defaultConfig = await getDefaultConfig(__dirname);
+const defaultConfig = getDefaultConfig(__dirname);
 
-  return {
-    resolver: {
-      assetExts: [...defaultConfig.resolver.assetExts, 'mp3', 'wav'],
-    },
-  };
-})();
+module.exports = mergeConfig(defaultConfig, {
+  resolver: {
+    assetExts: [...defaultConfig.resolver.assetExts, 'mp3', 'wav'],
+  },
+});

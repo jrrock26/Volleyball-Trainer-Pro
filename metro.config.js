@@ -8,8 +8,5 @@ module.exports = (async () => {
     resolver: {
       assetExts: [...defaultConfig.resolver.assetExts, 'mp3', 'wav'],
     },
-    transformer: {
-      babelTransformerPath: require.resolve('react-native-svg-transformer'),
-    },
   };
 })();

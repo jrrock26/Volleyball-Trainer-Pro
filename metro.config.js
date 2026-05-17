@@ -1,17 +1,18 @@
 // metro.config.js
 const { getDefaultConfig } = require('metro-config');
 
-/**
- * @type {import('metro-config').MetroConfig | Promise<import('metro-config').MetroConfig>}
- */
+console.log("🔍 METRO CONFIG LOADED FROM:", __filename);
+
 module.exports = (async () => {
   const defaultConfig = await getDefaultConfig(__dirname);
+
+  console.log("🔍 DEFAULT RESOLVER FROM RN:", defaultConfig.resolver);
 
   return {
     ...defaultConfig,
     transformer: {
       ...defaultConfig.transformer,
-      // This is the critical line: tell Metro where the asset registry lives.
+      // Explicitly set asset registry path to avoid missing-asset-registry-path
       assetRegistryPath: 'react-native/Libraries/Image/AssetRegistry',
     },
     resolver: {
@@ -20,3 +21,4 @@ module.exports = (async () => {
     },
   };
 })();
+

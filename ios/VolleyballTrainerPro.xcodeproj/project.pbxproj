@@ -202,7 +202,9 @@
             );
             runOnlyForDeploymentPostprocessing = 0;
             shellPath = /bin/sh;
-            shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
+            shellScript = "export NODE_BINARY=node
+            export METRO_CONFIG=$PROJECT_DIR/../metro.config.js
+            ../node_modules/react-native/scripts/react-native-xcode.sh";
             showEnvVarsInLog = 0;
         };
         08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */ = {

@@ -1,4 +1,5 @@
-import { useNavigation } from "@react-navigation/native";
+// HomeScreen.js
+
 import { Asset } from "expo-asset";
 import { useCallback, useRef } from "react";
 
@@ -60,8 +61,9 @@ const GlowButton = ({ img, onPress }) => {
   );
 };
 
-export default function HomeScreen() {
-  const navigation = useNavigation();
+// ⭐ React Navigation 4 passes navigation via props
+export default function HomeScreen(props) {
+  const { navigation } = props;
 
   return (
     <ImageBackground

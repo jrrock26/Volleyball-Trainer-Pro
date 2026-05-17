@@ -1,6 +1,6 @@
+// screens/PracticeSchedule.tsx
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Audio } from 'expo-av';
 import * as Haptics from 'expo-haptics';
 import * as Print from 'expo-print';
@@ -16,42 +16,38 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { RootStackParamList } from '../types/navigationTypes';
+import { NavigationScreenProp } from 'react-navigation';
 import { PracticeDrill } from './Drills';
 
-type PracticeScheduleRoute = RouteProp<
-  RootStackParamList,
-  'PracticeSchedule'
->;
+type Props = {
+  navigation: NavigationScreenProp<any, any>;
+};
 
-export default function PracticeSchedule() {
-  const route = useRoute<PracticeScheduleRoute>();
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { practiceDrills } = route.params;
+export default function PracticeSchedule({ navigation }: Props) {
+  const { practiceDrills } = navigation.state.params;
 
   const scrollRef = useRef<ScrollView>(null);
   const [selectedDrill, setSelectedDrill] = useState<PracticeDrill | null>(null);
 
-  // Naming modal state
   const [nameModalVisible, setNameModalVisible] = useState(false);
   const [practiceName, setPracticeName] = useState('');
 
   // ------------------------------------------------------------
-// REMOVE TRAILING WATER BREAK
-// ------------------------------------------------------------
-if (
-  practiceDrills.length > 0 &&
-  practiceDrills[practiceDrills.length - 1].category === 'break'
-) {
-  practiceDrills.pop();
-}
+  // REMOVE TRAILING WATER BREAK
+  // ------------------------------------------------------------
+  if (
+    practiceDrills.length > 0 &&
+    practiceDrills[practiceDrills.length - 1].category === 'break'
+  ) {
+    practiceDrills.pop();
+  }
 
   // ------------------------------------------------------------
   // INITIALIZE TIMERS
   // ------------------------------------------------------------
   const initialTimers: Record<string, number> = {};
-  practiceDrills.forEach((d) => {
-    if (d.category !== 'break') {
+  practiceDrills.forEach((d: PracticeDrill) => {
+  if (d.category !== 'break') {
       initialTimers[d.id] = d.duration;
     }
   });
@@ -90,7 +86,8 @@ if (
               Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
               playDing();
 
-              const index = practiceDrills.findIndex((d) => d.id === id);
+             const index = practiceDrills.findIndex((d: PracticeDrill) => d.id === id);
+
               const next = practiceDrills[index + 1];
 
               if (next && next.category !== 'break') {
@@ -135,7 +132,9 @@ if (
   // ------------------------------------------------------------
   // LIVE SUMMARY COUNTDOWN
   // ------------------------------------------------------------
-  const totalSeconds = practiceDrills.reduce((sum, drill) => {
+  const totalSeconds = practiceDrills.reduce(
+  (sum: number, drill: PracticeDrill) => {
+
     if (drill.category === 'break') return sum;
     return sum + (timers[drill.id] ?? drill.duration);
   }, 0);
@@ -143,7 +142,9 @@ if (
   // ------------------------------------------------------------
   // CATEGORY BREAKDOWN
   // ------------------------------------------------------------
-  const categoryCounts = practiceDrills.reduce((acc, drill) => {
+  const categoryCounts = practiceDrills.reduce(
+  (acc: Record<string, number>, drill: PracticeDrill) => {
+
     if (drill.category !== 'break') {
       acc[drill.category] = (acc[drill.category] || 0) + 1;
     }
@@ -151,7 +152,7 @@ if (
   }, {} as Record<string, number>);
 
   // ------------------------------------------------------------
-  // SAVE PRACTICE (with optional name)
+  // SAVE PRACTICE
   // ------------------------------------------------------------
   const finalizeSavePractice = async () => {
     try {
@@ -194,8 +195,8 @@ if (
             <hr />
 
             ${practiceDrills
-              .map(
-                d => `
+              .map((d: PracticeDrill) => `
+
               <div style="margin-bottom: 12px;">
                 <strong>${d.name}</strong><br/>
                 <span>${Math.round(d.duration / 60)} min</span><br/>
@@ -226,11 +227,20 @@ if (
     <View style={styles.container}>
       <Text style={styles.title}>Practice Schedule</Text>
 
+      {/* BACK BUTTON */}
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => navigation.goBack()}
+      >
+        <Text style={styles.backButtonText}>← Back</Text>
+      </TouchableOpacity>
+
       {/* SUMMARY */}
       <View style={styles.summaryBox}>
         <Text style={styles.summaryLine}>
           <Text style={styles.summaryLabel}>Drills: </Text>
-          {practiceDrills.filter((d) => d.category !== 'break').length}
+          {practiceDrills.filter((d: PracticeDrill) => d.category !== 'break').length}
+
         </Text>
 
         <Text style={styles.summaryLine}>
@@ -241,20 +251,23 @@ if (
         <Text style={[styles.summaryHeader, { marginTop: 10 }]}>
           Categories
         </Text>
-        {Object.entries(categoryCounts).map(([cat, count]) => (
-          <Text key={cat} style={styles.summaryLine}>
-            {cat}: {count}
-          </Text>
-        ))}
+        {(Object.entries(categoryCounts) as [string, number][]).map(([cat, count]) => (
+  <Text key={cat} style={styles.summaryLine}>
+    {`${cat}: ${count}`}
+  </Text>
+))}
+
+
       </View>
 
       {/* DRILL LIST */}
       <ScrollView ref={scrollRef} style={{ marginTop: 16 }}>
-        {practiceDrills.map((drill) => {
+        {practiceDrills.map((drill: PracticeDrill) => {
           if (drill.category === 'break') {
             return (
               <View key={drill.id} style={styles.breakCard}>
-                <Text style={styles.breakText}>WATER BREAK — 1 MIN</Text>
+                <Text style={styles.breakText}>{'WATER BREAK — 1 MIN'}</Text>
+
               </View>
             );
           }
@@ -308,24 +321,26 @@ if (
         })}
       </ScrollView>
 
-      {/* ACTION BUTTONS — SMALL + INLINE */}
-<View style={styles.actionRow}>
-  <TouchableOpacity style={styles.actionBtnBlue} onPress={() => setNameModalVisible(true)}>
-    <Text style={styles.actionText}>Save</Text>
-  </TouchableOpacity>
+      {/* ACTION BUTTONS */}
+      <View style={styles.actionRow}>
+        <TouchableOpacity
+          style={styles.actionBtnBlue}
+          onPress={() => setNameModalVisible(true)}
+        >
+          <Text style={styles.actionText}>Save</Text>
+        </TouchableOpacity>
 
-  <TouchableOpacity style={styles.actionBtnPink} onPress={handleExportPDF}>
-    <Text style={styles.actionText}>PDF</Text>
-  </TouchableOpacity>
+        <TouchableOpacity style={styles.actionBtnPink} onPress={handleExportPDF}>
+          <Text style={styles.actionText}>PDF</Text>
+        </TouchableOpacity>
 
-  <TouchableOpacity
-    style={styles.actionBtnBlack}
-    onPress={() => navigation.navigate('SavedPractices')}
-  >
-    <Text style={styles.actionText}>Saved</Text>
-  </TouchableOpacity>
-</View>
-
+        <TouchableOpacity
+          style={styles.actionBtnBlack}
+          onPress={() => navigation.navigate('SavedPractices')}
+        >
+          <Text style={styles.actionText}>Saved</Text>
+        </TouchableOpacity>
+      </View>
 
       {/* DRILL MODAL */}
       <Modal visible={!!selectedDrill} transparent animationType="slide">
@@ -411,6 +426,17 @@ const styles = StyleSheet.create({
     fontSize: 26,
     fontWeight: '700',
     color: '#111',
+  },
+
+  backButton: {
+    marginTop: 10,
+    marginBottom: 10,
+  },
+
+  backButtonText: {
+    fontSize: 16,
+    color: '#3A7AFE',
+    fontWeight: '700',
   },
 
   summaryBox: {
@@ -564,90 +590,46 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 
-  saveButton: {
+  actionRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 16,
+    marginBottom: 10,
+  },
+
+  actionBtnBlue: {
     backgroundColor: '#3A7AFE',
-    padding: 14,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginTop: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 10,
   },
 
-  saveText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '700',
-  },
-
-  exportButton: {
+  actionBtnPink: {
     backgroundColor: '#FF4FC3',
-    padding: 14,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginTop: 14,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 10,
   },
 
-  exportText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '700',
-  },
-
-  viewSavedButton: {
+  actionBtnBlack: {
     backgroundColor: '#111',
-    padding: 14,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginTop: 14,
-    marginBottom: 40,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 10,
   },
 
-  viewSavedText: {
+  actionText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '700',
   },
 
-  // NAME MODAL
   nameOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.45)',
     justifyContent: 'center',
     alignItems: 'center',
   },
-
-  actionRow: {
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  marginTop: 16,
-  marginBottom: 10,
-},
-
-actionBtnBlue: {
-  backgroundColor: '#3A7AFE',
-  paddingVertical: 10,
-  paddingHorizontal: 16,
-  borderRadius: 10,
-},
-
-actionBtnPink: {
-  backgroundColor: '#FF4FC3',
-  paddingVertical: 10,
-  paddingHorizontal: 16,
-  borderRadius: 10,
-},
-
-actionBtnBlack: {
-  backgroundColor: '#111',
-  paddingVertical: 10,
-  paddingHorizontal: 16,
-  borderRadius: 10,
-},
-
-actionText: {
-  color: 'white',
-  fontSize: 14,
-  fontWeight: '700',
-},
 
   nameBox: {
     width: '85%',
@@ -660,51 +642,51 @@ actionText: {
     elevation: 5,
   },
 
-  nameTitle: {
+    nameTitle: {
     fontSize: 20,
     fontWeight: '700',
     marginBottom: 12,
     color: '#111',
   },
 
-   nameInput: {
-      borderWidth: 1,
-      borderColor: '#ccc',
-      borderRadius: 10,
-      padding: 12,
-      fontSize: 16,
-      color: '#111',
-      marginBottom: 16,
-    },
+  nameInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 10,
+    padding: 12,
+    fontSize: 16,
+    color: '#111',
+    marginBottom: 16,
+  },
 
-    nameButtons: {
-      flexDirection: 'row',
-      justifyContent: 'flex-end',
-      marginTop: 10,
-    },
+  nameButtons: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: 10,
+  },
 
-    nameCancel: {
-      paddingVertical: 10,
-      paddingHorizontal: 16,
-      marginRight: 10,
-    },
+  nameCancel: {
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    marginRight: 10,
+  },
 
-    nameCancelText: {
-      fontSize: 16,
-      color: '#666',
-      fontWeight: '600',
-    },
+  nameCancelText: {
+    fontSize: 16,
+    color: '#666',
+    fontWeight: '600',
+  },
 
-    nameSave: {
-      backgroundColor: '#3A7AFE',
-      paddingVertical: 10,
-      paddingHorizontal: 18,
-      borderRadius: 10,
-    },
+  nameSave: {
+    backgroundColor: '#3A7AFE',
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    borderRadius: 10,
+  },
 
-    nameSaveText: {
-      fontSize: 16,
-      color: 'white',
-      fontWeight: '700',
-    },
+  nameSaveText: {
+    fontSize: 16,
+    color: 'white',
+    fontWeight: '700',
+  },
 });

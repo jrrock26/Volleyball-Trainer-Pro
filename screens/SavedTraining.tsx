@@ -1,8 +1,6 @@
 // screens/SavedTraining.tsx
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import {
   Alert,
@@ -12,8 +10,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { NavigationScreenProp } from 'react-navigation';
 import { TrainingBlock } from '../training/trainingLibrary';
-import { RootStackParamList } from '../types/navigationTypes';
 
 type SavedTraining = {
   id: string;
@@ -22,9 +20,11 @@ type SavedTraining = {
   blocks: TrainingBlock[];
 };
 
-export default function SavedTrainingScreen() {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+type Props = {
+  navigation: NavigationScreenProp<any, any>;
+};
+
+export default function SavedTrainingScreen({ navigation }: Props) {
   const [saved, setSaved] = useState<SavedTraining[]>([]);
 
   const loadSaved = async () => {
@@ -33,8 +33,8 @@ export default function SavedTrainingScreen() {
   };
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', loadSaved);
-    return unsubscribe;
+    const sub = navigation.addListener('willFocus', loadSaved);
+    return () => {};
   }, [navigation]);
 
   const deleteTraining = async (id: string) => {
@@ -74,8 +74,7 @@ export default function SavedTrainingScreen() {
             </Text>
 
             <Text style={styles.cardSub}>
-              {t.blocks.length} drills • Saved{' '}
-              {new Date(t.createdAt).toLocaleString()}
+              {t.blocks.length} drills • Saved {new Date(t.createdAt).toLocaleString()}
             </Text>
           </TouchableOpacity>
 
@@ -144,10 +143,3 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 });
-
-
-
-
-
-
-

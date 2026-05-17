@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import * as MediaLibrary from 'expo-media-library';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Animated,
@@ -14,8 +14,6 @@ import {
   View
 } from 'react-native';
 import Recording from 'react-native-record-screen';
-
-import * as MediaLibrary from 'expo-media-library';
 
 const volleyballImg = require('../assets/images/volleyball.png');
 
@@ -48,13 +46,6 @@ type SavedPlay = {
   playerLabels?: (string | null)[];
   playerRoles?: PlayerRole[];
 };
-
-type PlayStackParamList = {
-  PlayDesigner: { loadPlayId?: string } | undefined;
-  PlayLibrary: undefined;
-};
-
-type Props = NativeStackScreenProps<PlayStackParamList, 'PlayDesigner'>;
 
 const sixTwoBase: Record<Rotation, Pos[]> = {
   1: [
@@ -116,7 +107,9 @@ const cloneBase = (rot: Rotation): Pos[] =>
 const clonePositions = (positions: Pos[]): Pos[] =>
   positions.map(p => ({ ...p }));
 
-export default function PlayDesigner({ navigation, route }: Props) {
+export default function PlayDesigner(props: any) {
+  const { navigation } = props;
+  const loadPlayId = navigation.getParam('loadPlayId');
 
   // ⭐ REAL measured court height
   const [courtHeight, setCourtHeight] = useState(COURT_HEIGHT);
@@ -167,13 +160,14 @@ export default function PlayDesigner({ navigation, route }: Props) {
   const ballAnim = useRef(
     new Animated.ValueXY({ x: width * 0.8, y: COURT_HEIGHT * 0.9 })
   ).current;
-  // ⭐ ADD THESE TWO LINES RIGHT HERE
-const spinAnim = useRef(new Animated.Value(0)).current;
 
-const spin = spinAnim.interpolate({
-  inputRange: [0, 1],
-  outputRange: ['0deg', '360deg'],
-});
+  const spinAnim = useRef(new Animated.Value(0)).current;
+
+  const spin = spinAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg'],
+  });
+
   const [ballVisible, setBallVisible] = useState(false);
 
   const [showInstructions, setShowInstructions] = useState(false);
@@ -200,9 +194,8 @@ const spin = spinAnim.interpolate({
     }
   };
 
-  // ⭐ PATCH: use courtHeight everywhere
   useEffect(() => {
-    if (route.params?.loadPlayId) return;
+    if (loadPlayId) return;
 
     const base = cloneBase(rotation);
 
@@ -219,11 +212,11 @@ const spin = spinAnim.interpolate({
 
     setStepIndex(0);
     setMode('preServe');
-  }, [rotation, route.params?.loadPlayId, courtHeight]);
+  }, [rotation, loadPlayId, courtHeight]);
 
   useEffect(() => {
     const loadFromParam = async () => {
-      const id = route.params?.loadPlayId;
+      const id = loadPlayId;
       if (!id) return;
 
       const json = await AsyncStorage.getItem(STORAGE_KEY);
@@ -260,16 +253,9 @@ const spin = spinAnim.interpolate({
     };
 
     loadFromParam();
-  }, [route.params?.loadPlayId, courtHeight]);
+  }, [loadPlayId, courtHeight]);
 
-  useEffect(() => {
-    const current = getCurrentPositions();
-    current.forEach((pos, i) => {
-      anims[i].x.setValue(pos.x * width);
-      anims[i].y.setValue(pos.y * courtHeight);
-    });
-  }, [mode, courtHeight]);
-    const getCurrentPositions = (): Pos[] => {
+  const getCurrentPositions = (): Pos[] => {
     switch (mode) {
       case 'preServe': return preServePositions;
       case 'activeServe': return activeServePositions;
@@ -278,6 +264,14 @@ const spin = spinAnim.interpolate({
       case 'defendRight': return defendRightPositions;
     }
   };
+
+  useEffect(() => {
+    const current = getCurrentPositions();
+    current.forEach((pos, i) => {
+      anims[i].x.setValue(pos.x * width);
+      anims[i].y.setValue(pos.y * courtHeight);
+    });
+  }, [mode, courtHeight]);
 
   const setCurrentPositions = (positions: Pos[]) => {
     const cloned = clonePositions(positions);
@@ -356,8 +350,6 @@ const spin = spinAnim.interpolate({
       }).start(() => resolve(null));
     });
   };
-  
-
   const animatePlayersTo = (positions: Pos[], duration: number): Promise<void> =>
     new Promise(resolve => {
       const animations = positions.map((pos, i) =>
@@ -435,8 +427,8 @@ const spin = spinAnim.interpolate({
       labels[safeIndex] = liberoLabel;
     }
 
-      setPlayerRoles(roles);
-  setPlayerLabels(labels);
+    setPlayerRoles(roles);
+    setPlayerLabels(labels);
   };
 
   const goToNextStep = () => {
@@ -531,8 +523,6 @@ const spin = spinAnim.interpolate({
     const middle = clonePositions(defendMiddlePositions);
     const right = clonePositions(defendRightPositions);
 
-    
-
     // Start visually at pre-serve
     pre.forEach((pos, i) => {
       anims[i].x.setValue(pos.x * width);
@@ -599,42 +589,40 @@ const spin = spinAnim.interpolate({
     await sleep(450);
 
     // 8) Return to base
-    const base = cloneBase(rotation);
-    await animatePlayersTo(base, 2000);
+    const base2 = cloneBase(rotation);
+    await animatePlayersTo(base2, 2000);
     await sleep(400);
 
     setBallVisible(false);
   };
 
   // ⭐ Correct standalone recordPlay function
-const recordPlay = async () => {
-  const { status } = await MediaLibrary.requestPermissionsAsync();
-  if (status !== 'granted') {
-    alert('Permission required to save video');
-    return;
-  }
-
-  await Recording.startRecording();
-
-  // Run the animation
-  runPlay();
-
-  setTimeout(async () => {
-    const result = await Recording.stopRecording();
-
-    // TS types are wrong — cast to any
-    const uri = (result as any).outputURL || (result as any).video;
-
-    if (uri) {
-      await MediaLibrary.saveToLibraryAsync(uri);
-      alert('Saved to camera roll!');
-    } else {
-      alert('Recording failed');
+  const recordPlay = async () => {
+    const { status } = await MediaLibrary.requestPermissionsAsync();
+    if (status !== 'granted') {
+      alert('Permission required to save video');
+      return;
     }
-  }, 5000);
-};
+    await Recording.startRecording();
 
-  
+    // Run the animation
+    runPlay();
+
+    setTimeout(async () => {
+      const result = await Recording.stopRecording();
+
+      // TS types are wrong — cast to any
+      const uri = (result as any).outputURL || (result as any).video;
+
+      if (uri) {
+        await MediaLibrary.saveToLibraryAsync(uri);
+        alert('Saved to camera roll!');
+      } else {
+        alert('Recording failed');
+      }
+    }, 5000);
+  };
+
   const renderStepAdvanceButton = () => (
     <TouchableOpacity
       style={styles.stepAdvanceBtn}
@@ -647,319 +635,313 @@ const recordPlay = async () => {
   );
 
   return (
+    <View style={styles.container}>
 
-  <View style={styles.container}>
+      {/* ---------------- INSTRUCTIONS PANEL ---------------- */}
+      {showInstructions ? (
+        <View style={styles.instructionsBox}>
+          <View style={styles.instructionsHeader}>
+            <Text style={styles.instructionsTitle}>📘 Instructions</Text>
+            <TouchableOpacity onPress={() => setShowInstructions(false)}>
+              <Text style={styles.instructionsHide}>Hide</Text>
+            </TouchableOpacity>
+          </View>
 
-    {/* ---------------- INSTRUCTIONS PANEL ---------------- */}
-    {showInstructions ? (
-      <View style={styles.instructionsBox}>
-        <View style={styles.instructionsHeader}>
-          <Text style={styles.instructionsTitle}>📘 Instructions</Text>
-          <TouchableOpacity onPress={() => setShowInstructions(false)}>
-            <Text style={styles.instructionsHide}>Hide</Text>
-          </TouchableOpacity>
+          <Text style={styles.instructionsText}>
+            Drag and drop players to desired positions for each step.
+          </Text>
+          <Text style={styles.instructionsText}>
+            Step 1: Set <Text style={{ fontWeight: '700' }}>Pre‑Serve Formation</Text>.
+          </Text>
+          <Text style={styles.instructionsText}>
+            Step 2: Set <Text style={{ fontWeight: '700' }}>Active Serve Formation</Text>.
+          </Text>
+          <Text style={styles.instructionsText}>
+            Steps 3–5: Set <Text style={{ fontWeight: '700' }}>Left, Middle, Right Return</Text> formations.
+          </Text>
+          <Text style={styles.instructionsText}>
+            Use the <Text style={{ fontWeight: '700' }}>gear icon</Text> to change player roles and assign initials or jersey #.
+          </Text>
+          <Text style={styles.instructionsText}>
+            Use the <Text style={{ fontWeight: '700' }}>Rotate</Text> button to rotate the formation clockwise.
+          </Text>
+          <Text style={styles.instructionsText}>
+            Save stores the full play (all 5 formations) for this rotation.
+          </Text>
         </View>
-
-        <Text style={styles.instructionsText}>
-          Drag and drop players to desired positions for each step.
-        </Text>
-        <Text style={styles.instructionsText}>
-          Step 1: Set <Text style={{ fontWeight: '700' }}>Pre‑Serve Formation</Text>.
-        </Text>
-        <Text style={styles.instructionsText}>
-          Step 2: Set <Text style={{ fontWeight: '700' }}>Active Serve Formation</Text>.
-        </Text>
-        <Text style={styles.instructionsText}>
-          Steps 3–5: Set <Text style={{ fontWeight: '700' }}>Left, Middle, Right Return</Text> formations.
-        </Text>
-        <Text style={styles.instructionsText}>
-          Use the <Text style={{ fontWeight: '700' }}>gear icon</Text> to change player roles and assign initials or jersey #.
-        </Text>
-        <Text style={styles.instructionsText}>
-          Use the <Text style={{ fontWeight: '700' }}>Rotate</Text> button to rotate the formation clockwise.
-        </Text>
-        <Text style={styles.instructionsText}>
-          Save stores the full play (all 5 formations) for this rotation.
-        </Text>
-      </View>
-    ) : (
-      <TouchableOpacity
-        style={styles.instructionsCollapsed}
-        onPress={() => setShowInstructions(true)}
-      >
-        <Text style={styles.instructionsCollapsedText}>📘 Show Instructions</Text>
-      </TouchableOpacity>
-    )}
-    <TouchableOpacity
-  style={{
-    backgroundColor: '#ff3366',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 10,
-  }}
-  onPress={recordPlay}
->
-  <Text style={{ color: 'white', fontSize: 16, textAlign: 'center' }}>
-    Record Play
-  </Text>
-</TouchableOpacity>
-
-    {/* ---------------- COURT ---------------- */}
-    <ImageBackground
-      source={require('../assets/images/court.png')}
-      style={styles.court}
-      resizeMode="cover"
-      onLayout={e => setCourtHeight(e.nativeEvent.layout.height)}
-    >
-
-      {/* COURT LINES */}
-      <View style={styles.lineLeft} />
-      <View style={styles.lineRight} />
-      <View style={styles.lineTop} />
-      <View style={styles.lineBottom} />
-      <View style={styles.net} />
-      <View style={styles.attackLine} />
-
-      {/* RETURN BALL ROW */}
-      <View style={styles.returnRow}>
-
-        {/* Left hidden */}
-        <View
-          style={[styles.returnBall, { opacity: 0 }]}
-          pointerEvents="none"
-        />
-
-        {/* Middle visible */}
-        <View
-          style={[
-            styles.returnBall,
-            mode === 'defendMiddle' && styles.returnBallSelected
-          ]}
-        />
-
-        {/* Right hidden */}
-        <View
-          style={[styles.returnBall, { opacity: 0 }]}
-          pointerEvents="none"
-        />
-
-      </View>
-
-      {/* STEP LABEL + ADVANCE BUTTON */}
-      <View style={styles.stepOverlay}>
-        <Text style={styles.stepOverlayText}>{stepLabels[stepIndex]}</Text>
-        {renderStepAdvanceButton()}
-      </View>
-
-     {/* ANIMATED BALL — always rendered, instant load */}
-<Animated.Image
-  source={volleyballImg}
-  style={{
-    position: 'absolute',
-    width: 32,
-    height: 32,
-    opacity: ballVisible ? 1 : 0,   // instant load
-    zIndex: 9999,
-    transform: [
-      { translateX: Animated.subtract(ballAnim.x, 16) },
-      { translateY: Animated.subtract(ballAnim.y, 16) },
-    ],
-  }}
-  resizeMode="contain"
-/>
-
-
-
-
-
-
-      {/* PLAYERS */}
-      {playerRoles.map((role, i) => (
-        <Animated.View
-          key={i}
-          {...responders[i].panHandlers}
-          style={[
-            styles.player,
-            role === 'L' && styles.liberoPlayer,
-            { left: anims[i].x, top: anims[i].y },
-          ]}
+      ) : (
+        <TouchableOpacity
+          style={styles.instructionsCollapsed}
+          onPress={() => setShowInstructions(true)}
         >
-          <Text style={styles.playerLabel}>{role}</Text>
+          <Text style={styles.instructionsCollapsedText}>📘 Show Instructions</Text>
+        </TouchableOpacity>
+      )}
 
-          {playerLabels[i] && (
-            <View style={styles.numberBadge}>
-              <Text style={styles.numberBadgeText}>{playerLabels[i]}</Text>
-            </View>
-          )}
-
-          <TouchableOpacity
-            style={styles.gearButton}
-            onPress={() => {
-              setSelectedPlayerIndex(i);
-              setTempLabel(playerLabels[i] || '');
-              setRoleModalVisible(true);
-            }}
-          >
-            <Text style={styles.gearText}>⚙️</Text>
-          </TouchableOpacity>
-
-          {i === SERVER_INDEX && (
-            <View style={styles.serverBadge}>
-              <Text style={styles.serverBadgeText}>S</Text>
-            </View>
-          )}
-        </Animated.View>
-      ))}
-
-    </ImageBackground>
-
-    {/* ---------------- BOTTOM CONTROLS ---------------- */}
-    <View style={styles.bottomControls}>
-      <TouchableOpacity style={styles.controlBtn} onPress={runPlay}>
-        <Text style={styles.controlBtnText}>Run</Text>
+      <TouchableOpacity
+        style={{
+          backgroundColor: '#ff3366',
+          padding: 12,
+          borderRadius: 8,
+          marginBottom: 10,
+        }}
+        onPress={recordPlay}
+      >
+        <Text style={{ color: 'white', fontSize: 16, textAlign: 'center' }}>
+          Record Play
+        </Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.controlBtn} onPress={goToLibrary}>
-        <Text style={styles.controlBtnText}>Load</Text>
-      </TouchableOpacity>
+      {/* ---------------- COURT ---------------- */}
+      <ImageBackground
+        source={require('../assets/images/court.png')}
+        style={styles.court}
+        resizeMode="cover"
+        onLayout={e => setCourtHeight(e.nativeEvent.layout.height)}
+      >
 
-      <TouchableOpacity style={styles.controlBtn} onPress={resetPlay}>
-        <Text style={styles.controlBtnText}>Reset</Text>
-      </TouchableOpacity>
+        {/* COURT LINES */}
+        <View style={styles.lineLeft} />
+        <View style={styles.lineRight} />
+        <View style={styles.lineTop} />
+        <View style={styles.lineBottom} />
+        <View style={styles.net} />
+        <View style={styles.attackLine} />
 
-      <TouchableOpacity style={styles.controlBtn} onPress={handleRotate}>
-        <Text style={styles.controlBtnText}>Rotate {rotation}</Text>
-      </TouchableOpacity>
-    </View>
+        {/* RETURN BALL ROW */}
+        <View style={styles.returnRow}>
 
-    {/* SAVE MODAL */}
-    <Modal visible={saveModalVisible} transparent animationType="fade">
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalBox}>
-          <Text style={styles.modalTitle}>Save Full Play</Text>
-
-          <TextInput
-            style={styles.modalInput}
-            value={playName}
-            onChangeText={setPlayName}
-            placeholder="Play name"
-            placeholderTextColor="#999"
+          {/* Left hidden */}
+          <View
+            style={[styles.returnBall, { opacity: 0 }]}
+            pointerEvents="none"
           />
 
-          <View style={styles.modalButtons}>
+          {/* Middle visible */}
+          <View
+            style={[
+              styles.returnBall,
+              mode === 'defendMiddle' && styles.returnBallSelected
+            ]}
+          />
+
+          {/* Right hidden */}
+          <View
+            style={[styles.returnBall, { opacity: 0 }]}
+            pointerEvents="none"
+          />
+
+        </View>
+
+        {/* STEP LABEL + ADVANCE BUTTON */}
+        <View style={styles.stepOverlay}>
+          <Text style={styles.stepOverlayText}>{stepLabels[stepIndex]}</Text>
+          {renderStepAdvanceButton()}
+        </View>
+
+        {/* ANIMATED BALL — always rendered, instant load */}
+        <Animated.Image
+          source={volleyballImg}
+          style={{
+            position: 'absolute',
+            width: 32,
+            height: 32,
+            opacity: ballVisible ? 1 : 0,
+            zIndex: 9999,
+            transform: [
+              { translateX: Animated.subtract(ballAnim.x, 16) },
+              { translateY: Animated.subtract(ballAnim.y, 16) },
+            ],
+          }}
+          resizeMode="contain"
+        />
+        {/* PLAYERS */}
+        {playerRoles.map((role, i) => (
+          <Animated.View
+            key={i}
+            {...responders[i].panHandlers}
+            style={[
+              styles.player,
+              role === 'L' && styles.liberoPlayer,
+              { left: anims[i].x, top: anims[i].y },
+            ]}
+          >
+            <Text style={styles.playerLabel}>{role}</Text>
+
+            {playerLabels[i] && (
+              <View style={styles.numberBadge}>
+                <Text style={styles.numberBadgeText}>{playerLabels[i]}</Text>
+              </View>
+            )}
+
             <TouchableOpacity
-              style={styles.modalCancel}
-              onPress={() => setSaveModalVisible(false)}
+              style={styles.gearButton}
+              onPress={() => {
+                setSelectedPlayerIndex(i);
+                setTempLabel(playerLabels[i] || '');
+                setRoleModalVisible(true);
+              }}
             >
-              <Text style={styles.modalCancelText}>Cancel</Text>
+              <Text style={styles.gearText}>⚙️</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.modalSave} onPress={savePlay}>
-              <Text style={styles.modalSaveText}>Save</Text>
+            {i === SERVER_INDEX && (
+              <View style={styles.serverBadge}>
+                <Text style={styles.serverBadgeText}>S</Text>
+              </View>
+            )}
+          </Animated.View>
+        ))}
+
+      </ImageBackground>
+
+      {/* ---------------- BOTTOM CONTROLS ---------------- */}
+      <View style={styles.bottomControls}>
+        <TouchableOpacity style={styles.controlBtn} onPress={runPlay}>
+          <Text style={styles.controlBtnText}>Run</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.controlBtn} onPress={goToLibrary}>
+          <Text style={styles.controlBtnText}>Load</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.controlBtn} onPress={resetPlay}>
+          <Text style={styles.controlBtnText}>Reset</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.controlBtn} onPress={handleRotate}>
+          <Text style={styles.controlBtnText}>Rotate {rotation}</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* SAVE MODAL */}
+      <Modal visible={saveModalVisible} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalBox}>
+            <Text style={styles.modalTitle}>Save Full Play</Text>
+
+            <TextInput
+              style={styles.modalInput}
+              value={playName}
+              onChangeText={setPlayName}
+              placeholder="Play name"
+              placeholderTextColor="#999"
+            />
+
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={styles.modalCancel}
+                onPress={() => setSaveModalVisible(false)}
+              >
+                <Text style={styles.modalCancelText}>Cancel</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.modalSave} onPress={savePlay}>
+                <Text style={styles.modalSaveText}>Save</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* ROLE / LABEL MODAL */}
+      <Modal visible={roleModalVisible} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalBox}>
+            <Text style={styles.modalTitle}>Player Settings</Text>
+
+            <Text style={[styles.modalTitle, { fontSize: 16, marginTop: 4 }]}>
+              Select Position
+            </Text>
+
+            {VOLLEYBALL_POSITIONS.map(pos => {
+              if (selectedPlayerIndex === null) return null;
+
+              const anotherLiberoExists =
+                playerRoles.includes('L') &&
+                playerRoles[selectedPlayerIndex] !== 'L';
+
+              const disabled =
+                (pos === 'L' && !isBackRow(selectedPlayerIndex)) ||
+                (pos === 'L' && anotherLiberoExists);
+
+              return (
+                <TouchableOpacity
+                  key={pos}
+                  disabled={disabled}
+                  onPress={() => {
+                    if (selectedPlayerIndex !== null) {
+                      const updated = [...playerRoles];
+                      updated[selectedPlayerIndex] = pos;
+                      setPlayerRoles(updated);
+                    }
+                  }}
+                  style={[
+                    styles.roleOption,
+                    disabled && { opacity: 0.3 },
+                  ]}
+                >
+                  <Text style={styles.roleOptionText}>{pos}</Text>
+                </TouchableOpacity>
+              );
+            })}
+
+            <Text style={[styles.modalTitle, { fontSize: 16, marginTop: 10 }]}>
+              Initials or Jersey #
+            </Text>
+
+            <TextInput
+              style={styles.modalInput}
+              placeholder="Initials or Jersey #"
+              placeholderTextColor="#999"
+              value={tempLabel}
+              onChangeText={setTempLabel}
+              maxLength={4}
+            />
+
+            <TouchableOpacity
+              style={[styles.modalCancel, { marginTop: 10 }]}
+              onPress={() => {
+                let label = tempLabel.trim().toUpperCase();
+                label = label.slice(0, 2);
+
+                if (selectedPlayerIndex !== null) {
+                  const updated = [...playerLabels];
+                  updated[selectedPlayerIndex] = label.length > 0 ? label : null;
+                  setPlayerLabels(updated);
+                }
+
+                setTempLabel('');
+                setRoleModalVisible(false);
+              }}
+            >
+              <Text style={styles.modalCancelText}>Done</Text>
             </TouchableOpacity>
           </View>
         </View>
-      </View>
-    </Modal>
+      </Modal>
 
-    {/* ROLE / LABEL MODAL */}
-    <Modal visible={roleModalVisible} transparent animationType="fade">
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalBox}>
-          <Text style={styles.modalTitle}>Player Settings</Text>
+      {/* VALIDATION MODAL */}
+      <Modal visible={validationVisible} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalBox}>
+            <Text style={styles.modalTitle}>Incomplete Play</Text>
+            <Text style={{ textAlign: 'center', marginBottom: 20, color: '#333' }}>
+              Please complete all 5 formation steps before saving.
+            </Text>
 
-          <Text style={[styles.modalTitle, { fontSize: 16, marginTop: 4 }]}>
-            Select Position
-          </Text>
-
-          {VOLLEYBALL_POSITIONS.map(pos => {
-            if (selectedPlayerIndex === null) return null;
-
-            const anotherLiberoExists =
-              playerRoles.includes('L') &&
-              playerRoles[selectedPlayerIndex] !== 'L';
-
-            const disabled =
-              (pos === 'L' && !isBackRow(selectedPlayerIndex)) ||
-              (pos === 'L' && anotherLiberoExists);
-
-            return (
-              <TouchableOpacity
-                key={pos}
-                disabled={disabled}
-                onPress={() => {
-                  if (selectedPlayerIndex !== null) {
-                    const updated = [...playerRoles];
-                    updated[selectedPlayerIndex] = pos;
-                    setPlayerRoles(updated);
-                  }
-                }}
-                style={[
-                  styles.roleOption,
-                  disabled && { opacity: 0.3 },
-                ]}
-              >
-                <Text style={styles.roleOptionText}>{pos}</Text>
-              </TouchableOpacity>
-            );
-          })}
-
-          <Text style={[styles.modalTitle, { fontSize: 16, marginTop: 10 }]}>
-            Initials or Jersey #
-          </Text>
-
-          <TextInput
-            style={styles.modalInput}
-            placeholder="Initials or Jersey #"
-            placeholderTextColor="#999"
-            value={tempLabel}
-            onChangeText={setTempLabel}
-            maxLength={4}
-          />
-
-          <TouchableOpacity
-            style={[styles.modalCancel, { marginTop: 10 }]}
-            onPress={() => {
-              let label = tempLabel.trim().toUpperCase();
-              label = label.slice(0, 2);
-
-              if (selectedPlayerIndex !== null) {
-                const updated = [...playerLabels];
-                updated[selectedPlayerIndex] = label.length > 0 ? label : null;
-                setPlayerLabels(updated);
-              }
-
-              setTempLabel('');
-              setRoleModalVisible(false);
-            }}
-          >
-            <Text style={styles.modalCancelText}>Done</Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.modalCancel}
+              onPress={() => setValidationVisible(false)}
+            >
+              <Text style={styles.modalCancelText}>OK</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-    </Modal>
+      </Modal>
 
-    {/* VALIDATION MODAL */}
-    <Modal visible={validationVisible} transparent animationType="fade">
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalBox}>
-          <Text style={styles.modalTitle}>Incomplete Play</Text>
-          <Text style={{ textAlign: 'center', marginBottom: 20, color: '#333' }}>
-            Please complete all 5 formation steps before saving.
-          </Text>
-
-          <TouchableOpacity
-            style={styles.modalCancel}
-            onPress={() => setValidationVisible(false)}
-          >
-            <Text style={styles.modalCancelText}>OK</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </Modal>
-
-  </View>
-);
+    </View>
+  );
 }
 const styles = StyleSheet.create({
   container: {

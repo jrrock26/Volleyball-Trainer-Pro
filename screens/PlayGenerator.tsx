@@ -1,7 +1,5 @@
 // screens/PlayGenerator.tsx
 
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
 import {
   ScrollView,
@@ -10,18 +8,18 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { NavigationScreenProp } from 'react-navigation';
 
-import { RootStackParamList } from '../types/navigationTypes';
 import { DRILL_LIBRARY, PracticeDrill } from './Drills';
 
 import SimpleTimePicker from '../components/SimpleTimePicker';
 import TimeSelectorRow from '../components/TimeSelectorRow';
 
-type Nav = NativeStackNavigationProp<RootStackParamList>;
+type Props = {
+  navigation: NavigationScreenProp<any, any>;
+};
 
-export default function PlayGenerator() {
-  const navigation = useNavigation<Nav>();
-
+export default function PlayGenerator({ navigation }: Props) {
   // ⭐ Unified time system (seconds)
   const [sessionLengthSeconds, setSessionLengthSeconds] = useState(3600);
   const [pickerVisible, setPickerVisible] = useState(false);
@@ -314,6 +312,3 @@ const styles = StyleSheet.create({
     color: 'white',
   },
 });
-
-
-

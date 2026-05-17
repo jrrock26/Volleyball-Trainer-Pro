@@ -1,5 +1,5 @@
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+// screens/PracticeHub.tsx
+
 import { Asset } from 'expo-asset';
 import React, { useCallback, useRef } from 'react';
 import {
@@ -10,11 +10,9 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import { RootStackParamList } from '../types/navigationTypes';
+import { NavigationScreenProp } from 'react-navigation';
 
-type Nav = NativeStackNavigationProp<RootStackParamList>;
-
-// Preload all images into memory on module load
+// Preload images
 const bgModule = require('../assets/images/background.png');
 const btnPracticeBuilder = require('../assets/images/practicebuilder.png');
 const btnPracticeGenerator = require('../assets/images/practicegenerator.png');
@@ -27,21 +25,41 @@ Asset.fromModule(btnPracticeGenerator).downloadAsync();
 Asset.fromModule(btnDrillLibrary).downloadAsync();
 Asset.fromModule(btnSavedPractices).downloadAsync();
 
+type Props = {
+  navigation: NavigationScreenProp<any, any>;
+};
+
 const GlowButton = ({ img, onPress }: { img: any; onPress: () => void }) => {
   const anim = useRef(new Animated.Value(0)).current;
 
   const handlePressIn = useCallback(() => {
-    Animated.timing(anim, { toValue: 1, duration: 120, useNativeDriver: true }).start();
+    Animated.timing(anim, {
+      toValue: 1,
+      duration: 120,
+      useNativeDriver: true,
+    }).start();
   }, [anim]);
 
   const handlePressOut = useCallback(() => {
-    Animated.timing(anim, { toValue: 0, duration: 250, useNativeDriver: true }).start();
+    Animated.timing(anim, {
+      toValue: 0,
+      duration: 250,
+      useNativeDriver: true,
+    }).start();
   }, [anim]);
 
-  const scale = anim.interpolate({ inputRange: [0, 1], outputRange: [1, 0.95] });
+  const scale = anim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 0.95],
+  });
 
   return (
-    <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut} onPress={onPress} style={styles.buttonWrap}>
+    <Pressable
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      onPress={onPress}
+      style={styles.buttonWrap}
+    >
       <Animated.View style={[styles.buttonInner, { transform: [{ scale }] }]}>
         <Image source={img} style={styles.buttonImage} />
         <Animated.View style={[styles.glow, { opacity: anim }]} pointerEvents="none" />
@@ -50,9 +68,7 @@ const GlowButton = ({ img, onPress }: { img: any; onPress: () => void }) => {
   );
 };
 
-export default function PracticeHub() {
-  const navigation = useNavigation<Nav>();
-
+export default function PracticeHub({ navigation }: Props) {
   return (
     <ImageBackground
       source={bgModule}

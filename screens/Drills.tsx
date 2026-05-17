@@ -1,27 +1,27 @@
-// Drills.tsx — CLEAN VERSION
+// Drills.tsx — React Navigation 4 version
 // ------------------------------------------------------------
-// Types, Helpers, DRILL_LIBRARY
+// Types, Helpers, DRILL_LIBRARY (keep your existing content here)
 // ------------------------------------------------------------
 
-// ------------------------------------------------------------
-// TYPES
-// ------------------------------------------------------------
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { RootStackParamList } from '../types/navigationTypes';
-import DrillCardModal from './DrillCardModal'; // ⭐ NEW
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
-// Create a typed navigation type
-type Nav = NativeStackNavigationProp<RootStackParamList>;
+import DrillCardModal from './DrillCardModal';
 
+// ⭐ REMOVE all navigation imports from @react-navigation/*
+// ⭐ React Navigation 4 passes navigation via props
+// ⭐ RN4: navigation comes from props, not hooks
+export default function Drills(props: any) {
+  const { navigation } = props;
 
-// ... your types and helpers above ...
+  const [selectedDrill, setSelectedDrill] = useState<PracticeDrill | null>(null);
 
-export default function Drills() {
-  const navigation = useNavigation<Nav>();   // ← REQUIRED
- const [selectedDrill, setSelectedDrill] = useState<PracticeDrill | null>(null);
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Drill Library</Text>
@@ -33,30 +33,30 @@ export default function Drills() {
           <TouchableOpacity
             style={styles.listItem}
             onPress={() =>
-              
-  setSelectedDrill({
-    ...item,
-    id: item.name, // still required because PracticeDrill extends DrillDefinition
-  })
-}
+              setSelectedDrill({
+                ...item,
+                id: item.name, // still required because PracticeDrill extends DrillDefinition
+              })
+            }
           >
             <Text style={styles.listName}>{item.name}</Text>
             <Text style={styles.listCategory}>{item.category}</Text>
           </TouchableOpacity>
         )}
       />
-      <DrillCardModal
-  visible={!!selectedDrill}
-  drill={selectedDrill}
-  onClose={() => setSelectedDrill(null)}
-/>
 
+      <DrillCardModal
+        visible={!!selectedDrill}
+        drill={selectedDrill}
+        onClose={() => setSelectedDrill(null)}
+      />
     </View>
   );
 }
 
-
-
+// ------------------------------------------------------------
+// Styles (unchanged)
+// ------------------------------------------------------------
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: 'white', padding: 16 },
   title: { fontSize: 24, fontWeight: '700', marginBottom: 12 },
@@ -65,25 +65,29 @@ const styles = StyleSheet.create({
     width: '100%',
     height: undefined,
     aspectRatio: 1,
-    resizeMode: 'contain',   // ← FIXES HEAD CUT-OFF
+    resizeMode: 'contain',
   },
   name: { fontSize: 18, fontWeight: '700', marginTop: 8 },
   category: { fontSize: 14, color: '#666' },
   listItem: {
-  paddingVertical: 14,
-  borderBottomWidth: 1,
-  borderColor: '#ddd',
-},
-listName: {
-  fontSize: 18,
-  fontWeight: '700',
-  color: '#111',
-},
-listCategory: {
-  fontSize: 14,
-  color: '#666',
-},
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderColor: '#ddd',
+  },
+  listName: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#111',
+  },
+  listCategory: {
+    fontSize: 14,
+    color: '#666',
+  },
 });
+
+// ------------------------------------------------------------
+// Types (unchanged)
+// ------------------------------------------------------------
 export type DrillCategory =
   | 'warmup'
   | 'ballControl'
@@ -132,9 +136,8 @@ export type PracticeRoleFilter =
   | 'allSkills';
 
 // ------------------------------------------------------------
-// ROLE FILTER → PRIMARY ROLE MAPPING
+// ROLE FILTER → PRIMARY ROLE MAPPING (unchanged)
 // ------------------------------------------------------------
-
 export const roleFilterToPrimaryRoles = (
   role: PracticeRoleFilter,
 ): PrimaryRole[] => {

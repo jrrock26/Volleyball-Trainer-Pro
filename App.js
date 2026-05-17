@@ -1,9 +1,12 @@
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Buffer } from "buffer";
+// App.js
+
+import 'react-native-gesture-handler'; // MUST be first
+
+import { Buffer } from 'buffer';
 global.Buffer = Buffer;
 
-import HeaderHomeButton from './components/HeaderHomeButton';
+import { createAppContainer } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation-stack';
 
 // PERFORMANCE HUB
 import PerformanceHubScreen from './screens/PerformanceHubScreen';
@@ -35,127 +38,153 @@ import TrainingSchedule from './screens/TrainingSchedule';
 // ROTATIONS
 import Rotations from './screens/Rotations';
 
-const Stack = createNativeStackNavigator();
+const RootStack = createStackNavigator(
+  {
+    // HOME
+    Home: {
+      screen: HomeScreen,
+      navigationOptions: {
+        title: 'Home',
+      },
+    },
 
-export default function App() {
-  return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Home"
-        screenOptions={{
-          headerBackTitleVisible: false,
-        }}
-      >
+    // PLAY HUB
+    PlayHub: {
+      screen: PlayHubScreen,
+      navigationOptions: {
+        title: 'Play Hub',
+      },
+    },
 
-        {/* HOME */}
-        <Stack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{ title: 'Home' }}
-        />
+    // PERFORMANCE HUB
+    PerformanceHub: {
+      screen: PerformanceHubScreen,
+      navigationOptions: {
+        title: 'Performance Hub',
+      },
+    },
 
-        {/* PLAY HUB */}
-        <Stack.Screen
-          name="PlayHub"
-          component={PlayHubScreen}
-          options={{
-            title: 'Play Hub',
-            headerRight: () => <HeaderHomeButton />,
-          }}
-        />
+    // PLAY GENERATOR
+    PlayGenerator: {
+      screen: PlayGenerator,
+      navigationOptions: {
+        title: 'Play Generator',
+      },
+    },
 
-        {/* PERFORMANCE HUB */}
-        <Stack.Screen
-          name="PerformanceHub"
-          component={PerformanceHubScreen}
-          options={{
-            title: 'Performance Hub',
-            headerRight: () => <HeaderHomeButton />,
-          }}
-        />
+    // SAVED TRAINING
+    SavedTraining: {
+      screen: SavedTraining,
+      navigationOptions: {
+        title: 'Saved Training',
+      },
+    },
 
-        {/* PLAY GENERATOR */}
-        <Stack.Screen
-          name="PlayGenerator"
-          component={PlayGenerator}
-          options={{
-            title: 'Play Generator',
-            headerRight: () => <HeaderHomeButton />,
-          }}
-        />
+    // PRACTICE HUB
+    PracticeHub: {
+      screen: PracticeHub,
+      navigationOptions: {
+        title: 'Practice Hub',
+      },
+    },
 
-        {/* SAVED TRAINING */}
-        <Stack.Screen
-          name="SavedTraining"
-          component={SavedTraining}
-          options={{
-            headerShown: true,
-            title: 'Saved Training',
-          }}
-        />
+    PracticeBuilder: {
+      screen: PracticeBuilder,
+      navigationOptions: {
+        title: 'Practice Builder',
+      },
+    },
 
-        {/* PRACTICE HUB */}
-        <Stack.Screen
-          name="PracticeHub"
-          component={PracticeHub}
-          options={{
-            title: 'Practice Hub',
-            headerRight: () => <HeaderHomeButton />,
-          }}
-        />
+    PracticeSchedule: {
+      screen: PracticeSchedule,
+      navigationOptions: {
+        title: 'Practice Schedule',
+      },
+    },
 
-        <Stack.Screen name="PracticeBuilder" component={PracticeBuilder} />
-        <Stack.Screen name="PracticeSchedule" component={PracticeSchedule} />
-        <Stack.Screen name="SavedPractices" component={SavedPractices} />
+    SavedPractices: {
+      screen: SavedPractices,
+      navigationOptions: {
+        title: 'Saved Practices',
+      },
+    },
 
-        {/* TRAINING HUB */}
-        <Stack.Screen name="TrainingHub" component={TrainingHub} />
-        <Stack.Screen name="Training" component={Training} />
-        <Stack.Screen name="TrainingBuilder" component={TrainingBuilder} />
-        <Stack.Screen name="TrainingGenerator" component={TrainingGenerator} />
-        <Stack.Screen name="TrainingSchedule" component={TrainingSchedule} />
+    // TRAINING
+    TrainingHub: {
+      screen: TrainingHub,
+      navigationOptions: {
+        title: 'Training Hub',
+      },
+    },
 
-        {/* DRILLS */}
-        <Stack.Screen
-          name="Drills"
-          component={Drills}
-          options={{
-            title: 'Drills',
-            headerRight: () => <HeaderHomeButton />,
-          }}
-        />
+    Training: {
+      screen: Training,
+      navigationOptions: {
+        title: 'Training',
+      },
+    },
 
-        {/* PLAY DESIGNER */}
-        <Stack.Screen
-          name="PlayDesigner"
-          component={PlayDesigner}
-          options={{
-            title: 'Play Designer',
-            headerRight: () => <HeaderHomeButton />,
-          }}
-        />
+    TrainingBuilder: {
+      screen: TrainingBuilder,
+      navigationOptions: {
+        title: 'Training Builder',
+      },
+    },
 
-        {/* PLAY LIBRARY */}
-        <Stack.Screen
-          name="PlayLibrary"
-          component={PlayLibrary}
-          options={{
-            title: 'Play Library',
-            headerRight: () => <HeaderHomeButton />,
-          }}
-        />
+    TrainingGenerator: {
+      screen: TrainingGenerator,
+      navigationOptions: {
+        title: 'Training Generator',
+      },
+    },
 
-        {/* ROTATIONS */}
-        <Stack.Screen
-          name="Rotations"
-          component={Rotations}
-          options={{
-            title: 'Formations',
-            headerRight: () => <HeaderHomeButton />,
-          }}
-        />
+    TrainingSchedule: {
+      screen: TrainingSchedule,
+      navigationOptions: {
+        title: 'Training Schedule',
+      },
+    },
 
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
-}
+    // DRILLS
+    Drills: {
+      screen: Drills,
+      navigationOptions: {
+        title: 'Drills',
+      },
+    },
+
+    // PLAY DESIGNER
+    PlayDesigner: {
+      screen: PlayDesigner,
+      navigationOptions: {
+        title: 'Play Designer',
+      },
+    },
+
+    // PLAY LIBRARY
+    PlayLibrary: {
+      screen: PlayLibrary,
+      navigationOptions: {
+        title: 'Play Library',
+      },
+    },
+
+    // ROTATIONS
+    Rotations: {
+      screen: Rotations,
+      navigationOptions: {
+        title: 'Formations',
+      },
+    },
+  },
+  {
+    initialRouteName: 'Home',
+    headerMode: 'screen',
+    defaultNavigationOptions: {
+      headerBackTitle: null,
+      headerTitleAlign: 'center',
+    },
+  }
+);
+
+export default createAppContainer(RootStack);

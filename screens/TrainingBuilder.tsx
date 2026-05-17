@@ -1,8 +1,6 @@
 // screens/TrainingBuilder.tsx
 
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useMemo, useState } from 'react';
 import {
   Image,
@@ -12,15 +10,17 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { NavigationScreenProp } from 'react-navigation';
 
 import SimpleTimePicker from '../components/SimpleTimePicker';
 import {
   TRAINING_LIBRARY,
   TrainingBlock
 } from '../training/trainingLibrary';
-import { RootStackParamList } from '../types/navigationTypes';
 
-type Nav = NativeStackNavigationProp<RootStackParamList>;
+type Props = {
+  navigation: NavigationScreenProp<any, any>;
+};
 
 const DRILLS_BEFORE_WATER_BREAK = 3;
 
@@ -34,16 +34,13 @@ const createWaterBreak = (): TrainingBlock => ({
   instructions: [],
 });
 
-export default function TrainingBuilder() {
-  const navigation = useNavigation<Nav>();
-
+export default function TrainingBuilder({ navigation }: Props) {
   const [selectedBlocks, setSelectedBlocks] = useState<TrainingBlock[]>([]);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
   const [sessionLengthSeconds, setSessionLengthSeconds] = useState(3600);
   const [pickerVisible, setPickerVisible] = useState(false);
 
-  // ⭐ CATEGORY FILTER (simple, no library)
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   const totalTimeSeconds = useMemo(
@@ -85,7 +82,6 @@ export default function TrainingBuilder() {
     setPickerVisible(false);
   };
 
-  // ⭐ GROUP BLOCKS BY CATEGORY (Conditioning removed)
   const blocksByCategory = useMemo(() => {
     const map: Record<string, TrainingBlock[]> = {};
 
@@ -101,7 +97,6 @@ export default function TrainingBuilder() {
     return map;
   }, [selectedCategory]);
 
-  // ⭐ Extract category list for filter buttons
   const categoryList = useMemo(() => {
     const cats = Array.from(
       new Set(
@@ -141,7 +136,7 @@ export default function TrainingBuilder() {
           {Math.round(sessionLengthSeconds / 60)} min
         </Text>
 
-        {/* ⭐ CATEGORY FILTER BUTTONS */}
+        {/* CATEGORY FILTER BUTTONS */}
         <View style={styles.filterRow}>
           {categoryList.map((cat) => (
             <TouchableOpacity
@@ -165,54 +160,55 @@ export default function TrainingBuilder() {
         </View>
 
         {/* CATEGORY ACCORDIONS */}
-        {Object.entries(blocksByCategory).map(([category, blocks]) => (
-          <View key={category} style={styles.card}>
-            <TouchableOpacity
-              style={styles.cardHeader}
-              onPress={() =>
-                setExpandedCategory((prev) =>
-                  prev === category ? null : category
-                )
-              }
-            >
-              <Text style={styles.cardTitle}>{category.toUpperCase()}</Text>
-              <Ionicons
-                name={
-                  expandedCategory === category
-                    ? 'chevron-up'
-                    : 'chevron-down'
+        {(Object.entries(blocksByCategory) as [string, TrainingBlock[]][])
+          .map(([category, blocks]) => (
+            <View key={category} style={styles.card}>
+              <TouchableOpacity
+                style={styles.cardHeader}
+                onPress={() =>
+                  setExpandedCategory((prev) =>
+                    prev === category ? null : category
+                  )
                 }
-                size={18}
-                color="#3a7afe"
-              />
-            </TouchableOpacity>
+              >
+                <Text style={styles.cardTitle}>{category.toUpperCase()}</Text>
+                <Ionicons
+                  name={
+                    expandedCategory === category
+                      ? 'chevron-up'
+                      : 'chevron-down'
+                  }
+                  size={18}
+                  color="#3a7afe"
+                />
+              </TouchableOpacity>
 
-            {expandedCategory === category && (
-              <View style={styles.cardBody}>
-                {blocks.filter((b) => !isSelected(b)).length === 0 && (
-                  <Text style={styles.allSelectedText}>
-                    All drills selected
-                  </Text>
-                )}
+              {expandedCategory === category && (
+                <View style={styles.cardBody}>
+                  {blocks.filter((b) => !isSelected(b)).length === 0 && (
+                    <Text style={styles.allSelectedText}>
+                      All drills selected
+                    </Text>
+                  )}
 
-                {blocks
-                  .filter((b) => !isSelected(b))
-                  .map((block) => (
-                    <TouchableOpacity
-                      key={block.id}
-                      style={styles.drillRow}
-                      onPress={() => handleSelectBlock(block)}
-                    >
-                      <Text style={styles.drillName}>{block.name}</Text>
-                      <Text style={styles.drillDuration}>
-                        {block.durationMinutes} min
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-              </View>
-            )}
-          </View>
-        ))}
+                  {blocks
+                    .filter((b) => !isSelected(b))
+                    .map((block) => (
+                      <TouchableOpacity
+                        key={block.id}
+                        style={styles.drillRow}
+                        onPress={() => handleSelectBlock(block)}
+                      >
+                        <Text style={styles.drillName}>{block.name}</Text>
+                        <Text style={styles.drillDuration}>
+                          {block.durationMinutes} min
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                </View>
+              )}
+            </View>
+          ))}
 
         {/* START BUTTON */}
         <TouchableOpacity
@@ -330,3 +326,4 @@ const styles = StyleSheet.create({
   startBtnDisabled: { backgroundColor: '#bbb' },
   startText: { color: '#fff', fontSize: 16, fontWeight: '700' },
 });
+

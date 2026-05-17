@@ -1,27 +1,30 @@
+// screens/SavedPractices.tsx
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import {
-    Alert,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { RootStackParamList } from '../types/navigationTypes';
+import { NavigationScreenProp } from 'react-navigation';
 import { PracticeDrill } from './Drills';
 
 type SavedPractice = {
   id: string;
-  name: string;              // ⭐ NEW
+  name: string;
   createdAt: number;
   drills: PracticeDrill[];
 };
 
-export default function SavedPractices() {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+type Props = {
+  navigation: NavigationScreenProp<any, any>;
+};
+
+export default function SavedPractices({ navigation }: Props) {
   const [saved, setSaved] = useState<SavedPractice[]>([]);
 
   const loadSaved = async () => {
@@ -30,8 +33,8 @@ export default function SavedPractices() {
   };
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', loadSaved);
-    return unsubscribe;
+    const sub = navigation.addListener('willFocus', loadSaved);
+    return () => {};
   }, [navigation]);
 
   const deletePractice = async (id: string) => {
@@ -140,4 +143,3 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 });
-

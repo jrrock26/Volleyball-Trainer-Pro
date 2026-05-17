@@ -1,5 +1,6 @@
-  import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+// screens/PlayLibrary.tsx
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -10,13 +11,13 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-
+import { NavigationScreenProp } from 'react-navigation';
 
 type Pos = { x: number; y: number };
 type Rotation = 1 | 2 | 3 | 4 | 5 | 6;
 
 type SavedPlay = {
-  id: string;   // <-- REQUIRED
+  id: string;
   name: string;
   rotation: Rotation;
   preServe: Pos[];
@@ -28,13 +29,9 @@ type SavedPlay = {
   serve?: Pos[];
 };
 
-type PlayStackParamList = {
-  PlayDesigner: { loadPlayId?: string } | undefined;
-  PlayLibrary: undefined;
+type Props = {
+  navigation: NavigationScreenProp<any, any>;
 };
-
-
-type Props = NativeStackScreenProps<PlayStackParamList, 'PlayLibrary'>;
 
 const STORAGE_KEY = 'savedPlays';
 
@@ -60,10 +57,7 @@ export default function PlayLibrary({ navigation }: Props) {
       const data: Record<string, SavedPlay> = JSON.parse(json);
 
       const plays: SavedPlay[] = Object.entries(data)
-        .map(([id, play]) => ({
-          ...play,
-          id, // <-- guaranteed
-        }))
+        .map(([id, play]) => ({ ...play, id }))
         .sort((a, b) => b.updatedAt - a.updatedAt);
 
       const grouped: Record<Rotation, SavedPlay[]> = {
@@ -75,15 +69,10 @@ export default function PlayLibrary({ navigation }: Props) {
         6: [],
       };
 
-      plays.forEach((p) => {
-        grouped[p.rotation].push(p);
-      });
+      plays.forEach((p) => grouped[p.rotation].push(p));
 
       const result: GroupedPlays[] = (Object.keys(grouped) as unknown as Rotation[])
-        .map((r) => ({
-          rotation: r,
-          plays: grouped[r],
-        }))
+        .map((r) => ({ rotation: r, plays: grouped[r] }))
         .filter((g) => g.plays.length > 0);
 
       setGroups(result);
@@ -95,18 +84,14 @@ export default function PlayLibrary({ navigation }: Props) {
     }
   };
 
+  // React Navigation 4 focus listener
   useEffect(() => {
-  const unsubscribe = navigation.addListener('focus', () => {
-    loadPlays();
-  });
-
-  return unsubscribe;
-}, [navigation]);
+    navigation.addListener('willFocus', loadPlays);
+  }, [navigation]);
 
   const handleLoadPlay = (play: SavedPlay) => {
-  navigation.replace('PlayDesigner', { loadPlayId: play.id });
-};
-
+    navigation.navigate('PlayDesigner', { loadPlayId: play.id });
+  };
 
   const handleDeletePlay = (play: SavedPlay) => {
     Alert.alert(
@@ -123,8 +108,7 @@ export default function PlayLibrary({ navigation }: Props) {
               if (!json) return;
 
               const data: Record<string, SavedPlay> = JSON.parse(json);
-
-              delete data[play.id]; // <-- now valid
+              delete data[play.id];
 
               await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data));
               loadPlays();
@@ -152,7 +136,6 @@ export default function PlayLibrary({ navigation }: Props) {
             Rotation {play.rotation} • Last updated {timestamp}
           </Text>
         </TouchableOpacity>
-       
 
         <TouchableOpacity
           style={styles.deleteBtn}
@@ -200,21 +183,18 @@ export default function PlayLibrary({ navigation }: Props) {
 
       <View style={styles.footer}>
         <TouchableOpacity
-  style={styles.footerBtn}
-  onPress={() => navigation.replace('PlayDesigner')}
->
-  <Text style={styles.footerBtnText}>Back to Play Builder</Text>
-</TouchableOpacity>
+          style={styles.footerBtn}
+          onPress={() => navigation.navigate('PlayDesigner')}
+        >
+          <Text style={styles.footerBtnText}>Back to Play Builder</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#ffffff', 
-    paddingTop: 20, 
-    paddingHorizontal: 16 },
-
+  container: { flex: 1, backgroundColor: '#ffffff', paddingTop: 20, paddingHorizontal: 16 },
   headerTitle: { fontSize: 22, fontWeight: '700', color: '#2b6cb0', marginBottom: 12, textAlign: 'center' },
   loadingBox: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   loadingText: { marginTop: 8, fontSize: 15, color: '#555' },

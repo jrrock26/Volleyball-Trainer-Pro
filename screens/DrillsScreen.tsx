@@ -1,6 +1,7 @@
-// @ts-nocheck
+// DrillsScreen.tsx — React Navigation 4 version
+// @ts-nocheck  ← optional, but keeps TS from complaining about RN4 navigation
+
 import { Ionicons } from '@expo/vector-icons';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
 import {
   ScrollView,
@@ -10,15 +11,10 @@ import {
   View,
 } from 'react-native';
 
-type RootStackParamList = {
-  DrillsScreen: undefined;
-  PracticeBuilder: undefined;
-  PlayGenerator: undefined;
-};
+// ⭐ RN4: navigation comes from props, not hooks or typed stacks
+export default function DrillsScreen(props: any) {
+  const { navigation } = props;
 
-type Props = NativeStackScreenProps<RootStackParamList, 'DrillsScreen'>;
-
-const DrillsScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -66,9 +62,7 @@ const DrillsScreen: React.FC<Props> = ({ navigation }) => {
       </ScrollView>
     </View>
   );
-};
-
-export default DrillsScreen;
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -99,8 +93,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-
-    // No shadow (your choice B)
     shadowOpacity: 0,
     elevation: 0,
   },

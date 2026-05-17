@@ -8,7 +8,13 @@
     "ios": "react-native run-ios"
   },
   "dependencies": {
+    "@expo/vector-icons": "^15.1.1",
     "@react-native-async-storage/async-storage": "^3.0.2",
+    "expo-asset": "^55.0.17",
+    "expo-av": "^16.0.8",
+    "expo-haptics": "^55.0.14",
+    "expo-media-library": "^55.0.17",
+    "expo-print": "^55.0.15",
     "react": "18.2.0",
     "react-native": "0.73.0",
     "react-native-gesture-handler": "^2.31.1",

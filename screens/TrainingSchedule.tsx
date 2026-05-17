@@ -1,8 +1,6 @@
 // screens/TrainingSchedule.tsx
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { RouteProp, useRoute } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Audio } from 'expo-av';
 import * as Haptics from 'expo-haptics';
 import React, { useEffect, useRef, useState } from 'react';
@@ -16,38 +14,37 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { NavigationScreenProp } from 'react-navigation';
 
 import { TrainingBlock } from '../training/trainingLibrary';
-import { RootStackParamList } from '../types/navigationTypes';
 
-type TrainingScheduleRoute = RouteProp<RootStackParamList, 'TrainingSchedule'>;
-type Nav = NativeStackNavigationProp<RootStackParamList>;
+type Props = {
+  navigation: NavigationScreenProp<any, any>;
+};
 
-export default function TrainingSchedule({ navigation }: { navigation: Nav }) {
-  const route = useRoute<TrainingScheduleRoute>();
-  const { trainingBlocks } = route.params;
+export default function TrainingSchedule({ navigation }: Props) {
+  // ---------------- PARAMS (React Navigation 4) ----------------
+  const { trainingBlocks } = navigation.state.params;
 
   const scrollRef = useRef<ScrollView>(null);
   const [selectedBlock, setSelectedBlock] = useState<TrainingBlock | null>(null);
 
-  // Save modal
   const [saveModalVisible, setSaveModalVisible] = useState(false);
   const [trainingName, setTrainingName] = useState('');
 
-  const schedule = trainingBlocks;
-  
-// ---------------- REMOVE TRAILING WATER BREAK ----------------
-if (
-  schedule.length > 0 &&
-  schedule[schedule.length - 1].category === 'break'
-) {
-  schedule.pop();
-}
-  // ------------------------------------------------------------
-  // TIMERS
-  // ------------------------------------------------------------
+  const schedule = [...trainingBlocks];
+
+  // ---------------- REMOVE TRAILING WATER BREAK ----------------
+  if (
+    schedule.length > 0 &&
+    schedule[schedule.length - 1].category === 'break'
+  ) {
+    schedule.pop();
+  }
+
+  // ---------------- TIMERS ----------------
   const initialTimers: Record<string, number> = {};
-  schedule.forEach((b) => {
+  schedule.forEach((b: TrainingBlock) => {
     if (b.category !== 'break') {
       initialTimers[b.id] = b.durationMinutes * 60;
     }
@@ -103,18 +100,19 @@ if (
     `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
 
   const totalMinutes = schedule.reduce(
-    (sum, b) => sum + b.durationMinutes,
+    (sum: number, b: TrainingBlock) => sum + b.durationMinutes,
     0
   );
 
-  const categoryCounts = schedule.reduce((acc, b) => {
-    acc[b.category] = (acc[b.category] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  const categoryCounts = schedule.reduce(
+    (acc: Record<string, number>, b: TrainingBlock) => {
+      acc[b.category] = (acc[b.category] || 0) + 1;
+      return acc;
+    },
+    {}
+  );
 
-  // ------------------------------------------------------------
-  // SAVE TRAINING (modal)
-  // ------------------------------------------------------------
+  // ---------------- SAVE TRAINING ----------------
   const confirmSaveTraining = async () => {
     const saved = await AsyncStorage.getItem('@saved_trainings');
     const parsed = saved ? JSON.parse(saved) : [];
@@ -135,29 +133,12 @@ if (
     setSaveModalVisible(false);
   };
 
-  // ------------------------------------------------------------
-  // HEADER (default back + home icon)
-  // ------------------------------------------------------------
-  React.useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-          <Image
-            source={require('../assets/images/icon.png')}
-            style={{ width: 32, height: 32, resizeMode: 'contain' }}
-          />
-        </TouchableOpacity>
-      ),
-    });
-  }, [navigation]);
-
-  // ------------------------------------------------------------
-  // UI
-  // ------------------------------------------------------------
+  // ---------------- UI ----------------
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Training Schedule</Text>
 
+      {/* SUMMARY */}
       <View style={styles.summaryBox}>
         <Text style={styles.summaryLine}>
           <Text style={styles.summaryLabel}>Drills: </Text>
@@ -169,82 +150,84 @@ if (
           {totalMinutes} min
         </Text>
 
-        {Object.entries(categoryCounts).map(([cat, count]) => (
-          <Text key={cat} style={styles.summaryLine}>
-            {cat}: {count}
-          </Text>
-        ))}
+        {(Object.entries(categoryCounts) as [string, number][]).map(
+          ([cat, count]) => (
+            <Text key={cat} style={styles.summaryLine}>
+              {`${cat}: ${count}`}
+            </Text>
+          )
+        )}
       </View>
 
+      {/* LIST */}
       <ScrollView ref={scrollRef} style={{ marginTop: 16 }}>
-        {schedule.map((item) => {
+        {schedule.map((item: TrainingBlock) => {
           if (item.category === 'break') {
             return (
               <View key={item.id} style={styles.breakCard}>
                 <Text style={styles.breakText}>
-                  WATER BREAK — {item.durationMinutes} MIN
+                  {`WATER BREAK — ${item.durationMinutes} MIN`}
                 </Text>
               </View>
             );
           }
 
           return (
-  <View key={item.id} style={styles.blockRow}>
-    <TouchableOpacity
-      style={{ flexDirection: 'row', flex: 1 }}
-      onPress={() => setSelectedBlock(item)}
-    >
-      {/* Small preview image */}
-      <Image source={item.image} style={styles.drillImage} />
+            <View key={item.id} style={styles.blockRow}>
+              <TouchableOpacity
+                style={{ flexDirection: 'row', flex: 1 }}
+                onPress={() => setSelectedBlock(item)}
+              >
+                <Image source={item.image} style={styles.drillImage} />
 
-      <View style={{ flex: 1 }}>
-        <Text style={styles.drillName}>{item.name}</Text>
-        <Text style={styles.drillMeta}>
-          {item.durationMinutes} min • {item.category} • {item.intensity.toUpperCase()}
-        </Text>
-      </View>
-    </TouchableOpacity>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.drillName}>{item.name}</Text>
+                  <Text style={styles.drillMeta}>
+                    {item.durationMinutes} min • {item.category} •{' '}
+                    {item.intensity.toUpperCase()}
+                  </Text>
+                </View>
+              </TouchableOpacity>
 
-    <View style={styles.timerBox}>
-      <Text style={styles.timerTextPink}>
-        {formatTime(timers[item.id] || 0)}
-      </Text>
+              <View style={styles.timerBox}>
+                <Text style={styles.timerTextPink}>
+                  {formatTime(timers[item.id] || 0)}
+                </Text>
 
-      <View style={styles.timerButtons}>
-        <TouchableOpacity
-          onPress={() =>
-            setRunning((prev) => ({ ...prev, [item.id]: true }))
-          }
-          style={styles.timerBtn}
-        >
-          <Text style={styles.timerBtnText}>▶</Text>
-        </TouchableOpacity>
+                <View style={styles.timerButtons}>
+                  <TouchableOpacity
+                    onPress={() =>
+                      setRunning((prev) => ({ ...prev, [item.id]: true }))
+                    }
+                    style={styles.timerBtn}
+                  >
+                    <Text style={styles.timerBtnText}>▶</Text>
+                  </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={() =>
-            setRunning((prev) => ({ ...prev, [item.id]: false }))
-          }
-          style={styles.timerBtn}
-        >
-          <Text style={styles.timerBtnText}>⏸</Text>
-        </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() =>
+                      setRunning((prev) => ({ ...prev, [item.id]: false }))
+                    }
+                    style={styles.timerBtn}
+                  >
+                    <Text style={styles.timerBtnText}>⏸</Text>
+                  </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={() =>
-            setTimers((prev) => ({
-              ...prev,
-              [item.id]: item.durationMinutes * 60,
-            }))
-          }
-          style={styles.timerBtn}
-        >
-          <Text style={styles.timerBtnText}>⟲</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  </View>
-);
-
+                  <TouchableOpacity
+                    onPress={() =>
+                      setTimers((prev) => ({
+                        ...prev,
+                        [item.id]: item.durationMinutes * 60,
+                      }))
+                    }
+                    style={styles.timerBtn}
+                  >
+                    <Text style={styles.timerBtnText}>⟲</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          );
         })}
       </ScrollView>
 
@@ -281,11 +264,13 @@ if (
                 )}
 
                 <Text style={styles.modalHeader}>Instructions</Text>
-                {selectedBlock.instructions.map((line, idx) => (
-                  <Text key={idx} style={styles.modalText}>
-                    • {line}
-                  </Text>
-                ))}
+                {selectedBlock.instructions.map(
+                  (line: string, idx: number) => (
+                    <Text key={idx} style={styles.modalText}>
+                      • {line}
+                    </Text>
+                  )
+                )}
 
                 <TouchableOpacity
                   style={styles.closeButton}
@@ -365,16 +350,6 @@ const styles = StyleSheet.create({
     borderColor: '#3A7AFE',
     padding: 10,
     marginBottom: 10,
-  },
-  blockName: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#111',
-  },
-  blockMeta: {
-    fontSize: 13,
-    color: '#666',
-    marginTop: 2,
   },
 
   timerBox: {
@@ -485,7 +460,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 
-  // Save name modal
   nameModalBox: {
     width: '85%',
     backgroundColor: '#fff',
@@ -526,26 +500,25 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '700',
   },
+
   drillImage: {
-  width: 55,
-  height: 55,
-  marginRight: 10,
-  resizeMode: 'contain',
-},
-
-drillName: {
-  fontSize: 16,
-  fontWeight: '700',
-  color: '#111',
-},
-
-drillMeta: {
-  fontSize: 13,
-  color: '#666',
-  marginTop: 2,
-},
-
+    width: 55,
+    height: 55,
+    marginRight: 10,
+    resizeMode: 'contain',
+  },
+  drillName: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#111',
+  },
+  drillMeta: {
+    fontSize: 13,
+    color: '#666',
+    marginTop: 2,
+  },
 });
+
 
 
 

@@ -1,5 +1,6 @@
+// screens/PracticeBuilder.tsx
+
 import { Ionicons } from '@expo/vector-icons';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useMemo, useState } from 'react';
 import {
   Image,
@@ -9,6 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { NavigationScreenProp } from 'react-navigation';
 
 import SimpleTimePicker from '../components/SimpleTimePicker';
 import {
@@ -18,12 +20,9 @@ import {
   PrimaryRole,
 } from './Drills';
 
-type RootStackParamList = {
-  PracticeBuilder: undefined;
-  PracticeSchedule: { practiceDrills: PracticeDrill[] };
+type Props = {
+  navigation: NavigationScreenProp<any, any>;
 };
-
-type Props = NativeStackScreenProps<RootStackParamList, 'PracticeBuilder'>;
 
 const DRILLS_BEFORE_WATER_BREAK = 3;
 const WATER_BREAK_DURATION = 60;
@@ -42,7 +41,6 @@ const PracticeBuilder: React.FC<Props> = ({ navigation }) => {
 
   const isPracticeFull = totalTimeSeconds >= practiceLengthSeconds;
 
-  // ⭐ Helper: check if drill is already selected
   const isSelected = (drill: DrillDefinition) =>
     selectedDrills.some(d => d.name === drill.name);
 
@@ -85,7 +83,10 @@ const PracticeBuilder: React.FC<Props> = ({ navigation }) => {
 
   const handleOpenSchedule = () => {
     if (selectedDrills.length === 0) return;
-    navigation.navigate('PracticeSchedule', { practiceDrills: selectedDrills });
+
+    navigation.navigate('PracticeSchedule', {
+      practiceDrills: selectedDrills,
+    });
   };
 
   const handleTimeConfirm = (hours: number, minutes: number) => {
@@ -161,7 +162,6 @@ const PracticeBuilder: React.FC<Props> = ({ navigation }) => {
 
             {expandedRole === role && (
               <View style={styles.cardBody}>
-                {/* ⭐ Hide selected drills */}
                 {drills.filter(d => !isSelected(d)).length === 0 && (
                   <Text
                     style={{

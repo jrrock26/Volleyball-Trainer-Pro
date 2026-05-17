@@ -1,7 +1,5 @@
 // screens/TrainingGenerator.tsx
 
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
 import {
   ScrollView,
@@ -10,14 +8,15 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-
-import { TRAINING_LIBRARY, TrainingBlock } from '../training/trainingLibrary';
-import { RootStackParamList } from '../types/navigationTypes';
+import { NavigationScreenProp } from 'react-navigation';
 
 import SimpleTimePicker from '../components/SimpleTimePicker';
 import TimeSelectorRow from '../components/TimeSelectorRow';
+import { TRAINING_LIBRARY, TrainingBlock } from '../training/trainingLibrary';
 
-type Nav = NativeStackNavigationProp<RootStackParamList>;
+type Props = {
+  navigation: NavigationScreenProp<any, any>;
+};
 
 const CATEGORY_OPTIONS: TrainingBlock['category'][] = [
   'plyometrics',
@@ -25,9 +24,7 @@ const CATEGORY_OPTIONS: TrainingBlock['category'][] = [
   'volleyballHitting',
 ];
 
-export default function TrainingGenerator() {
-  const navigation = useNavigation<Nav>();
-
+export default function TrainingGenerator({ navigation }: Props) {
   const [sessionLengthSeconds, setSessionLengthSeconds] = useState(3600);
   const [pickerVisible, setPickerVisible] = useState(false);
 
@@ -47,9 +44,7 @@ export default function TrainingGenerator() {
     let warmups: TrainingBlock[] = [];
     let warmupTime = 0;
 
-    // ------------------------------------------------------------
-    // 1. RANDOM 3 STRETCHING WARMUPS (optional)
-    // ------------------------------------------------------------
+    // 1. RANDOM 3 STRETCHING WARMUPS
     if (includeWarmups) {
       const stretchingBlocks = TRAINING_LIBRARY.filter(
         (b) => b.category === 'stretching',
@@ -69,9 +64,7 @@ export default function TrainingGenerator() {
     let remainingTime = durationSeconds - warmupTime;
     if (remainingTime < 0) remainingTime = 0;
 
-    // ------------------------------------------------------------
-    // 2. FILTER BY CATEGORY (strict)
-    // ------------------------------------------------------------
+    // 2. FILTER BY CATEGORY
     const filtered = TRAINING_LIBRARY.filter(
       (b) =>
         b.category !== 'stretching' &&
@@ -81,14 +74,12 @@ export default function TrainingGenerator() {
 
     const shuffled = [...filtered].sort(() => Math.random() - 0.5);
 
-    // ------------------------------------------------------------
     // 3. BUILD TRAINING SESSION
-    // ------------------------------------------------------------
     const result: TrainingBlock[] = [...warmups];
     let total = warmupTime;
     let blockCount = warmups.length;
 
-    // ⭐ Insert water break immediately after warmups
+    // Insert water break after warmups
     if (includeWarmups && warmups.length === 3) {
       result.push({
         id: 'water_' + Math.random().toString(36).slice(2),
@@ -103,9 +94,7 @@ export default function TrainingGenerator() {
       blockCount++;
     }
 
-    // ------------------------------------------------------------
     // 4. ADD MAIN BLOCKS + WATER BREAKS EVERY 3 BLOCKS
-    // ------------------------------------------------------------
     for (const block of shuffled) {
       const blockSeconds = block.durationMinutes * 60;
 
@@ -137,10 +126,7 @@ export default function TrainingGenerator() {
   };
 
   const handleGenerate = () => {
-    const training = generateTraining(
-      sessionLengthSeconds,
-      selectedCategory,
-    );
+    const training = generateTraining(sessionLengthSeconds, selectedCategory);
 
     navigation.navigate('TrainingSchedule', {
       trainingBlocks: training,
@@ -252,5 +238,6 @@ const styles = StyleSheet.create({
   },
   generateText: { fontSize: 18, fontWeight: '700', color: 'white' },
 });
+
 
 

@@ -1,10 +1,15 @@
 // metro.config.js
-const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
+const { getDefaultConfig } = require('metro-config');
 
-const defaultConfig = getDefaultConfig(__dirname);
+module.exports = (async () => {
+  const defaultConfig = await getDefaultConfig();
 
-module.exports = mergeConfig(defaultConfig, {
-  resolver: {
-    assetExts: [...defaultConfig.resolver.assetExts, 'mp3', 'wav'],
-  },
-});
+  return {
+    resolver: {
+      assetExts: [...defaultConfig.resolver.assetExts, 'mp3', 'wav'],
+    },
+    transformer: {
+      babelTransformerPath: require.resolve('react-native-svg-transformer'),
+    },
+  };
+})();

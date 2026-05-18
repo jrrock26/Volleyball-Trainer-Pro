@@ -56,7 +56,8 @@ target 'VolleyballTrainerPro' do
 
   # --- Native ML pods ---
   pod 'MediaPipeTasksVision'
-  pod 'MLModels', :path => '../MLModels.podspec'
+  pod 'MLModels', :path => '../MLModels'
+
 
   # --- Custom native modules ---
   pod 'MLBridge', :path => '../ios/MLBridge'

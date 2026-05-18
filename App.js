@@ -1,4 +1,4 @@
-import { NavigationContainer } from '@react-navigation/native';
+import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Buffer } from "buffer";
 global.Buffer = Buffer;
@@ -39,14 +39,13 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={DefaultTheme}>
       <Stack.Navigator
         initialRouteName="Home"
         screenOptions={{
           headerBackTitleVisible: false,
         }}
       >
-
         {/* HOME */}
         <Stack.Screen
           name="Home"

@@ -14,6 +14,21 @@
         96905EF65AED1B983A6B3ABC /* libPods-VolleyballTrainerPro.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58EEBF8E8E6FB1BC6CAF49B5 /* libPods-VolleyballTrainerPro.a */; };
         5EED6AC482164804B689E7BF /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E28FC6859FE46739C5B9CBB /* noop-file.swift */; };
         DE3DA3C79B6545A5825D2837 /* VolleyballTrainerPro-Bridging-Header.h in Resources */ = {isa = PBXBuildFile; fileRef = 0A0655CF3B0D4641B5B46135 /* VolleyballTrainerPro-Bridging-Header.h */; };
+
+        A0ML00011A00000000000001 /* FrameExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0ML00111A00000000000001 /* FrameExtractor.swift */; };
+        A0ML00021A00000000000002 /* HitDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0ML00121A00000000000002 /* HitDetector.swift */; };
+        A0ML00031A00000000000003 /* MLBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0ML00131A00000000000003 /* MLBridge.swift */; };
+        A0ML00041A00000000000004 /* MLProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0ML00141A00000000000004 /* MLProcessor.swift */; };
+        A0ML00051A00000000000005 /* PoseEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0ML00151A00000000000005 /* PoseEstimator.swift */; };
+        A0ML00061A00000000000006 /* PoseMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0ML00161A00000000000006 /* PoseMath.swift */; };
+        A0ML00071A00000000000007 /* SpeedEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0ML00171A00000000000007 /* SpeedEstimator.swift */; };
+        A0ML00081A00000000000008 /* TrajectoryMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0ML00181A00000000000008 /* TrajectoryMapper.swift */; };
+        A0ML00091A00000000000009 /* TrajectoryMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0ML00191A00000000000009 /* TrajectoryMath.swift */; };
+        A0ML000A1A0000000000000A /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0ML001A1A0000000000000A /* Types.swift */; };
+        A0ML000B1A0000000000000B /* YOLODetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0ML001B1A0000000000000B /* YOLODetector.swift */; };
+        A0ML000C1A0000000000000C /* YOLOParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0ML001C1A0000000000000C /* YOLOParser.swift */; };
+        A1B2C3041A00000100000001 /* ReplayKitRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3011A00000100000001 /* ReplayKitRecorder.swift */; };
+        A1B2C3051A00000100000001 /* ReplayKitRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3021A00000100000001 /* ReplayKitRecorder.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +45,22 @@
         ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
         0E28FC6859FE46739C5B9CBB /* noop-file.swift */ = {isa = PBXFileReference; name = "noop-file.swift"; path = "VolleyballTrainerPro/noop-file.swift"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.swift; explicitFileType = undefined; includeInIndex = 0; };
         0A0655CF3B0D4641B5B46135 /* VolleyballTrainerPro-Bridging-Header.h */ = {isa = PBXFileReference; name = "VolleyballTrainerPro-Bridging-Header.h"; path = "VolleyballTrainerPro/VolleyballTrainerPro-Bridging-Header.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+
+        A0ML00111A00000000000001 /* FrameExtractor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FrameExtractor.swift; path = MLBridge/FrameExtractor.swift; sourceTree = "<group>"; };
+        A0ML00121A00000000000002 /* HitDetector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HitDetector.swift; path = MLBridge/HitDetector.swift; sourceTree = "<group>"; };
+        A0ML00131A00000000000003 /* MLBridge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MLBridge.swift; path = MLBridge/MLBridge.swift; sourceTree = "<group>"; };
+        A0ML00141A00000000000004 /* MLProcessor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MLProcessor.swift; path = MLBridge/MLProcessor.swift; sourceTree = "<group>"; };
+        A0ML00151A00000000000005 /* PoseEstimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PoseEstimator.swift; path = MLBridge/PoseEstimator.swift; sourceTree = "<group>"; };
+        A0ML00161A00000000000006 /* PoseMath.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PoseMath.swift; path = MLBridge/PoseMath.swift; sourceTree = "<group>"; };
+        A0ML00171A00000000000007 /* SpeedEstimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SpeedEstimator.swift; path = MLBridge/SpeedEstimator.swift; sourceTree = "<group>"; };
+        A0ML00181A00000000000008 /* TrajectoryMapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TrajectoryMapper.swift; path = MLBridge/TrajectoryMapper.swift; sourceTree = "<group>"; };
+        A0ML00191A00000000000009 /* TrajectoryMath.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TrajectoryMath.swift; path = MLBridge/TrajectoryMath.swift; sourceTree = "<group>"; };
+        A0ML001A1A0000000000000A /* Types.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Types.swift; path = MLBridge/Types.swift; sourceTree = "<group>"; };
+        A0ML001B1A0000000000000B /* YOLODetector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = YOLODetector.swift; path = MLBridge/YOLODetector.swift; sourceTree = "<group>"; };
+        A0ML001C1A0000000000000C /* YOLOParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = YOLOParser.swift; path = MLBridge/YOLOParser.swift; sourceTree = "<group>"; };
+        A1B2C3011A00000100000001 /* ReplayKitRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ReplayKitRecorder.swift; path = ReplayKitRecorder/ReplayKitRecorder.swift; sourceTree = "<group>"; };
+        A1B2C3021A00000100000001 /* ReplayKitRecorder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ReplayKitRecorder.m; path = ReplayKitRecorder/ReplayKitRecorder.m; sourceTree = "<group>"; };
+        A1B2C3031A00000100000001 /* ReplayKitRecorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ReplayKitRecorder.h; path = ReplayKitRecorder/ReplayKitRecorder.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +87,9 @@
                 AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
                 0E28FC6859FE46739C5B9CBB /* noop-file.swift */,
                 0A0655CF3B0D4641B5B46135 /* VolleyballTrainerPro-Bridging-Header.h */,
+                A0ML01001A00000000000000 /* MLBridge */,
+                A1B2C3001A00000100000001 /* ReplayKitRecorder */,
+
             );
             name = VolleyballTrainerPro;
             sourceTree = "<group>";
@@ -122,6 +156,39 @@
             path = Pods;
             sourceTree = "<group>";
         };
+
+        A0ML01001A00000000000000 /* MLBridge */ = {
+            isa = PBXGroup;
+            children = (
+                A0ML00111A00000000000001 /* FrameExtractor.swift */,
+                A0ML00121A00000000000002 /* HitDetector.swift */,
+                A0ML00131A00000000000003 /* MLBridge.swift */,
+                A0ML00141A00000000000004 /* MLProcessor.swift */,
+                A0ML00151A00000000000005 /* PoseEstimator.swift */,
+                A0ML00161A00000000000006 /* PoseMath.swift */,
+                A0ML00171A00000000000007 /* SpeedEstimator.swift */,
+                A0ML00181A00000000000008 /* TrajectoryMapper.swift */,
+                A0ML00191A00000000000009 /* TrajectoryMath.swift */,
+                A0ML001A1A0000000000000A /* Types.swift */,
+                A0ML001B1A0000000000000B /* YOLODetector.swift */,
+                A0ML001C1A0000000000000C /* YOLOParser.swift */,
+            );
+            name = MLBridge;
+            path = MLBridge;
+            sourceTree = "<group>";
+        };
+        A1B2C3001A00000100000001 /* ReplayKitRecorder */ = {
+    isa = PBXGroup;
+    children = (
+        A1B2C3011A00000100000001 /* ReplayKitRecorder.swift */,
+        A1B2C3021A00000100000001 /* ReplayKitRecorder.m */,
+        A1B2C3031A00000100000001 /* ReplayKitRecorder.h */,
+    );
+    name = ReplayKitRecorder;
+    path = ReplayKitRecorder;
+    sourceTree = "<group>";
+};
+
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -146,6 +213,7 @@
             productType = "com.apple.product-type.application";
         };
 /* End PBXNativeTarget section */
+
 /* Begin PBXProject section */
         83CBB9F71A601CBA00E9B192 /* Project object */ = {
             isa = PBXProject;
@@ -254,6 +322,21 @@
                 13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
                 13B07FC11A68108700A75B9A /* main.m in Sources */,
                 5EED6AC482164804B689E7BF /* noop-file.swift in Sources */,
+                A0ML00011A00000000000001 /* FrameExtractor.swift in Sources */,
+                A0ML00021A00000000000002 /* HitDetector.swift in Sources */,
+                A0ML00031A00000000000003 /* MLBridge.swift in Sources */,
+                A0ML00041A00000000000004 /* MLProcessor.swift in Sources */,
+                A0ML00051A00000000000005 /* PoseEstimator.swift in Sources */,
+                A0ML00061A00000000000006 /* PoseMath.swift in Sources */,
+                A0ML00071A00000000000007 /* SpeedEstimator.swift in Sources */,
+                A0ML00081A00000000000008 /* TrajectoryMapper.swift in Sources */,
+                A0ML00091A00000000000009 /* TrajectoryMath.swift in Sources */,
+                A0ML000A1A0000000000000A /* Types.swift in Sources */,
+                A0ML000B1A0000000000000B /* YOLODetector.swift in Sources */,
+                A0ML000C1A0000000000000C /* YOLOParser.swift in Sources */,
+                A1B2C3041A00000100000001 /* ReplayKitRecorder.swift in Sources */,
+                A1B2C3051A00000100000001 /* ReplayKitRecorder.m in Sources */,
+
             );
             runOnlyForDeploymentPostprocessing = 0;
         };

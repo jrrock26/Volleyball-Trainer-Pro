@@ -4,32 +4,37 @@
   <dict>
     <key>CADisableMinimumFrameDurationOnPhone</key>
     <true/>
+
     <key>CFBundleDevelopmentRegion</key>
     <string>$(DEVELOPMENT_LANGUAGE)</string>
+
     <key>CFBundleDisplayName</key>
     <string>Volleyball Trainer Pro</string>
+
     <key>CFBundleExecutable</key>
     <string>$(EXECUTABLE_NAME)</string>
+
     <key>CFBundleIdentifier</key>
     <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
+
     <key>CFBundleName</key>
     <string>$(PRODUCT_NAME)</string>
+
     <key>CFBundlePackageType</key>
     <string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
+
     <key>CFBundleShortVersionString</key>
     <string>1.0.0</string>
+
     <key>CFBundleSignature</key>
     <string>????</string>
+
+    <!-- Correct URL scheme block -->
     <key>CFBundleURLTypes</key>
     <array>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>com.yourteam.volleyballtrainerpro</string>
-        </array>
-      </dict>
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
@@ -37,10 +42,13 @@
         </array>
       </dict>
     </array>
+
     <key>CFBundleVersion</key>
     <string>1</string>
+
     <key>LSRequiresIPhoneOS</key>
     <true/>
+
     <key>NSAppTransportSecurity</key>
     <dict>
       <key>NSAllowsArbitraryLoads</key>
@@ -48,29 +56,45 @@
       <key>NSAllowsLocalNetworking</key>
       <true/>
     </dict>
+
+    <!-- Updated permission text -->
     <key>NSCameraUsageDescription</key>
-    <string>This app uses the camera for recording drills.</string>
+    <string>This app uses the camera to analyze volleyball movements using machine learning.</string>
+
     <key>NSMicrophoneUsageDescription</key>
-    <string>This app uses the microphone for recording audio.</string>
+    <string>This app uses the microphone to capture audio during training recordings.</string>
+
     <key>NSPhotoLibraryAddUsageDescription</key>
     <string>This app saves exported videos to your library.</string>
+
     <key>NSPhotoLibraryUsageDescription</key>
     <string>This app accesses your library to save videos.</string>
+
+    <!-- Recommended for ReplayKit -->
+    <key>NSScreenCaptureDescription</key>
+    <string>This app records your screen for training analysis.</string>
+
     <key>UILaunchStoryboardName</key>
     <string>SplashScreen</string>
+
+    <!-- Corrected device capability -->
     <key>UIRequiredDeviceCapabilities</key>
     <array>
-      <string>armv7</string>
+      <string>arm64</string>
     </array>
+
     <key>UIRequiresFullScreen</key>
     <false/>
+
     <key>UIStatusBarStyle</key>
     <string>UIStatusBarStyleDefault</string>
+
     <key>UISupportedInterfaceOrientations</key>
     <array>
       <string>UIInterfaceOrientationPortrait</string>
       <string>UIInterfaceOrientationPortraitUpsideDown</string>
     </array>
+
     <key>UISupportedInterfaceOrientations~ipad</key>
     <array>
       <string>UIInterfaceOrientationPortrait</string>
@@ -78,8 +102,10 @@
       <string>UIInterfaceOrientationLandscapeLeft</string>
       <string>UIInterfaceOrientationLandscapeRight</string>
     </array>
+
     <key>UIUserInterfaceStyle</key>
     <string>Light</string>
+
     <key>UIViewControllerBasedStatusBarAppearance</key>
     <false/>
   </dict>

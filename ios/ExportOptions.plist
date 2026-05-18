@@ -1,23 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
+  <dict>
     <key>method</key>
-    <string>app-store</string>
-
-    <key>uploadBitcode</key>
-    <false/>
-
-    <key>compileBitcode</key>
-    <false/>
-
-    <key>destination</key>
-    <string>export</string>
+    <string>development</string>
 
     <key>signingStyle</key>
     <string>manual</string>
 
+    <key>provisioningProfiles</key>
+    <dict>
+      <key>com.yourteam.volleyballtrainerpro</key>
+      <string>VBTPDEV</string>
+    </dict>
+
+    <key>compileBitcode</key>
+    <false/>
+
+    <key>uploadBitcode</key>
+    <false/>
+
     <key>stripSwiftSymbols</key>
     <true/>
-</dict>
+
+    <key>teamID</key>
+    <string>2G78XY4X97</string>
+
+    <key>destination</key>
+    <string>export</string>
+  </dict>
 </plist>

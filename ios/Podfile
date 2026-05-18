@@ -14,22 +14,15 @@ install! 'cocoapods',
 prepare_react_native_project!
 
 flipper_config = FlipperConfiguration.disabled
-if ENV['NO_FLIPPER'] == '1' then
-  flipper_config = FlipperConfiguration.disabled
-elsif podfile_properties.key?('ios.flipper') then
-  if podfile_properties['ios.flipper'] == 'true' then
-    flipper_config = FlipperConfiguration.enabled(["Debug", "Release"])
-  elsif podfile_properties['ios.flipper'] != 'false' then
-    flipper_config = FlipperConfiguration.enabled(["Debug", "Release"], { 'Flipper' => podfile_properties['ios.flipper'] })
-  end
-end
 
 target 'VolleyballTrainerPro' do
   use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
   use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']
 
-  # --- HARD OVERRIDE BOOST PODSPEC (RN 0.73) ---
-  # Rewrite React Native's internal Boost podspec with a valid one pointing to SourceForge
+  # Expo modules autolinking
+  use_expo_modules!
+
+  # Boost override for RN 0.73
   boost_podspec_path = File.join(__dir__, "../node_modules/react-native/third-party-podspecs/boost.podspec")
   File.open(boost_podspec_path, "w") do |f|
     f.write <<~RUBY
@@ -58,12 +51,13 @@ target 'VolleyballTrainerPro' do
     :flipper_configuration => flipper_config
   )
 
-  # --- Native ML Pods ---
-  pod 'TensorFlowLiteSwift'
-  pod 'TensorFlowLiteC'
-  pod 'TensorFlowLiteObjC'
-  pod 'TensorFlowLiteSelectTfOps'
+  # Native ML pods
   pod 'MediaPipeTasksVision'
+  pod 'MLModels', :path => '../MLModels.podspec'
+
+  # MLBridge + ReplayKit
+  pod 'MLBridge', :path => '../ios/MLBridge'
+  pod 'ReplayKitRecorder', :path => '../ios/ReplayKitRecorder'
 
   post_install do |installer|
     react_native_post_install(

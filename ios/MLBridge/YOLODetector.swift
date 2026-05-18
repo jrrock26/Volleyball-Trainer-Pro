@@ -4,22 +4,28 @@ import Vision
 
 class YOLODetector {
 
-  static let shared = YOLODetector()
+    static let shared = YOLODetector()
 
-  private let model: VNCoreMLModel
+    private let model: VNCoreMLModel
 
-  private init() {
-    let config = MLModelConfiguration()
-    let mlModel = try! yolo(configuration: config).model
-    model = try! VNCoreMLModel(for: mlModel)
-  }
+    private init() {
+        let config = MLModelConfiguration()
+        config.computeUnits = .all
 
-  func detectBall(in image: UIImage) -> BallResult {
-    let request = VNCoreMLRequest(model: model)
-    let handler = VNImageRequestHandler(cgImage: image.cgImage!)
-    try? handler.perform([request])
+        // IMPORTANT: Your generated CoreML class name is literally "model"
+        let coreMLModel = try! model(configuration: config).model
 
-    let detections = YOLOParser.parse(request.results)
-    return BallResult(detections: detections)
-  }
+        self.model = try! VNCoreMLModel(for: coreMLModel)
+    }
+
+    func detectBall(in image: UIImage) -> BallResult {
+        let request = VNCoreMLRequest(model: model)
+        request.imageCropAndScaleOption = .scaleFill
+
+        let handler = VNImageRequestHandler(cgImage: image.cgImage!, orientation: .up)
+        try? handler.perform([request])
+
+        let detections = YOLOParser.parse(request.results)
+        return BallResult(detections: detections)
+    }
 }

@@ -34,7 +34,8 @@
     "react-native-reanimated": "^3.5.4",
     "react-native-record-screen": "^0.6.2",
     "react-native-safe-area-context": "^5.7.0",
-    "react-native-screens": "^4.24.0"
+    "react-native-screens": "4.24.0",
+    "typescript": "^5.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

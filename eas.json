@@ -7,8 +7,8 @@
       "developmentClient": true,
       "distribution": "internal",
       "ios": {
-        "resourceClass": "m-medium",
-        "image": "latest"
+        "resourceClass": "m-large",
+        "image": "sdk-50"
       },
       "env": {
         "APP_VARIANT": "development"
@@ -17,8 +17,8 @@
     "production": {
       "distribution": "store",
       "ios": {
-        "resourceClass": "m-medium",
-        "image": "latest"
+        "resourceClass": "m-large",
+        "image": "sdk-50"
       },
       "env": {
         "APP_VARIANT": "production"
@@ -35,6 +35,3 @@
     }
   }
 }
-
-
-

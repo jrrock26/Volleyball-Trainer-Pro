@@ -1,0 +1,66 @@
+name: Build Dev Client IPA
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-ios:
+    runs-on: macos-14
+
+    env:
+      IOS_DEV_MOBILEPROVISION: ${{ secrets.IOS_DEV_MOBILEPROVISION }}
+
+    steps:
+      - name: Checkout current branch
+        uses: actions/checkout@v4
+        with:
+          ref: master   # <-- CHANGE THIS to your actual working branch
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install JS dependencies
+        run: npm ci
+
+      - name: Import iOS signing certificate
+        uses: apple-actions/import-codesign-certs@v3
+        with:
+          p12-file-base64: ${{ secrets.IOS_DEV_CERT_P12 }}
+          p12-password: ${{ secrets.IOS_DEV_CERT_PASSWORD }}
+
+      - name: Install provisioning profile
+        run: |
+          echo "$IOS_DEV_MOBILEPROVISION" | base64 --decode > profile.mobileprovision
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+
+      - name: Install pods (clean + install)
+        run: |
+          cd ios
+          rm -rf Pods Podfile.lock
+          pod install --repo-update
+
+      - name: Build Dev Client IPA (Release)
+        run: |
+          cd ios
+          xcodebuild \
+            -workspace VolleyballTrainerPro.xcworkspace \
+            -scheme VolleyballTrainerPro \
+            -configuration Release \
+            -archivePath build/VTPro.xcarchive \
+            -destination generic/platform=iOS \
+            archive
+
+          xcodebuild \
+            -exportArchive \
+            -archivePath build/VTPro.xcarchive \
+            -exportPath build/output \
+            -exportOptionsPlist ExportOptions.plist
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dev-client-ipa
+          path: ios/build/output/*.ipa

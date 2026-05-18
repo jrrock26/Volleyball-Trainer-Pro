@@ -19,10 +19,12 @@ target 'VolleyballTrainerPro' do
   use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
   use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']
 
-  # Expo modules autolinking
-  use_expo_modules!
+  #
+  # 🚫 Removed: use_expo_modules!
+  # This project is no longer using Expo modules.
+  #
 
-  # Boost override for RN 0.73
+  # --- Boost override for RN 0.73 ---
   boost_podspec_path = File.join(__dir__, "../node_modules/react-native/third-party-podspecs/boost.podspec")
   File.open(boost_podspec_path, "w") do |f|
     f.write <<~RUBY
@@ -44,6 +46,7 @@ target 'VolleyballTrainerPro' do
     RUBY
   end
 
+  # --- React Native 0.73 + Hermes ---
   use_react_native!(
     :path => "../node_modules/react-native",
     :hermes_enabled => true,
@@ -51,11 +54,11 @@ target 'VolleyballTrainerPro' do
     :flipper_configuration => flipper_config
   )
 
-  # Native ML pods
+  # --- Native ML pods ---
   pod 'MediaPipeTasksVision'
   pod 'MLModels', :path => '../MLModels.podspec'
 
-  # MLBridge + ReplayKit
+  # --- Custom native modules ---
   pod 'MLBridge', :path => '../ios/MLBridge'
   pod 'ReplayKitRecorder', :path => '../ios/ReplayKitRecorder'
 
@@ -65,6 +68,7 @@ target 'VolleyballTrainerPro' do
       :mac_catalyst_enabled => false
     )
 
+    # Disable signing for resource bundles
     installer.target_installation_results.pod_target_installation_results
       .each do |pod_name, target_installation_result|
         target_installation_result.resource_bundle_targets.each do |resource_bundle_target|
@@ -75,3 +79,4 @@ target 'VolleyballTrainerPro' do
       end
   end
 end
+

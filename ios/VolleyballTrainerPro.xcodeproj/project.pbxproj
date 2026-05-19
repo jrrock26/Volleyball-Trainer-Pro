@@ -315,32 +315,19 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-        13B07F871A680F5B00A75B9A /* Sources */ = {
-            isa = PBXSourcesBuildPhase;
-            buildActionMask = 2147483647;
-            files = (
-                13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
-                13B07FC11A68108700A75B9A /* main.m in Sources */,
-                5EED6AC482164804B689E7BF /* noop-file.swift in Sources */,
-                A0ML00011A00000000000001 /* FrameExtractor.swift in Sources */,
-                A0ML00021A00000000000002 /* HitDetector.swift in Sources */,
-                A0ML00031A00000000000003 /* MLBridge.swift in Sources */,
-                A0ML00041A00000000000004 /* MLProcessor.swift in Sources */,
-                A0ML00051A00000000000005 /* PoseEstimator.swift in Sources */,
-                A0ML00061A00000000000006 /* PoseMath.swift in Sources */,
-                A0ML00071A00000000000007 /* SpeedEstimator.swift in Sources */,
-                A0ML00081A00000000000008 /* TrajectoryMapper.swift in Sources */,
-                A0ML00091A00000000000009 /* TrajectoryMath.swift in Sources */,
-                A0ML000A1A0000000000000A /* Types.swift in Sources */,
-                A0ML000B1A0000000000000B /* YOLODetector.swift in Sources */,
-                A0ML000C1A0000000000000C /* YOLOParser.swift in Sources */,
-                A1B2C3041A00000100000001 /* ReplayKitRecorder.swift in Sources */,
-                A1B2C3051A00000100000001 /* ReplayKitRecorder.m in Sources */,
-
-            );
-            runOnlyForDeploymentPostprocessing = 0;
-        };
+13B07F871A680F5B00A75B9A /* Sources */ = {
+    isa = PBXSourcesBuildPhase;
+    buildActionMask = 2147483647;
+    files = (
+        13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
+        13B07FC11A68108700A75B9A /* main.m in Sources */,
+        5EED6AC482164804B689E7BF /* noop-file.swift in Sources */,
+        // NOTHING ELSE BELONGS HERE
+    );
+    runOnlyForDeploymentPostprocessing = 0;
+};
 /* End PBXSourcesBuildPhase section */
+
 
 /* Begin XCBuildConfiguration section */
         13B07F941A680F5B00A75B9A /* Debug */ = {

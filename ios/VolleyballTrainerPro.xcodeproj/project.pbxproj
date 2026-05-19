@@ -368,6 +368,7 @@
                 CODE_SIGN_STYLE = Manual;
                 PRODUCT_BUNDLE_IDENTIFIER = "com.jrrock26.volleyballtrainerpro";
                 PRODUCT_NAME = "VolleyballTrainerPro";
+                PROVISIONING_PROFILE_SPECIFIER = VBTPDEV;
                 SWIFT_OPTIMIZATION_LEVEL = "-Onone";
                 SWIFT_VERSION = 5.0;
                 VERSIONING_SYSTEM = "apple-generic";
@@ -397,6 +398,7 @@
                 CODE_SIGN_STYLE = Manual;
                 PRODUCT_BUNDLE_IDENTIFIER = "com.jrrock26.volleyballtrainerpro";
                 PRODUCT_NAME = "VolleyballTrainerPro";
+                PROVISIONING_PROFILE_SPECIFIER = VBTPDEV;
                 SWIFT_VERSION = 5.0;
                 VERSIONING_SYSTEM = "apple-generic";
                 TARGETED_DEVICE_FAMILY = "1";

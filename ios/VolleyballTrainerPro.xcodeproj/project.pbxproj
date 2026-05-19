@@ -48,7 +48,7 @@
 
         A0ML00111A00000000000001 /* FrameExtractor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FrameExtractor.swift; path = MLBridge/FrameExtractor.swift; sourceTree = "<group>"; };
         A0ML00121A00000000000002 /* HitDetector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HitDetector.swift; path = MLBridge/HitDetector.swift; sourceTree = "<group>"; };
-        A0ML00131A00000000000003 /* MLBridge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MLBridge.swift; path = MLBridge/MLBridge.swift; sourceTree = "<group>"; };
+        A0ML00131A00000000000003 /* MLBridge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MLBridge.swift; path = MLBridge.swift; sourceTree = "<group>"; };
         A0ML00141A00000000000004 /* MLProcessor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MLProcessor.swift; path = MLBridge/MLProcessor.swift; sourceTree = "<group>"; };
         A0ML00151A00000000000005 /* PoseEstimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PoseEstimator.swift; path = MLBridge/PoseEstimator.swift; sourceTree = "<group>"; };
         A0ML00161A00000000000006 /* PoseMath.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PoseMath.swift; path = MLBridge/PoseMath.swift; sourceTree = "<group>"; };
@@ -58,9 +58,9 @@
         A0ML001A1A0000000000000A /* Types.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Types.swift; path = MLBridge/Types.swift; sourceTree = "<group>"; };
         A0ML001B1A0000000000000B /* YOLODetector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = YOLODetector.swift; path = MLBridge/YOLODetector.swift; sourceTree = "<group>"; };
         A0ML001C1A0000000000000C /* YOLOParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = YOLOParser.swift; path = MLBridge/YOLOParser.swift; sourceTree = "<group>"; };
-        A1B2C3011A00000100000001 /* ReplayKitRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ReplayKitRecorder.swift; path = ReplayKitRecorder/ReplayKitRecorder.swift; sourceTree = "<group>"; };
-        A1B2C3021A00000100000001 /* ReplayKitRecorder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ReplayKitRecorder.m; path = ReplayKitRecorder/ReplayKitRecorder.m; sourceTree = "<group>"; };
-        A1B2C3031A00000100000001 /* ReplayKitRecorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ReplayKitRecorder.h; path = ReplayKitRecorder/ReplayKitRecorder.h; sourceTree = "<group>"; };
+        A1B2C3011A00000100000001 /* ReplayKitRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ReplayKitRecorder.swift; path = ReplayKitRecorder.swift; sourceTree = "<group>"; };
+        A1B2C3021A00000100000001 /* ReplayKitRecorder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ReplayKitRecorder.m; path = ReplayKitRecorder.m; sourceTree = "<group>"; };
+        A1B2C3031A00000100000001 /* ReplayKitRecorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ReplayKitRecorder.h; path = ReplayKitRecorder.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */

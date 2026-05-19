@@ -8,6 +8,10 @@ class ReplayKitRecorder: RCTEventEmitter {
     private let recorder = RPScreenRecorder.shared()
     private var isRecording = false
 
+    override init() {
+        super.init()
+    }
+
     override static func requiresMainQueueSetup() -> Bool {
         return true
     }
@@ -16,8 +20,11 @@ class ReplayKitRecorder: RCTEventEmitter {
         return ["onRecordingStarted", "onRecordingStopped", "onRecordingError"]
     }
 
-    @objc(startRecording:)
-    func startRecording(resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    // MARK: - Start Recording
+    @objc(startRecording:rejecter:)
+    func startRecording(resolve: @escaping RCTPromiseResolveBlock,
+                        rejecter reject: @escaping RCTPromiseRejectBlock) {
+
         guard !isRecording else {
             resolve("already_recording")
             return
@@ -38,8 +45,11 @@ class ReplayKitRecorder: RCTEventEmitter {
         }
     }
 
-    @objc(stopRecording:)
-    func stopRecording(resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    // MARK: - Stop Recording
+    @objc(stopRecording:rejecter:)
+    func stopRecording(resolve: @escaping RCTPromiseResolveBlock,
+                       rejecter reject: @escaping RCTPromiseRejectBlock) {
+
         guard isRecording else {
             resolve("not_recording")
             return
@@ -56,9 +66,12 @@ class ReplayKitRecorder: RCTEventEmitter {
 
             self.sendEvent(withName: "onRecordingStopped", body: nil)
 
-            preview?.previewControllerDelegate = self
-            if let vc = RCTPresentedViewController(), let preview = preview {
-                vc.present(preview, animated: true)
+            // Present the preview UI on the main thread
+            DispatchQueue.main.async {
+                if let vc = RCTPresentedViewController(), let preview = preview {
+                    preview.previewControllerDelegate = self
+                    vc.present(preview, animated: true)
+                }
             }
 
             resolve("stopped")
@@ -66,6 +79,7 @@ class ReplayKitRecorder: RCTEventEmitter {
     }
 }
 
+// MARK: - Preview Delegate
 extension ReplayKitRecorder: RPPreviewViewControllerDelegate {
     func previewControllerDidFinish(_ previewController: RPPreviewViewController) {
         previewController.dismiss(animated: true)

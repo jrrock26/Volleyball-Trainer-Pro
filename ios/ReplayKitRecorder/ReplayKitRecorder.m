@@ -4,9 +4,9 @@
 @interface RCT_EXTERN_MODULE(ReplayKitRecorder, RCTEventEmitter)
 
 RCT_EXTERN_METHOD(startRecording:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
+                  rejecter:(RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(stopRecording:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
+                  rejecter:(RCTPromiseRejectBlock)reject)
 
 @end

@@ -51,6 +51,7 @@ jobs:
             -configuration Release \
             -archivePath build/VTPro.xcarchive \
             -destination generic/platform=iOS \
+            DEVELOPMENT_TEAM=2G78XY4X97 \
             archive
 
           xcodebuild \

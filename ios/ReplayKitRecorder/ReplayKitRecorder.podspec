@@ -10,12 +10,19 @@ Pod::Spec.new do |s|
   s.platform     = :ios, "14.0"
   s.swift_version = "5.0"
 
-  # Local pod — CocoaPods uses the folder as the source
+  # Local pod
   s.source       = { :path => "." }
 
-  # Include all Swift/ObjC files
-  s.source_files = "**/*.{swift,h,m,mm}"
+  # Only include files inside this folder
+  s.source_files = "ReplayKitRecorder/**/*.{swift,h,m}"
+
+  # Public headers (required for Swift bridging)
+  s.public_header_files = "ReplayKitRecorder/**/*.h"
+
+  # Ensure module name is stable
+  s.module_name = "ReplayKitRecorder"
 
   # React Native dependency
   s.dependency "React-Core"
 end
+

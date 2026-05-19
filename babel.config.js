@@ -1,12 +1,8 @@
 module.exports = function (api) {
   api.cache(true);
 
-  const isExpo = process.env.EXPO_ROUTER_APP_ROOT !== undefined;
-
   return {
-    presets: [
-      isExpo ? 'babel-preset-expo' : 'module:metro-react-native-babel-preset'
-    ],
+    presets: ['module:metro-react-native-babel-preset'],
     plugins: [
       [
         'module-resolver',

@@ -3,6 +3,10 @@ name: iOS Pre-AI TestFlight Build
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   build-ios:
     runs-on: macos-14

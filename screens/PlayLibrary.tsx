@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+  import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import {
@@ -11,12 +11,12 @@ import {
   View,
 } from 'react-native';
 
-import type { PlayStackParamList } from '../navigationTypes' // adjust path if needed
 
 type Pos = { x: number; y: number };
 type Rotation = 1 | 2 | 3 | 4 | 5 | 6;
 
 type SavedPlay = {
+  id: string;   // <-- REQUIRED
   name: string;
   rotation: Rotation;
   preServe: Pos[];
@@ -27,6 +27,12 @@ type SavedPlay = {
   updatedAt: number;
   serve?: Pos[];
 };
+
+type PlayStackParamList = {
+  PlayDesigner: { loadPlayId?: string } | undefined;
+  PlayLibrary: undefined;
+};
+
 
 type Props = NativeStackScreenProps<PlayStackParamList, 'PlayLibrary'>;
 
@@ -53,9 +59,12 @@ export default function PlayLibrary({ navigation }: Props) {
 
       const data: Record<string, SavedPlay> = JSON.parse(json);
 
-      const plays = Object.values(data).sort(
-        (a, b) => b.updatedAt - a.updatedAt
-      );
+      const plays: SavedPlay[] = Object.entries(data)
+        .map(([id, play]) => ({
+          ...play,
+          id, // <-- guaranteed
+        }))
+        .sort((a, b) => b.updatedAt - a.updatedAt);
 
       const grouped: Record<Rotation, SavedPlay[]> = {
         1: [],
@@ -67,8 +76,7 @@ export default function PlayLibrary({ navigation }: Props) {
       };
 
       plays.forEach((p) => {
-        const r = p.rotation ?? 1;
-        grouped[r].push(p);
+        grouped[p.rotation].push(p);
       });
 
       const result: GroupedPlays[] = (Object.keys(grouped) as unknown as Rotation[])
@@ -88,13 +96,17 @@ export default function PlayLibrary({ navigation }: Props) {
   };
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', loadPlays);
-    return unsubscribe;
-  }, [navigation]);
+  const unsubscribe = navigation.addListener('focus', () => {
+    loadPlays();
+  });
+
+  return unsubscribe;
+}, [navigation]);
 
   const handleLoadPlay = (play: SavedPlay) => {
-    navigation.navigate('PlayDesignerMain', { loadPlayName: play.name });
-  };
+  navigation.replace('PlayDesigner', { loadPlayId: play.id });
+};
+
 
   const handleDeletePlay = (play: SavedPlay) => {
     Alert.alert(
@@ -111,7 +123,8 @@ export default function PlayLibrary({ navigation }: Props) {
               if (!json) return;
 
               const data: Record<string, SavedPlay> = JSON.parse(json);
-              delete data[play.name];
+
+              delete data[play.id]; // <-- now valid
 
               await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data));
               loadPlays();
@@ -139,6 +152,7 @@ export default function PlayLibrary({ navigation }: Props) {
             Rotation {play.rotation} • Last updated {timestamp}
           </Text>
         </TouchableOpacity>
+       
 
         <TouchableOpacity
           style={styles.deleteBtn}
@@ -154,7 +168,7 @@ export default function PlayLibrary({ navigation }: Props) {
     <View style={styles.groupBox}>
       <Text style={styles.groupTitle}>Rotation {item.rotation}</Text>
       {item.plays.map((p) => (
-        <View key={p.name}>{renderPlayItem(p)}</View>
+        <View key={p.id}>{renderPlayItem(p)}</View>
       ))}
     </View>
   );
@@ -186,120 +200,37 @@ export default function PlayLibrary({ navigation }: Props) {
 
       <View style={styles.footer}>
         <TouchableOpacity
-          style={styles.footerBtn}
-          onPress={() => navigation.navigate('PlayDesignerMain')}
-        >
-          <Text style={styles.footerBtnText}>Back to Play Builder</Text>
-        </TouchableOpacity>
+  style={styles.footerBtn}
+  onPress={() => navigation.replace('PlayDesigner')}
+>
+  <Text style={styles.footerBtnText}>Back to Play Builder</Text>
+</TouchableOpacity>
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-    paddingTop: 20,
-    paddingHorizontal: 16,
-  },
-  headerTitle: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#2b6cb0',
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  loadingBox: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    marginTop: 8,
-    fontSize: 15,
-    color: '#555',
-  },
-  emptyBox: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-  },
-  emptyTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#333',
-    marginBottom: 6,
-  },
-  emptyText: {
-    fontSize: 14,
-    color: '#666',
-    textAlign: 'center',
-  },
-  listContent: {
-    paddingBottom: 80,
-  },
-  groupBox: {
-    marginBottom: 18,
-    backgroundColor: '#f4f6f8',
-    borderRadius: 12,
-    padding: 10,
-  },
-  groupTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#2b6cb0',
-    marginBottom: 6,
-  },
-  playRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 8,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#ddd',
-  },
-  playInfo: {
-    flex: 1,
-  },
-  playName: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#222',
-  },
-  playMeta: {
-    fontSize: 12,
-    color: '#666',
-    marginTop: 2,
-  },
-  deleteBtn: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 8,
-    backgroundColor: '#e53e3e',
-    marginLeft: 8,
-  },
-  deleteText: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: '700',
-  },
-  footer: {
-    position: 'absolute',
-    bottom: 16,
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-  },
-  footerBtn: {
-    backgroundColor: '#2b6cb0',
-    paddingHorizontal: 18,
-    paddingVertical: 10,
-    borderRadius: 10,
-  },
-  footerBtnText: {
-    color: '#fff',
-    fontWeight: '700',
-    fontSize: 14,
-  },
+  container: { flex: 1, backgroundColor: '#ffffff', 
+    paddingTop: 20, 
+    paddingHorizontal: 16 },
+
+  headerTitle: { fontSize: 22, fontWeight: '700', color: '#2b6cb0', marginBottom: 12, textAlign: 'center' },
+  loadingBox: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  loadingText: { marginTop: 8, fontSize: 15, color: '#555' },
+  emptyBox: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20 },
+  emptyTitle: { fontSize: 18, fontWeight: '700', color: '#333', marginBottom: 6 },
+  emptyText: { fontSize: 14, color: '#666', textAlign: 'center' },
+  listContent: { paddingBottom: 80 },
+  groupBox: { marginBottom: 18, backgroundColor: '#f4f6f8', borderRadius: 12, padding: 10 },
+  groupTitle: { fontSize: 16, fontWeight: '700', color: '#2b6cb0', marginBottom: 6 },
+  playRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#ddd' },
+  playInfo: { flex: 1 },
+  playName: { fontSize: 15, fontWeight: '700', color: '#222' },
+  playMeta: { fontSize: 12, color: '#666', marginTop: 2 },
+  deleteBtn: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8, backgroundColor: '#e53e3e', marginLeft: 8 },
+  deleteText: { color: '#fff', fontSize: 12, fontWeight: '700' },
+  footer: { position: 'absolute', bottom: 16, left: 0, right: 0, alignItems: 'center' },
+  footerBtn: { backgroundColor: '#2b6cb0', paddingHorizontal: 18, paddingVertical: 10, borderRadius: 10 },
+  footerBtnText: { color: '#fff', fontWeight: '700', fontSize: 14 },
 });

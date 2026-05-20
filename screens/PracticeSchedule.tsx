@@ -181,43 +181,102 @@ if (
     }
   };
 
-  // ------------------------------------------------------------
-  // EXPORT AS PDF
-  // ------------------------------------------------------------
   const handleExportPDF = async () => {
-    try {
-      const html = `
-        <html>
-          <body style="font-family: Arial; padding: 20px;">
-            <h1>Practice Schedule</h1>
-            <h3>Total Duration: ${Math.round(totalSeconds / 60)} min</h3>
-            <hr />
+  try {
+    const logo = Image.resolveAssetSource(require('../assets/images/icon.png')).uri;
 
+    const html = `
+      <html>
+        <body style="
+          font-family: Arial;
+          padding: 40px;
+          position: relative;
+        ">
+
+          <!-- Watermark -->
+          <div style="
+            position: fixed;
+            top: 35%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.08;
+            z-index: -1;
+          ">
+            <img 
+              src="${logo}" 
+              style="
+                max-width: 350px;
+                max-height: 350px;
+                object-fit: contain;
+              "
+            />
+          </div>
+
+          <!-- Header -->
+          <div style="text-align: center; margin-bottom: 20px;">
+            <img 
+              src="${logo}" 
+              style="
+                width: 90px;
+                height: 90px;
+                object-fit: contain;
+                margin-bottom: 10px;
+              " 
+            />
+            <h1 style="margin: 0; font-size: 28px;">Practice Schedule</h1>
+            <p style="margin: 4px 0; font-size: 16px; color: #555;">
+              Total Duration: ${Math.round(totalSeconds / 60)} minutes
+            </p>
+            <hr style="margin-top: 20px;" />
+          </div>
+
+          <!-- Drill List -->
+          <div>
             ${practiceDrills
-              .map(
-                d => `
-              <div style="margin-bottom: 12px;">
-                <strong>${d.name}</strong><br/>
-                <span>${Math.round(d.duration / 60)} min</span><br/>
-                <span>Category: ${d.category}</span>
-              </div>
-            `
-              )
+              .map(d => {
+                const isWaterBreak = d.name.toLowerCase().includes("water");
+
+                return `
+                  <div style="
+                    padding: 12px 0;
+                    border-bottom: 1px solid #ddd;
+                    ${isWaterBreak ? `
+  color: #FF4FC3;
+  font-weight: bold;
+` : ""}
+
+                  ">
+                    <div style="font-size: 18px;">
+                      ${d.name}
+                    </div>
+                    <div style="font-size: 14px; color: #444;">
+                      Duration: ${Math.round(d.duration / 60)} min
+                    </div>
+                    <div style="font-size: 14px; color: #666;">
+                      Category: ${d.category}
+                    </div>
+                  </div>
+                `;
+              })
               .join('')}
-          </body>
-        </html>
-      `;
+          </div>
 
-      const { uri } = await Print.printToFileAsync({ html });
+        </body>
+      </html>
+    `;
 
-      await Share.share({
-        url: uri,
-        message: 'Practice Schedule PDF',
-      });
-    } catch (err) {
-      console.log('PDF Export Error:', err);
-    }
-  };
+    const { uri } = await Print.printToFileAsync({ html });
+
+    await Share.share({
+      url: uri,
+      message: 'Practice Schedule PDF',
+    });
+  } catch (err) {
+    console.log('PDF Export Error:', err);
+  }
+};
+
+
 
   // ------------------------------------------------------------
   // UI

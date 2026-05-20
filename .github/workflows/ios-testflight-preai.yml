@@ -1,0 +1,56 @@
+name: iOS Pre-AI TestFlight Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-ios:
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: |
+          npm install
+
+      - name: Decode signing certificate
+        run: |
+          echo "$IOS_CERT_P12" | base64 --decode > dist-cert.p12
+
+      - name: Decode provisioning profile
+        run: |
+          echo "$IOS_PROVISION_PROFILE" | base64 --decode > profile.mobileprovision
+
+      - name: Install fastlane
+        run: sudo gem install fastlane -N
+
+      - name: Build IPA
+        run: |
+          fastlane gym \
+            --scheme "volleyball-trainer-pro" \
+            --export_method app-store \
+            --export_options '{"provisioningProfiles":{"com.yourteam.volleyballtrainerpro":"profile"}}' \
+            --output_directory build \
+            --output_name VolleyballTrainerPro.ipa \
+            --silent
+        env:
+          MATCH_KEYCHAIN_PASSWORD: ${{ secrets.IOS_CERT_PASSWORD }}
+
+      - name: Upload to TestFlight
+        run: |
+          xcrun altool --upload-app \
+            --type ios \
+            --file build/VolleyballTrainerPro.ipa \
+            --apiKey $ASC_API_KEY_ID \
+            --apiIssuer $ASC_API_KEY_ISSUER_ID
+        env:
+          ASC_API_KEY_ID: ${{ secrets.ASC_API_KEY_ID }}
+          ASC_API_KEY_ISSUER_ID: ${{ secrets.ASC_API_KEY_ISSUER_ID }}
+          ASC_API_KEY: ${{ secrets.ASC_API_KEY }}

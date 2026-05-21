@@ -3,13 +3,19 @@
     "version": ">= 3.0.0"
   },
   "build": {
-    "production": {
-      "ios": {
-        "simulator": false
-      }
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "development-ios": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "platform": "ios"
+    },
+    "development-android": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "platform": "android"
     }
-  },
-  "submit": {
-    "production": {}
   }
 }

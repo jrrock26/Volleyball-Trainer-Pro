@@ -20,7 +20,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.yourteam.volleyballtrainerpro"
     },
     "web": {
       "favicon": "./assets/images/icon.png"

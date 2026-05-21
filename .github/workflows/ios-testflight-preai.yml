@@ -21,8 +21,15 @@ jobs:
           node-version: 18
 
       - name: Install dependencies
+        run: npm install
+
+      - name: Install CocoaPods
+        run: sudo gem install cocoapods -N
+
+      - name: Install iOS Pods
         run: |
-          npm install
+          cd ios
+          pod install
 
       - name: Decode signing certificate
         run: |
@@ -35,10 +42,11 @@ jobs:
       - name: Install fastlane
         run: sudo gem install fastlane -N
 
-      - name: Build IPA
+      - name: Build IPA with Fastlane Gym
         run: |
           fastlane gym \
-            --scheme "volleyball-trainer-pro" \
+            --workspace "ios/volleyballtrainerpro.xcworkspace" \
+            --scheme "volleyballtrainerpro" \
             --export_method app-store \
             --export_options '{"provisioningProfiles":{"com.yourteam.volleyballtrainerpro":"profile"}}' \
             --output_directory build \

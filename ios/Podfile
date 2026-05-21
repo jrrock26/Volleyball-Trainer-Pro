@@ -62,8 +62,7 @@ target 'volleyballtrainerpro' do
       :ccache_enabled => ccache_enabled?(podfile_properties)
     )
 
-    # REQUIRED for Xcode 16 + RN 0.76
-    __apply_Xcode_16_compatibility_fixes(installer)
+    
 
     # Prevent simulator arm64 failures on Codemagic
     installer.pods_project.targets.each do |target|

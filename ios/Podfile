@@ -5,17 +5,16 @@ require 'json'
 podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties.json'))) rescue {}
 
 def ccache_enabled?(podfile_properties)
-  # Environment variable takes precedence
   return ENV['USE_CCACHE'] == '1' if ENV['USE_CCACHE']
-  
-  # Fall back to Podfile properties
   podfile_properties['apple.ccacheEnabled'] == 'true'
 end
 
-ENV['RCT_NEW_ARCH_ENABLED'] ||= '0' if podfile_properties['newArchEnabled'] == 'false'
+# Expo / RN environment flags
+ENV['RCT_NEW_ARCH_ENABLED'] ||= '1'  # Required for SDK 54 / RN 0.76
 ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] ||= podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR']
-ENV['RCT_USE_RN_DEP'] ||= '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true' && podfile_properties['newArchEnabled'] != 'false'
-ENV['RCT_USE_PREBUILT_RNCORE'] ||= '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true' && podfile_properties['newArchEnabled'] != 'false'
+ENV['RCT_USE_RN_DEP'] ||= '1'
+ENV['RCT_USE_PREBUILT_RNCORE'] ||= '1'
+
 platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
 
 prepare_react_native_project!
@@ -23,8 +22,9 @@ prepare_react_native_project!
 target 'volleyballtrainerpro' do
   use_expo_modules!
 
+  # Autolinking config
   if ENV['EXPO_USE_COMMUNITY_AUTOLINKING'] == '1'
-    config_command = ['node', '-e', "process.argv=['', '', 'config'];require('@react-native-community/cli').run()"];
+    config_command = ['node', '-e', "process.argv=['', '', 'config'];require('@react-native-community/cli').run()"]
   else
     config_command = [
       'node',
@@ -41,15 +41,17 @@ target 'volleyballtrainerpro' do
 
   config = use_native_modules!(config_command)
 
+  # Frameworks support
   use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
   use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']
 
+  # React Native configuration
   use_react_native!(
     :path => config[:reactNativePath],
-    :hermes_enabled => podfile_properties['expo.jsEngine'] == nil || podfile_properties['expo.jsEngine'] == 'hermes',
-    # An absolute path to your application root.
+    :hermes_enabled => true,
+    :fabric_enabled => true,  # REQUIRED for SDK 54 / RN 0.76
     :app_path => "#{Pod::Config.instance.installation_root}/..",
-    :privacy_file_aggregation_enabled => podfile_properties['apple.privacyManifestAggregationEnabled'] != 'false',
+    :privacy_file_aggregation_enabled => podfile_properties['apple.privacyManifestAggregationEnabled'] != 'false'
   )
 
   post_install do |installer|
@@ -57,7 +59,17 @@ target 'volleyballtrainerpro' do
       installer,
       config[:reactNativePath],
       :mac_catalyst_enabled => false,
-      :ccache_enabled => ccache_enabled?(podfile_properties),
+      :ccache_enabled => ccache_enabled?(podfile_properties)
     )
+
+    # REQUIRED for Xcode 16 + RN 0.76
+    __apply_Xcode_16_compatibility_fixes(installer)
+
+    # Prevent simulator arm64 failures on Codemagic
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
+      end
+    end
   end
 end

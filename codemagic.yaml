@@ -7,7 +7,6 @@ workflows:
       vars:
         XCODE_WORKSPACE: "ios/volleyballtrainerpro.xcworkspace"
         XCODE_SCHEME: "volleyballtrainerpro"
-        BUNDLE_ID: "com.yourteam.volleyballtrainerpro"
       xcode: "16.1"
 
     scripts:
@@ -23,11 +22,12 @@ workflows:
           rm -rf build
           cd ..
 
-      - name: Install CocoaPods
+      - name: Install CocoaPods (generate workspace)
         script: |
           cd ios
           pod install
           cd ..
+          ls ios
 
       - name: Decode signing files
         script: |
@@ -69,4 +69,3 @@ workflows:
 
     artifacts:
       - build/*.ipa
-

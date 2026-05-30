@@ -7,6 +7,12 @@ import HeaderHomeButton from './components/HeaderHomeButton';
 
 // PERFORMANCE HUB
 import PerformanceHubScreen from './screens/PerformanceHubScreen';
+import RecordHitScreen from './screens/RecordHitScreen';
+import SavedHitsScreen from './screens/SavedHitsScreen';
+import ReplayHitScreen from './screens/ReplayHitScreen';
+import PerformanceAnalysisScreen from './screens/PerformanceAnalysisScreen';
+import TrendsScreen from './screens/TrendsScreen';
+import PersonalBestsScreen from './screens/PersonalBestsScreen';
 
 // CORE APP SCREENS
 import Drills from './screens/Drills';
@@ -74,6 +80,60 @@ export default function App() {
           }}
         />
 
+        <Stack.Screen
+          name="RecordHit"
+          component={RecordHitScreen}
+          options={{
+            title: 'Record Live Hit',
+            headerRight: () => <HeaderHomeButton />,
+          }}
+        />
+
+        <Stack.Screen
+          name="SavedHits"
+          component={SavedHitsScreen}
+          options={{
+            title: 'Saved Hits',
+            headerRight: () => <HeaderHomeButton />,
+          }}
+        />
+
+        <Stack.Screen
+          name="ReplayHit"
+          component={ReplayHitScreen}
+          options={{
+            title: 'Replay Hit',
+            headerRight: () => <HeaderHomeButton />,
+          }}
+        />
+
+        <Stack.Screen
+          name="PerformanceAnalysis"
+          component={PerformanceAnalysisScreen}
+          options={{
+            title: 'Performance Analysis',
+            headerRight: () => <HeaderHomeButton />,
+          }}
+        />
+
+        <Stack.Screen
+          name="Trends"
+          component={TrendsScreen}
+          options={{
+            title: 'Trends',
+            headerRight: () => <HeaderHomeButton />,
+          }}
+        />
+
+        <Stack.Screen
+          name="PersonalBests"
+          component={PersonalBestsScreen}
+          options={{
+            title: 'Personal Bests',
+            headerRight: () => <HeaderHomeButton />,
+          }}
+        />
+
         {/* PLAY GENERATOR */}
         <Stack.Screen
           name="PlayGenerator"
@@ -89,8 +149,8 @@ export default function App() {
           name="SavedTraining"
           component={SavedTraining}
           options={{
-            headerShown: true,
             title: 'Saved Training',
+            headerRight: () => <HeaderHomeButton />,
           }}
         />
 

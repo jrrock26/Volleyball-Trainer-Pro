@@ -5,6 +5,9 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Audio } from 'expo-av';
 import * as Haptics from 'expo-haptics';
+import * as Print from 'expo-print';
+import { Share } from 'react-native';
+import * as FileSystem from 'expo-file-system/legacy';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Image,
@@ -135,6 +138,111 @@ if (
     setSaveModalVisible(false);
   };
 
+  const handleExportTrainingPDF = async () => {
+  try {
+    // Use the icon URI directly — no base64 conversion needed
+    const logo = Image.resolveAssetSource(
+      require('../assets/images/icon.png')
+    ).uri;
+
+    const html = `
+      <html>
+        <body style="
+          font-family: Arial;
+          padding: 40px;
+          position: relative;
+        ">
+
+          <!-- Watermark -->
+          <div style="
+            position: fixed;
+            top: 35%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.08;
+            z-index: -1;
+          ">
+            <img 
+              src="${logo}" 
+              style="
+                max-width: 350px;
+                max-height: 350px;
+                object-fit: contain;
+              "
+            />
+          </div>
+
+          <!-- Header -->
+          <div style="text-align: center; margin-bottom: 20px;">
+            <img 
+              src="${logo}" 
+              style="
+                width: 90px;
+                height: 90px;
+                object-fit: contain;
+                margin-bottom: 10px;
+              " 
+            />
+            <h1 style="margin: 0; font-size: 28px;">Training Schedule</h1>
+            <p style="margin: 4px 0; font-size: 16px; color: #555;">
+              Total Duration: ${totalMinutes} minutes
+            </p>
+            <hr style="margin-top: 20px;" />
+          </div>
+
+          <!-- Block List -->
+          <div>
+            ${schedule
+              .map((b) => {
+                const isWaterBreak = b.category === "break";
+
+                return `
+                  <div style="
+                    padding: 12px 0;
+                    border-bottom: 1px solid #ddd;
+                    ${isWaterBreak ? `
+                      color: #FF4FC3;
+                      font-weight: bold;
+                    ` : ""}
+                  ">
+                    <div style="font-size: 18px;">
+                      ${isWaterBreak ? "WATER BREAK" : b.name}
+                    </div>
+
+                    <div style="font-size: 14px; color: #444;">
+                      Duration: ${b.durationMinutes} min
+                    </div>
+
+                    ${
+                      !isWaterBreak
+                        ? `<div style="font-size: 14px; color: #666;">
+                            Category: ${b.category}
+                           </div>`
+                        : ""
+                    }
+                  </div>
+                `;
+              })
+              .join('')}
+          </div>
+
+        </body>
+      </html>
+    `;
+
+    // ⭐ This is the key fix — Expo will embed images automatically
+    const { uri } = await Print.printToFileAsync({ html });
+
+    await Share.share({
+      url: uri,
+      message: 'Training Schedule PDF',
+    });
+  } catch (err) {
+    console.log('PDF Export Error:', err);
+  }
+};
+
+
   // ------------------------------------------------------------
   // HEADER (default back + home icon)
   // ------------------------------------------------------------
@@ -169,11 +277,12 @@ if (
           {totalMinutes} min
         </Text>
 
-        {Object.entries(categoryCounts).map(([cat, count]) => (
-          <Text key={cat} style={styles.summaryLine}>
-            {cat}: {count}
-          </Text>
-        ))}
+        {(Object.entries(categoryCounts) as [string, number][]).map(([cat, count]) => (
+  <Text key={cat} style={styles.summaryLine}>
+    {cat}: {count}
+  </Text>
+))}
+
       </View>
 
       <ScrollView ref={scrollRef} style={{ marginTop: 16 }}>
@@ -256,6 +365,13 @@ if (
         >
           <Text style={styles.actionText}>Save</Text>
         </TouchableOpacity>
+        <TouchableOpacity
+  style={styles.actionBtnPink}
+  onPress={handleExportTrainingPDF}
+>
+  <Text style={styles.actionText}>PDF</Text>
+</TouchableOpacity>
+
 
         <TouchableOpacity
           style={styles.actionBtnBlack}
@@ -264,6 +380,7 @@ if (
           <Text style={styles.actionText}>Return</Text>
         </TouchableOpacity>
       </View>
+      
 
       {/* BLOCK DETAILS MODAL */}
       <Modal visible={!!selectedBlock} transparent animationType="slide">
@@ -397,6 +514,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
   },
+  actionBtnPink: {
+  backgroundColor: '#FF4FC3',
+  paddingVertical: 10,
+  paddingHorizontal: 16,
+  borderRadius: 10,
+},
+
 
   breakCard: {
     backgroundColor: '#FF4FC355',

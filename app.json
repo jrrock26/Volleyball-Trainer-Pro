@@ -6,30 +6,43 @@
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "userInterfaceStyle": "light",
+
     "splash": {
       "image": "./assets/images/icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.yourteam.volleyballtrainerpro",
       "buildNumber": "2"
     },
+
     "android": {
+      "package": "com.yourteam.volleyballtrainerpro",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.yourteam.volleyballtrainerpro"
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.READ_MEDIA_VIDEO",
+        "android.permission.READ_MEDIA_IMAGES"
+      ]
     },
+
     "web": {
       "favicon": "./assets/images/icon.png"
     },
+
     "extra": {
       "eas": {
         "projectId": "ec1b4630-26b6-4051-b45c-2008426804a0"
       }
-    }
+    },
+
+    "plugins": []
   }
 }

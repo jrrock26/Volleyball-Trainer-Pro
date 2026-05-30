@@ -1,21 +1,18 @@
 {
   "cli": {
-    "version": ">= 3.0.0"
+    "version": ">= 3.0.0",
+    "appVersionSource": "local"
   },
   "build": {
     "development": {
       "developmentClient": true,
       "distribution": "internal"
     },
-    "development-ios": {
-      "developmentClient": true,
-      "distribution": "internal",
-      "platform": "ios"
+    "preview": {
+      "distribution": "internal"
     },
-    "development-android": {
-      "developmentClient": true,
-      "distribution": "internal",
-      "platform": "android"
+    "production": {
+      "distribution": "store"
     }
   }
 }

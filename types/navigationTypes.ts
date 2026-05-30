@@ -1,4 +1,5 @@
-import { TrainingBlock } from '@/training/trainingLibrary';
+import { TrainingBlock } from '../training/trainingLibrary';
+
 import { PracticeDrill } from '../screens/Drills';
 
 export type RootStackParamList = {
@@ -42,10 +43,11 @@ export type RootStackParamList = {
   // TrainingSchedule receives an array of training blocks
   TrainingSchedule: { trainingBlocks: TrainingBlock[] };
 
-  // --- Performance Hub (placeholder only) ---
+  // --- Performance Hub + Performance Flow ---
   PerformanceHub: undefined;
+  RecordHit: undefined;
+  SavedHits: undefined;
+  PerformanceAnalysis: undefined;
+  Trends: undefined;
+  PersonalBests: undefined;
 };
-
-
-
-
